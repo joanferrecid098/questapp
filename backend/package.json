@@ -1,0 +1,17 @@
+{
+    "name": "questapp-backend",
+    "version": "0.1.0",
+    "description": "WORK IN PROGRESS",
+    "main": "main.ts",
+    "repository": "https://github.com/joanferrecid098/questapp",
+    "author": "joanferrecid098",
+    "license": "MIT",
+    "scripts": {
+        "start": "tsc && nodemon dist/main.js",
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.4",
+        "ts-node": "^10.9.2"
+    }
+}
