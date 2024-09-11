@@ -4,6 +4,13 @@ import dotenv from "dotenv";
 dotenv.config();
 const app = express();
 
+// Middleware
+app.use(express.json());
+app.use((req, res, next) => {
+    console.log("Connection to: " + req.path + " With method: " + req.method);
+    next();
+});
+
 // Express Routers
 import usersRouter from "./routers/users";
 import groupsRouter from "./routers/groups";

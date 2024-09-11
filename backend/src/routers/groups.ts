@@ -21,10 +21,10 @@ router.post("/", createGroup);
 router.patch("/group/:id", updateGroup);
 router.delete("/group/:id", removeGroup);
 
-router.get("/users", getUsers);
+router.get("/users/:id", getUsers);
 router.post("/users", addUser);
-router.delete("/users/:id", removeUser);
+router.delete("/users", removeUser);
 
-router.get("/question", getQuestion);
+router.get("/question/:id", getQuestion);
 
 export default router;
