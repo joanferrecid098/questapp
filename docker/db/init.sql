@@ -3,12 +3,12 @@
 USE questapp;
 
 -- @block groups
-CREATE TAB LE `groups`
+CREATE TABLE `groups`
 (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id`)
-)
+);
 
 -- @block questions
 CREATE TABLE `questions`
@@ -20,7 +20,7 @@ CREATE TABLE `questions`
     `date` DATE NOT NULL,
     FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
     PRIMARY KEY (`id`)
-)
+);
 
 -- @block users
 CREATE TABLE `users`
@@ -29,7 +29,7 @@ CREATE TABLE `users`
     `username` VARCHAR(255) NOT NULL UNIQUE,
     `password` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id`)
-)
+);
 
 -- @block memberships
 CREATE TABLE `memberships`
@@ -40,7 +40,7 @@ CREATE TABLE `memberships`
     FOREIGN KEY (`user_id`) REFERENCES users(`id`),
     FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
     PRIMARY KEY (`id`)
-)
+);
 
 -- @block votes
 CREATE TABLE `votes`
@@ -53,4 +53,4 @@ CREATE TABLE `votes`
     FOREIGN KEY (`to_id`) REFERENCES users(`id`),
     FOREIGN KEY (`question_id`) REFERENCES questions(`id`),
     PRIMARY KEY (`id`)
-)
+);
