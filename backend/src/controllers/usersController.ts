@@ -1,51 +1,48 @@
+import { signup, login } from "../functions/usersManager";
 import { Response, Request } from "express";
 import db from "../connection";
 
 // User Details
-export const getUsers = async (req: Request, res: Response) => {
-    await db
-        .query("SELECT * FROM users")
-        .then((result) => {
-            res.status(200).json(result[0]);
-            return;
-        })
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-};
-
-export const getUser = async (req: Request, res: Response) => {
-    const { id } = req.params;
-
-    const query = "SELECT * FROM users WHERE id = ?";
-
-    await db
-        .query(query, [id])
-        .then((result) => {
-            res.status(200).json(result[0]);
-            return;
-        })
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-};
-
-export const createUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
-    const query = "INSERT INTO users VALUES (NULL, ?, ?)";
+    try {
+        const user = await login(username, password);
 
-    await db
-        .query(query, [username, password])
-        .then((result) => {
-            res.status(200).json(result[0]);
+        // SUCCESS
+
+        res.status(200).json({ username });
+        return;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
             return;
-        })
-        .catch((err) => {
-            res.status(400).json({ error: err });
-        });
+        } else {
+            res.status(400).json({ error: "Internal server error." });
+            return;
+        }
+    }
+};
+
+export const signupUser = async (req: Request, res: Response) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await signup(username, password);
+
+        // SUCCESS
+
+        res.status(200).json({ username });
+        return;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+            return;
+        } else {
+            res.status(400).json({ error: "Internal server error." });
+            return;
+        }
+    }
 };
 
 export const updateUser = async (req: Request, res: Response) => {

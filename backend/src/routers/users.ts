@@ -3,18 +3,16 @@ const router = Router();
 
 // Include Methods
 import {
-    getUsers,
-    getUser,
-    createUser,
+    loginUser,
+    signupUser,
     updateUser,
     removeUser,
     getGroups,
 } from "../controllers/usersController";
 
 // REST API Endpoints
-router.get("/", getUsers);
-router.get("/user/:id", getUser);
-router.post("/", createUser);
+router.post("/login", loginUser);
+router.post("/signup", signupUser);
 router.patch("/user/:id", updateUser);
 router.delete("/user/:id", removeUser);
 
