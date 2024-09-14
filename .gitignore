@@ -133,8 +133,8 @@ dist
 # Svelte
 .output
 .vercel
-/.svelte-kit
-/build
+.svelte-kit/
+build/
 
 # Vite
 vite.config.js.timestamp-*
