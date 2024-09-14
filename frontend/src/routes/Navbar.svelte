@@ -1,15 +1,29 @@
+<script>
+    import { page } from "$app/stores";
+    $: currentRoute = $page.url.pathname;
+</script>
+
 <nav>
     <a class="container home" href="/">
-        <i class="material-symbols-outlined">home</i>
+        <i
+            class="material-symbols-outlined"
+            class:is-active={currentRoute === "/"}>home</i
+        >
         <p>Home</p>
     </a>
     <a class="container groups" href="/groups">
-        <i class="material-symbols-outlined">forum</i>
+        <i
+            class="material-symbols-outlined"
+            class:is-active={currentRoute === "/groups"}>forum</i
+        >
         <p>Groups</p>
     </a>
     <div class="bottom">
         <a class="container settings" href="/settings">
-            <i class="material-symbols-outlined">settings</i>
+            <i
+                class="material-symbols-outlined"
+                class:is-active={currentRoute === "/settings"}>settings</i
+            >
             <p>Settings</p>
         </a>
     </div>
@@ -56,10 +70,6 @@
         gap: 0.125rem;
     }
 
-    .container:hover {
-        cursor: pointer;
-    }
-
     .bottom {
         height: 100%;
         width: 100%;
@@ -76,9 +86,29 @@
 
     p {
         font-size: 0.75rem;
+        transition: 200ms color;
     }
 
     i {
         font-size: 1.5rem;
+        transition: 200ms color;
+    }
+
+    /* State changes */
+
+    .container:hover {
+        cursor: pointer;
+    }
+
+    .container:hover i {
+        color: #ffffff;
+    }
+
+    .container:hover p {
+        color: #ffffff;
+    }
+
+    .is-active {
+        font-variation-settings: "FILL" 1;
     }
 </style>
