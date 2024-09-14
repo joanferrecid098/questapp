@@ -21,7 +21,7 @@
     main {
         width: 100%;
         box-sizing: border-box;
-        padding-left: 12rem;
+        padding-left: 10rem;
         padding-right: 4rem;
         padding-top: 4rem;
     }
