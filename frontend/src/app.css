@@ -1,0 +1,48 @@
+@import "@fontsource-variable/nunito-sans";
+
+:root {
+    --font-body: "Nunito Sans Variable", sans-serif;
+    --color-accent-yellow: #ffc600;
+    --color-bg-1: #505050;
+    --color-bg-2: #2d2d2d;
+    --color-primary-black: #191919;
+    --color-text-white: #e8eaed;
+    font-family: var(--font-body);
+    color: var(--color-text-white);
+    font-size: 16px;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background-attachment: fixed;
+    background-color: var(--color-bg-1);
+    background-size: 100vw 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    font-weight: 400;
+    margin: 0;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+.visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: auto;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
+}
