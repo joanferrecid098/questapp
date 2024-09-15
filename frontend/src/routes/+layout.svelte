@@ -24,5 +24,6 @@
         padding-left: 10rem;
         padding-right: 4rem;
         padding-top: 4rem;
+        padding-bottom: 2rem;
     }
 </style>

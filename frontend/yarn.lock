@@ -162,11 +162,6 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@neoconfetti/svelte@^2.0.0":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@neoconfetti/svelte/-/svelte-2.2.1.tgz#ac4c322ad0d7d89041a5fabf434f150d81b65653"
-  integrity sha512-2Ts0Rxaf6clW2qG+AKhTwpl01AAyZEAe03XeuQ7Vp+qYIaM3ycuI94j546fmEkUxwACwGI3Zl2cZ/pncTuNcJg==
-
 "@polka/url@^1.0.0-next.24":
   version "1.0.0-next.25"
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.25.tgz#f077fdc0b5d0078d30893396ff4827a13f99e817"
