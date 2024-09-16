@@ -2,17 +2,18 @@
     /* export let data;
     data.slug;
     */
-    import { VotingForm } from "$components";
+    import { VotingForm, VotesChart, Information } from "$components";
 
     let currentVote = 0;
     const groupDetails = {
         name: "Example Group",
+        owner: "Russell",
         nextQuestion: "2024-09-24 11:00:55",
     };
     const groupUsers = [
-        { name: "Lynda", id: "1" },
-        { name: "Russell", id: "2" },
-        { name: "James", id: "3" },
+        { name: "Lynda", id: "1", percentage: "30" },
+        { name: "Russell", id: "2", percentage: "50" },
+        { name: "James", id: "3", percentage: "20" },
     ];
 
     const submitVote = (id: number) => {
@@ -35,6 +36,9 @@
     </div>
     {#if currentVote == 0}
         <VotingForm {groupUsers} {submitVote} />
+    {:else}
+        <VotesChart {groupUsers} />
+        <Information {groupUsers} {groupDetails} />
     {/if}
 </section>
 

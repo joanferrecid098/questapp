@@ -14,7 +14,7 @@
     <a class="container groups" href="/groups">
         <i
             class="material-symbols-outlined"
-            class:is-active={currentRoute === "/groups"}>forum</i
+            class:is-active={currentRoute.startsWith("/groups")}>forum</i
         >
         <p>Groups</p>
     </a>
