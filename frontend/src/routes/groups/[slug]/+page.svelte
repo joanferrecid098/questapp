@@ -1,14 +1,21 @@
 <script lang="ts">
-    /* export let data;
-    data.slug;
-    */
+    import { invalidateAll } from "$app/navigation";
     import { VotingForm, VotesChart, Information } from "$components";
+    import { convertDateToTimeLeft } from "$scripts/dates";
+    import { onDestroy, onMount } from "svelte";
 
+    /* Variables */
+    // export let data;
+    // data.slug;
+    let interval: ReturnType<typeof setInterval>;
+    let timer: string = "";
     let currentVote = 0;
+
+    /* API Responses */
     const groupDetails = {
         name: "Example Group",
         owner: "Russell",
-        nextQuestion: "2024-09-24 11:00:55",
+        nextQuestion: "2024-09-24 23:00:00",
     };
     const groupUsers = [
         { name: "Lynda", id: "1", percentage: "30" },
@@ -16,10 +23,61 @@
         { name: "James", id: "3", percentage: "20" },
     ];
 
+    /* API Requests */
     const submitVote = (id: number) => {
         // SEND API REQUEST
         currentVote = id;
     };
+
+    /* Intervals */
+    const resetInterval = () => {
+        clearInterval(interval);
+        interval = setInterval(() => {
+            const timerObject = convertDateToTimeLeft(
+                new Date(groupDetails.nextQuestion),
+            );
+            if (timerObject.hours != 0) {
+                timer = `${timerObject.hoursString}:${timerObject.minutes}:${timerObject.seconds}`;
+                return;
+            }
+            if (timerObject.minutes != 0) {
+                timer = `${timerObject.minutesString}:${timerObject.seconds}`;
+                return;
+            }
+            if (timerObject.seconds != 0) {
+                timer = `${timerObject.secondsString}s`;
+                return;
+            }
+            invalidateAll();
+            return;
+        }, 1000);
+
+        const timerObject = convertDateToTimeLeft(
+            new Date(groupDetails.nextQuestion),
+        );
+        if (timerObject.hours != 0) {
+            timer = `${timerObject.hoursString}:${timerObject.minutes}:${timerObject.seconds}`;
+            return;
+        }
+        if (timerObject.minutes != 0) {
+            timer = `${timerObject.minutesString}:${timerObject.seconds}`;
+            return;
+        }
+        if (timerObject.seconds != 0) {
+            timer = `${timerObject.secondsString}s`;
+            return;
+        }
+        invalidateAll();
+        return;
+    };
+
+    onMount(() => {
+        resetInterval();
+    });
+
+    onDestroy(() => {
+        clearInterval(interval);
+    });
 </script>
 
 <section>
@@ -27,7 +85,7 @@
         <div class="details">
             <p><strong>{groupDetails.name}</strong></p>
             <p class="end">
-                New question in: <strong>{groupDetails.nextQuestion}</strong>
+                New question in: <strong>{timer}</strong>
             </p>
         </div>
         <div class="question">
