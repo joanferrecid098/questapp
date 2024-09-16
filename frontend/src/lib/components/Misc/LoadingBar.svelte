@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     export let progress = 0;
 </script>
 

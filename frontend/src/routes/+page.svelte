@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { PendingNotification, LoadingBar } from "$components";
 </script>
 
