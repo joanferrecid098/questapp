@@ -15,7 +15,7 @@
     const groupDetails = {
         name: "Example Group",
         owner: "Russell",
-        nextQuestion: "2024-09-24 23:00:00",
+        nextQuestion: "2024-09-24 01:11:30",
     };
     const groupUsers = [
         { name: "Lynda", id: "1", percentage: "30" },
@@ -37,11 +37,11 @@
                 new Date(groupDetails.nextQuestion),
             );
             if (timerObject.hours != 0) {
-                timer = `${timerObject.hoursString}:${timerObject.minutes}:${timerObject.seconds}`;
+                timer = `${timerObject.hoursString}:${timerObject.minutesString}:${timerObject.secondsString}`;
                 return;
             }
             if (timerObject.minutes != 0) {
-                timer = `${timerObject.minutesString}:${timerObject.seconds}`;
+                timer = `${timerObject.minutesString}:${timerObject.secondsString}`;
                 return;
             }
             if (timerObject.seconds != 0) {
@@ -56,11 +56,11 @@
             new Date(groupDetails.nextQuestion),
         );
         if (timerObject.hours != 0) {
-            timer = `${timerObject.hoursString}:${timerObject.minutes}:${timerObject.seconds}`;
+            timer = `${timerObject.hoursString}:${timerObject.minutesString}:${timerObject.secondsString}`;
             return;
         }
         if (timerObject.minutes != 0) {
-            timer = `${timerObject.minutesString}:${timerObject.seconds}`;
+            timer = `${timerObject.minutesString}:${timerObject.secondsString}`;
             return;
         }
         if (timerObject.seconds != 0) {
