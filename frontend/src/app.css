@@ -64,6 +64,11 @@ input {
     font-family: var(--font-body);
 }
 
+select {
+    border: 0;
+    font-family: var(--font-body);
+}
+
 .visually-hidden {
     border: 0;
     clip: rect(0 0 0 0);

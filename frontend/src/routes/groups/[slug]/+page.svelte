@@ -3,30 +3,61 @@
     import { VotingForm, VotesChart, Information } from "$components";
     import { convertDateToTimeLeft } from "$scripts/dates";
     import { onDestroy, onMount } from "svelte";
+    import { page } from "$app/stores";
+    import {
+        type GroupDetails,
+        type UserDetails,
+    } from "$lib/interfaces/models";
 
     /* Variables */
-    // export let data;
-    // data.slug;
+    let slug = $page.params.slug;
     let interval: ReturnType<typeof setInterval>;
     let timer: string = "";
+    let editMode = false;
     let currentVote = 0;
 
     /* API Responses */
-    const groupDetails = {
+    const groupDetails: GroupDetails = {
+        id: Number(slug),
         name: "Example Group",
         owner: "Russell",
+        ownerId: 2,
         nextQuestion: "2024-09-24 01:11:30",
+        participants: [
+            { name: "Lynda", id: 1 },
+            { name: "Russell", id: 2 },
+            { name: "James", id: 3 },
+        ],
     };
-    const groupUsers = [
-        { name: "Lynda", id: "1", percentage: "30" },
-        { name: "Russell", id: "2", percentage: "50" },
-        { name: "James", id: "3", percentage: "20" },
+    const groupUsers: UserDetails[] = [
+        { name: "Lynda", id: 1, percentage: 30 },
+        { name: "Russell", id: 2, percentage: 50 },
+        { name: "James", id: 3, percentage: 20 },
     ];
 
     /* API Requests */
     const submitVote = (id: number) => {
         // SEND API REQUEST
         currentVote = id;
+    };
+
+    const submitChanges = (groupDetails: GroupDetails) => {
+        // SEND API REQUEST
+        console.log("update group details with following information");
+        console.log(groupDetails);
+        invalidateAll();
+    };
+
+    const removeUser = (userDetails: UserDetails) => {
+        // SEND API REQUEST
+        console.log("remove following user:");
+        console.log(userDetails);
+    };
+
+    const addUser = (userDetails: UserDetails) => {
+        // SEND API REQUEST
+        console.log("add following user:");
+        console.log(userDetails);
     };
 
     /* Intervals */
@@ -96,7 +127,14 @@
         <VotingForm {groupUsers} {submitVote} />
     {:else}
         <VotesChart {groupUsers} />
-        <Information {groupUsers} {groupDetails} />
+        <Information
+            {groupUsers}
+            {groupDetails}
+            {editMode}
+            {submitChanges}
+            {removeUser}
+            {addUser}
+        />
     {/if}
 </section>
 
