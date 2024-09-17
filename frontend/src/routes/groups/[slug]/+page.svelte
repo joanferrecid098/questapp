@@ -13,7 +13,6 @@
     let slug = $page.params.slug;
     let interval: ReturnType<typeof setInterval>;
     let timer: string = "";
-    let editMode = false;
     let currentVote = 0;
 
     /* API Responses */
@@ -23,11 +22,6 @@
         owner: "Russell",
         ownerId: 2,
         nextQuestion: "2024-09-24 01:11:30",
-        participants: [
-            { name: "Lynda", id: 1 },
-            { name: "Russell", id: 2 },
-            { name: "James", id: 3 },
-        ],
     };
     const groupUsers: UserDetails[] = [
         { name: "Lynda", id: 1, percentage: 30 },
@@ -42,6 +36,7 @@
     };
 
     const submitChanges = (groupDetails: GroupDetails) => {
+        // COMPARE VALUES TO OLD
         // SEND API REQUEST
         console.log("update group details with following information");
         console.log(groupDetails);
@@ -130,7 +125,6 @@
         <Information
             {groupUsers}
             {groupDetails}
-            {editMode}
             {submitChanges}
             {removeUser}
             {addUser}

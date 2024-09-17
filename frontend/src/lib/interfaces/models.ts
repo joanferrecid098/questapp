@@ -11,5 +11,4 @@ export interface GroupDetails {
     owner?: string;
     ownerId: number;
     nextQuestion?: string;
-    participants?: UserDetails[];
 }

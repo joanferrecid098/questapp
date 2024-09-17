@@ -7,8 +7,8 @@
 
     export let groupDetails: GroupDetails;
     export let groupUsers: UserDetails[];
-    export let editMode: boolean;
 
+    let editMode: boolean;
     let name: string = groupDetails.name;
     let owner: number = groupDetails.ownerId;
 
