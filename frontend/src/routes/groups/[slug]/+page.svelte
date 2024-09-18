@@ -15,6 +15,9 @@
     let timer: string = "";
     let currentVote = 0;
 
+    let removedUsers: UserDetails[] = [];
+    let addedUsers: UserDetails[] = [];
+
     /* API Responses */
     const groupDetails: GroupDetails = {
         id: Number(slug),
@@ -40,19 +43,19 @@
         // SEND API REQUEST
         console.log("update group details with following information");
         console.log(groupDetails);
+        console.log("add following users:");
+        console.log(addedUsers);
+        console.log("remove following users:");
+        console.log(removedUsers);
         invalidateAll();
     };
 
     const removeUser = (userDetails: UserDetails) => {
-        // SEND API REQUEST
-        console.log("remove following user:");
-        console.log(userDetails);
+        removedUsers.push(userDetails);
     };
 
     const addUser = (userDetails: UserDetails) => {
-        // SEND API REQUEST
-        console.log("add following user:");
-        console.log(userDetails);
+        addedUsers.push(userDetails);
     };
 
     /* Intervals */
