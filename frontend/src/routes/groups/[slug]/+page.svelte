@@ -63,7 +63,7 @@
         clearInterval(interval);
         interval = setInterval(() => {
             const timerObject = convertDateToTimeLeft(
-                new Date(groupDetails.nextQuestion),
+                new Date(groupDetails.nextQuestion!),
             );
             if (timerObject.hours != 0) {
                 timer = `${timerObject.hoursString}:${timerObject.minutesString}:${timerObject.secondsString}`;
@@ -82,7 +82,7 @@
         }, 1000);
 
         const timerObject = convertDateToTimeLeft(
-            new Date(groupDetails.nextQuestion),
+            new Date(groupDetails.nextQuestion!),
         );
         if (timerObject.hours != 0) {
             timer = `${timerObject.hoursString}:${timerObject.minutesString}:${timerObject.secondsString}`;
