@@ -1,5 +1,25 @@
 <script lang="ts">
-    import { GroupElement } from "$components";
+    import { GroupElement, CreateGroup } from "$components";
+    import {
+        type GroupDetails,
+        type UserDetails,
+    } from "$lib/interfaces/models";
+
+    let createGroupActive: boolean = false;
+
+    const saveGroup = (
+        groupDetails: GroupDetails,
+        userArray: UserDetails[],
+    ) => {
+        if (!groupDetails || !userArray) {
+            createGroupActive = false;
+            return;
+        }
+        console.log("create group with following information:");
+        console.log(groupDetails);
+        console.log("create group with following users:");
+        console.log(userArray);
+    };
 </script>
 
 <svelte:head>
@@ -7,6 +27,7 @@
 </svelte:head>
 
 <section>
+    <CreateGroup isActive={createGroupActive} {saveGroup} />
     <div class="header">
         <h1>My Groups</h1>
     </div>
@@ -14,7 +35,7 @@
     <div class="groups">
         <GroupElement title="Example Group" update="Today" groupId="1" />
         <GroupElement title="Example Group 2" update="Yesterday" groupId="2" />
-        <button class="btn create" on:click={() => alert(1)}>
+        <button class="btn create" on:click={() => (createGroupActive = true)}>
             <i class="material-symbols-outlined">add</i>
             <p>Create a new group</p>
         </button>

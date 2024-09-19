@@ -1,5 +1,25 @@
 <script lang="ts">
-    import { PendingNotification, LoadingBar } from "$components";
+    import { PendingNotification, LoadingBar, CreateGroup } from "$components";
+    import {
+        type GroupDetails,
+        type UserDetails,
+    } from "$lib/interfaces/models";
+
+    let createGroupActive: boolean = false;
+
+    const saveGroup = (
+        groupDetails: GroupDetails,
+        userArray: UserDetails[],
+    ) => {
+        if (!groupDetails || !userArray) {
+            createGroupActive = false;
+            return;
+        }
+        console.log("create group with following information:");
+        console.log(groupDetails);
+        console.log("create group with following users:");
+        console.log(userArray);
+    };
 </script>
 
 <svelte:head>
@@ -7,6 +27,7 @@
 </svelte:head>
 
 <section>
+    <CreateGroup isActive={createGroupActive} {saveGroup} />
     <div class="header">
         <h1>Home</h1>
     </div>
@@ -18,7 +39,7 @@
             <p class="empty">No new notifications</p>
         </div>
     </div>
-    <button class="btn create" on:click={() => alert(1)}>
+    <button class="btn create" on:click={() => (createGroupActive = true)}>
         <i class="material-symbols-outlined">add</i>
         <p>Create your first group</p>
     </button>
