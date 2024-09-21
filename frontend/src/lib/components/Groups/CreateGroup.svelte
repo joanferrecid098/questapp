@@ -1,7 +1,6 @@
 <script lang="ts">
     import { type UserDetails } from "$lib/interfaces/models";
 
-    export let isActive: boolean;
     export let saveGroup;
 
     let groupUsers: UserDetails[] = [];
@@ -10,8 +9,8 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="overlay" class:show={isActive} on:click={() => saveGroup()}></div>
-<div class="create" class:show={isActive}>
+<div class="overlay" on:click={() => saveGroup()}></div>
+<div class="create">
     <div class="container header">
         <h2>Create a new group</h2>
         <button on:click={() => saveGroup({ name }, groupUsers)}>
@@ -54,7 +53,6 @@
     .create {
         position: absolute;
         width: 75%;
-        display: none;
         flex-direction: column;
         align-items: start;
         align-content: stretch;
@@ -89,11 +87,6 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        display: none;
-    }
-
-    .show {
-        display: flex;
     }
 
     .header {

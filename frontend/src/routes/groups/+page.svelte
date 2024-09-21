@@ -5,8 +5,24 @@
         type UserDetails,
     } from "$lib/interfaces/models";
 
+    /* Variables */
     let createGroupActive: boolean = false;
 
+    /* API Responses */
+    const groups: GroupDetails[] = [
+        {
+            id: 1,
+            name: "Example Group",
+            ownerId: 2,
+        },
+        {
+            id: 2,
+            name: "Example Group 2",
+            ownerId: 1,
+        },
+    ];
+
+    /* Functions */
     const saveGroup = (
         groupDetails: GroupDetails,
         userArray: UserDetails[],
@@ -27,14 +43,21 @@
 </svelte:head>
 
 <section>
-    <CreateGroup isActive={createGroupActive} {saveGroup} />
+    {#if createGroupActive}
+        <CreateGroup {saveGroup} />
+    {/if}
     <div class="header">
         <h1>My Groups</h1>
     </div>
     <input type="text" class="search" placeholder=" Search" />
     <div class="groups">
-        <GroupElement title="Example Group" update="Today" groupId="1" />
-        <GroupElement title="Example Group 2" update="Yesterday" groupId="2" />
+        {#each groups as group}
+            <GroupElement
+                title={group.name}
+                update="Today"
+                groupId={group.id}
+            />
+        {/each}
         <button class="btn create" on:click={() => (createGroupActive = true)}>
             <i class="material-symbols-outlined">add</i>
             <p>Create a new group</p>

@@ -1,0 +1,295 @@
+<script lang="ts">
+    import type { UserDetails } from "$lib/interfaces/models";
+
+    /* API Responses */
+    let accountDetails: UserDetails = {
+        id: 2,
+        name: "Russell",
+        username: "russell-test-user",
+    };
+
+    /* Variables */
+    let editMode: boolean = false;
+    let cachedName: string = accountDetails.name!;
+    let cachedUsername: string = accountDetails.username!;
+
+    /* API Requests */
+    const updateAccount = ({ id, name, username }: UserDetails) => {
+        if (!name || !username) {
+            editMode = false;
+            console.log("Nothing changed.");
+
+            cachedName = accountDetails.name!;
+            cachedUsername = accountDetails.username!;
+
+            return;
+        }
+        if (name === accountDetails.username || name === accountDetails.name) {
+            editMode = false;
+            console.log("Nothing changed.");
+
+            cachedName = accountDetails.name!;
+            cachedUsername = accountDetails.username!;
+
+            return;
+        }
+
+        // SEND API REQUEST
+        accountDetails.name = name;
+        accountDetails.username = username;
+
+        cachedName = accountDetails.name;
+        cachedUsername = accountDetails.username;
+
+        console.log("Account updated.");
+        console.log(id, name, username);
+
+        editMode = false;
+    };
+</script>
+
+<svelte:head>
+    <title>Settings</title>
+</svelte:head>
+
+<section>
+    <div class="header">
+        <h1>Settings</h1>
+    </div>
+    {#if !editMode}
+        <div class="details">
+            <div class="container header">
+                <h2>Account Details</h2>
+                <button class="edit" on:click={() => (editMode = true)}>
+                    <i class="material-symbols-outlined">edit</i>
+                </button>
+            </div>
+            <div class="container">
+                <div class="info">
+                    <div class="text">
+                        <p>
+                            <strong>Display name:</strong>
+                            {accountDetails.name}
+                        </p>
+                        <p>
+                            <strong>Username:</strong>
+                            {accountDetails.username}
+                        </p>
+                    </div>
+                    <div class="image">
+                        <img src="https://picsum.photos/256/256" alt="" />
+                    </div>
+                </div>
+                <button class="btn logoff" on:click={() => alert(1)}>
+                    <i class="material-symbols-outlined">logout</i>
+                    <p>Log Off</p>
+                </button>
+                <button class="btn delete" on:click={() => alert(2)}>
+                    <i class="material-symbols-outlined">delete</i>
+                    <p>Delete Account</p>
+                </button>
+            </div>
+        </div>
+    {:else}
+        <div class="details">
+            <div class="container header">
+                <h2>Account Details</h2>
+                <button
+                    class="edit"
+                    on:click={() =>
+                        updateAccount({
+                            id: accountDetails.id,
+                            name: cachedName,
+                            username: cachedUsername,
+                        })}
+                >
+                    <i class="material-symbols-outlined">save</i>
+                </button>
+            </div>
+            <div class="container">
+                <div class="info">
+                    <div class="text">
+                        <div class="input">
+                            <p><strong>Display name:</strong></p>
+                            <input type="text" bind:value={cachedName} />
+                        </div>
+                        <div class="input">
+                            <p><strong>Username:</strong></p>
+                            <input type="text" bind:value={cachedUsername} />
+                        </div>
+                    </div>
+                    <div class="image">
+                        <img src="https://picsum.photos/256/256" alt="" />
+                    </div>
+                </div>
+                <button class="btn logoff" on:click={() => alert(3)}>
+                    <i class="material-symbols-outlined">password</i>
+                    <p>Change Password</p>
+                </button>
+            </div>
+        </div>
+    {/if}
+    <div class="app-info">
+        <div class="container">
+            <h2>App Details</h2>
+        </div>
+        <div class="container">
+            <p><strong>Version:</strong> 1.1.0</p>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Sections */
+    section {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: start;
+        align-content: stretch;
+        justify-content: start;
+        gap: 1.5rem;
+        width: 100%;
+        height: 100%;
+    }
+
+    .header {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        align-content: stretch;
+        justify-content: start;
+        gap: 2rem;
+    }
+
+    .details {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        align-content: stretch;
+        justify-content: start;
+        gap: 0.0625rem;
+        width: 100%;
+    }
+
+    .app-info {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        align-content: stretch;
+        justify-content: start;
+        gap: 0.0625rem;
+        width: 100%;
+    }
+
+    .container {
+        background-color: var(--color-bg-2);
+
+        height: auto;
+        width: 100%;
+        padding: 0.5rem 1rem 0.5rem 1rem;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        align-content: stretch;
+        justify-content: start;
+        gap: 0.5rem;
+    }
+
+    .header {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .info {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: start;
+        align-content: stretch;
+        justify-content: start;
+        gap: 0.75rem;
+    }
+
+    .text {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn {
+        cursor: pointer;
+        width: 100%;
+        padding: 0.625rem 1rem;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        align-content: stretch;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .input {
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        align-content: stretch;
+        justify-content: start;
+        gap: 1rem;
+    }
+
+    input {
+        box-sizing: border-box;
+        padding: 0.5rem;
+        background-color: var(--color-primary-black);
+        color: var(--color-text-white);
+        width: 100%;
+    }
+
+    /* Elements */
+    h2 {
+        flex: 1;
+    }
+
+    .btn {
+        font-size: 1rem;
+    }
+
+    .logoff {
+        background-color: var(--color-accent-yellow);
+        color: var(--color-primary-black);
+    }
+
+    .delete {
+        background-color: var(--color-danger-red);
+    }
+
+    .edit {
+        cursor: pointer;
+        background: none;
+        flex-shrink: 0;
+        padding: 0;
+        max-height: 1.5rem;
+        max-width: 1.5rem;
+    }
+
+    i {
+        width: auto;
+        font-size: 1.5rem;
+    }
+
+    .text > p {
+        font-size: 1.25rem;
+    }
+
+    .input > p {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+</style>
