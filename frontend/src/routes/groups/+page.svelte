@@ -22,7 +22,7 @@
         },
     ];
 
-    /* Functions */
+    /* API Requests */
     const saveGroup = (
         groupDetails: GroupDetails,
         userArray: UserDetails[],
@@ -31,6 +31,10 @@
             createGroupActive = false;
             return;
         }
+
+        // SEND API REQUEST
+        createGroupActive = false;
+
         console.log("create group with following information:");
         console.log(groupDetails);
         console.log("create group with following users:");

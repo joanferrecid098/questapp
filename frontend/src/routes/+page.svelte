@@ -1,10 +1,5 @@
 <script lang="ts">
-    import {
-        PendingNotification,
-        LoadingBar,
-        CreateGroup,
-        Popup,
-    } from "$components";
+    import { PendingNotification, LoadingBar, CreateGroup } from "$components";
     import {
         type GroupDetails,
         type UserDetails,

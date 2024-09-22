@@ -14,6 +14,7 @@
     .contents {
         position: absolute;
         width: 75%;
+        display: flex;
         flex-direction: column;
         align-items: start;
         align-content: stretch;

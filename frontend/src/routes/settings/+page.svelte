@@ -1,5 +1,6 @@
 <script lang="ts">
-    import type { UserDetails } from "$lib/interfaces/models";
+    import { type UserDetails } from "$lib/interfaces/models";
+    import { ChangePassword } from "$components";
 
     /* API Responses */
     let accountDetails: UserDetails = {
@@ -10,6 +11,7 @@
 
     /* Variables */
     let editMode: boolean = false;
+    let passwordMode: boolean = false;
     let cachedName: string = accountDetails.name!;
     let cachedUsername: string = accountDetails.username!;
 
@@ -46,6 +48,20 @@
 
         editMode = false;
     };
+
+    const updatePassword = (oldPassword: string, newPassword: string) => {
+        if (!oldPassword || !newPassword) {
+            passwordMode = false;
+            return;
+        }
+
+        // SEND API REQUEST
+        passwordMode = false;
+        editMode = false;
+
+        console.log("change password to the following");
+        console.log(newPassword);
+    };
 </script>
 
 <svelte:head>
@@ -53,6 +69,9 @@
 </svelte:head>
 
 <section>
+    {#if passwordMode}
+        <ChangePassword {updatePassword} />
+    {/if}
     <div class="header">
         <h1>Settings</h1>
     </div>
@@ -122,7 +141,10 @@
                         <img src="https://picsum.photos/256/256" alt="" />
                     </div>
                 </div>
-                <button class="btn logoff" on:click={() => alert(3)}>
+                <button
+                    class="btn change"
+                    on:click={() => (passwordMode = true)}
+                >
                     <i class="material-symbols-outlined">password</i>
                     <p>Change Password</p>
                 </button>
@@ -261,7 +283,8 @@
         font-size: 1rem;
     }
 
-    .logoff {
+    .logoff,
+    .change {
         background-color: var(--color-accent-yellow);
         color: var(--color-primary-black);
     }

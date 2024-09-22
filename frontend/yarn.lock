@@ -337,6 +337,11 @@ braces@~3.0.2:
   dependencies:
     fill-range "^7.1.1"
 
+check-password-strength@^2.0.10:
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/check-password-strength/-/check-password-strength-2.0.10.tgz#d716d767944f43aa83665cdf96a2c28e18b2a7b6"
+  integrity sha512-HRM5ICPmtnNtLnTv2QrfVkq1IxI9z3bzYpDJ1k5ixwD9HtJGHuv265R6JmHOV6r8wLhQMlULnIUVpkrC2yaiCw==
+
 chokidar@^3.4.1:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.6.0.tgz#197c6cc669ef2a8dc5e7b4d97ee4e092c3eb0d5b"
