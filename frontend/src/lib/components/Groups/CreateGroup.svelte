@@ -1,5 +1,6 @@
 <script lang="ts">
     import { type UserDetails } from "$lib/interfaces/models";
+    import { Popup } from "$components";
 
     export let saveGroup;
 
@@ -7,10 +8,7 @@
     let name: string;
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="overlay" on:click={() => saveGroup()}></div>
-<div class="create">
+<Popup closeMethod={saveGroup}>
     <div class="container header">
         <h2>Create a new group</h2>
         <button on:click={() => saveGroup({ name }, groupUsers)}>
@@ -46,24 +44,10 @@
             ><strong>Add user</strong></button
         >
     </div>
-</div>
+</Popup>
 
 <style>
     /* Sections */
-    .create {
-        position: absolute;
-        width: 75%;
-        flex-direction: column;
-        align-items: start;
-        align-content: stretch;
-        justify-content: start;
-        gap: 0.125rem;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: var(--color-bg-1);
-    }
-
     .container {
         background-color: var(--color-bg-2);
 
@@ -78,15 +62,6 @@
         align-content: stretch;
         justify-content: start;
         gap: 0.75rem;
-    }
-
-    .overlay {
-        background-color: rgba(0, 0, 0, 0.5);
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
     }
 
     .header {
