@@ -20,7 +20,15 @@ export const signup = async (username: string, password: string) => {
         throw Error("Username is not valid.");
     }
 
-    if (!validator.isStrongPassword(password)) {
+    if (
+        !validator.isStrongPassword(password, {
+            minLength: 8,
+            minNumbers: 1,
+            minLowercase: 1,
+            minUppercase: 1,
+            minSymbols: 1,
+        })
+    ) {
         throw Error("Password is not strong enough.");
     }
 
