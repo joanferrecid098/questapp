@@ -6,4 +6,6 @@ export { default as LoadingBar } from "./Misc/LoadingBar.svelte";
 export { default as VotesChart } from "./Groups/VotesChart.svelte";
 export { default as Information } from "./Groups/Information.svelte";
 export { default as CreateGroup } from "./Groups/CreateGroup.svelte";
+export { default as EmptyGroup } from "./Groups/EmptyGroup.svelte";
+export { default as AddUsers } from "./Groups/AddUsers.svelte";
 export { default as Popup } from "./Misc/Popup.svelte";

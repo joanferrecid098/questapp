@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type UserDetails } from "$lib/interfaces/models";
+    import type { UserDetails } from "$lib/interfaces/models";
     import { ChangePassword } from "$components";
 
     /* API Responses */

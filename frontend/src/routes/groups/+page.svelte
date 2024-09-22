@@ -1,9 +1,6 @@
 <script lang="ts">
     import { GroupElement, CreateGroup } from "$components";
-    import {
-        type GroupDetails,
-        type UserDetails,
-    } from "$lib/interfaces/models";
+    import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
 
     /* Variables */
     let createGroupActive: boolean = false;

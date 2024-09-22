@@ -1,13 +1,15 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
-    import { VotingForm, VotesChart, Information } from "$components";
     import { convertDateToTimeLeft } from "$scripts/dates";
     import { onDestroy, onMount } from "svelte";
     import { page } from "$app/stores";
+    import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
     import {
-        type GroupDetails,
-        type UserDetails,
-    } from "$lib/interfaces/models";
+        VotingForm,
+        VotesChart,
+        Information,
+        EmptyGroup,
+    } from "$components";
 
     /* Variables */
     let slug = $page.params.slug;
@@ -16,7 +18,6 @@
     let currentVote = 0;
 
     let removedUsers: UserDetails[] = [];
-    let addedUsers: UserDetails[] = [];
 
     /* API Responses */
     const groupDetails: GroupDetails = {
@@ -43,8 +44,6 @@
         // SEND API REQUEST
         console.log("update group details with following information");
         console.log(groupDetails);
-        console.log("add following users:");
-        console.log(addedUsers);
         console.log("remove following users:");
         console.log(removedUsers);
         invalidateAll();
@@ -52,10 +51,6 @@
 
     const removeUser = (userDetails: UserDetails) => {
         removedUsers.push(userDetails);
-    };
-
-    const addUser = (userDetails: UserDetails) => {
-        addedUsers.push(userDetails);
     };
 
     /* Intervals */
@@ -121,17 +116,13 @@
             <h2>Who would be more likely to become an Olympic athelete?</h2>
         </div>
     </div>
-    {#if currentVote == 0}
+    {#if groupUsers.length == 0}
+        <EmptyGroup />
+    {:else if currentVote == 0}
         <VotingForm {groupUsers} {submitVote} />
     {:else}
         <VotesChart {groupUsers} />
-        <Information
-            {groupUsers}
-            {groupDetails}
-            {submitChanges}
-            {removeUser}
-            {addUser}
-        />
+        <Information {groupUsers} {groupDetails} {submitChanges} {removeUser} />
     {/if}
 </section>
 

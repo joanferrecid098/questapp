@@ -1,17 +1,20 @@
 <script lang="ts">
     import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+    import { AddUsers } from "$components";
 
     export let submitChanges;
     export let removeUser;
-    export let addUser;
 
     export let groupDetails: GroupDetails;
     export let groupUsers: UserDetails[];
 
     let search: string;
+    let addMode: boolean;
     let editMode: boolean;
     let name: string = groupDetails.name;
     let owner: number = groupDetails.ownerId;
+
+    $: if (!editMode) addMode = false;
 
     const handleSubmit = () => {
         const groupChanges: GroupDetails = {
@@ -23,8 +26,18 @@
         submitChanges(groupChanges);
         editMode = false;
     };
+
+    const closeAdd = () => {
+        addMode = false;
+    };
 </script>
 
+{#if addMode}
+    <AddUsers
+        {closeAdd}
+        linkValue="https://questapp.com/invite/aca7a1c9-b691-480f-9511-edf45d932e11"
+    />
+{/if}
 <div class="information">
     {#if !editMode}
         <div class="container header">
@@ -97,7 +110,7 @@
                     </div>
                 {/each}
             </div>
-            <button class="add" on:click={() => alert(3)}
+            <button class="add" on:click={() => (addMode = true)}
                 ><strong>Add user</strong></button
             >
         </div>

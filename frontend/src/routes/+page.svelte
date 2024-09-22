@@ -1,9 +1,6 @@
 <script lang="ts">
     import { PendingNotification, LoadingBar, CreateGroup } from "$components";
-    import {
-        type GroupDetails,
-        type UserDetails,
-    } from "$lib/interfaces/models";
+    import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
 
     let createGroupActive: boolean = false;
 
