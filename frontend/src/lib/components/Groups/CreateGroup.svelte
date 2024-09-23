@@ -4,14 +4,13 @@
 
     export let saveGroup;
 
-    let groupUsers: UserDetails[] = [];
     let name: string;
 </script>
 
 <Popup closeMethod={saveGroup}>
     <div class="container header">
         <h2>Create a new group</h2>
-        <button on:click={() => saveGroup({ name }, groupUsers)}>
+        <button on:click={() => saveGroup({ name })}>
             <i class="material-symbols-outlined">save</i>
         </button>
     </div>

@@ -1,12 +1,14 @@
 <script lang="ts">
+    import { createSearchStore, searchHandler } from "$stores/search";
+    import type { GroupDetails } from "$lib/interfaces/models";
     import { GroupElement, CreateGroup } from "$components";
-    import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+    import { onDestroy } from "svelte";
 
     /* Variables */
     let createGroupActive: boolean = false;
 
     /* API Responses */
-    const groups: GroupDetails[] = [
+    const groupDetails: GroupDetails[] = [
         {
             id: 1,
             name: "Example Group",
@@ -20,11 +22,8 @@
     ];
 
     /* API Requests */
-    const saveGroup = (
-        groupDetails: GroupDetails,
-        userArray: UserDetails[],
-    ) => {
-        if (!groupDetails || !userArray) {
+    const saveGroup = (groupDetails: GroupDetails) => {
+        if (!groupDetails) {
             createGroupActive = false;
             return;
         }
@@ -34,9 +33,20 @@
 
         console.log("create group with following information:");
         console.log(groupDetails);
-        console.log("create group with following users:");
-        console.log(userArray);
     };
+
+    /* Search Logic */
+    const searchGroups: GroupDetails[] = groupDetails.map((group) => ({
+        ...group,
+        searchTerms: `${group.name}`,
+    }));
+
+    const searchStore = createSearchStore(searchGroups);
+    const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
+
+    onDestroy(() => {
+        unsubscribe();
+    });
 </script>
 
 <svelte:head>
@@ -50,9 +60,14 @@
     <div class="header">
         <h1>My Groups</h1>
     </div>
-    <input type="text" class="search" placeholder=" Search" />
+    <input
+        type="text"
+        class="search"
+        placeholder=" Search"
+        bind:value={$searchStore.search}
+    />
     <div class="groups">
-        {#each groups as group}
+        {#each $searchStore.filtered as group}
             <GroupElement
                 title={group.name}
                 update="Today"

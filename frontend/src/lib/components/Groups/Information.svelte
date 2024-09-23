@@ -1,6 +1,8 @@
 <script lang="ts">
     import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+    import { createSearchStore, searchHandler } from "$stores/search";
     import { AddUsers } from "$components";
+    import { onDestroy } from "svelte";
 
     export let submitChanges;
     export let removeUser;
@@ -16,6 +18,7 @@
 
     $: if (!editMode) addMode = false;
 
+    /* Functions */
     const handleSubmit = () => {
         const groupChanges: GroupDetails = {
             id: groupDetails.id,
@@ -30,6 +33,19 @@
     const closeAdd = () => {
         addMode = false;
     };
+
+    /* Search Logic */
+    const searchUsers: UserDetails[] = groupUsers.map((user) => ({
+        ...user,
+        searchTerms: `${user.name} ${user.username}`,
+    }));
+
+    const searchStore = createSearchStore(searchUsers);
+    const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
+
+    onDestroy(() => {
+        unsubscribe();
+    });
 </script>
 
 {#if addMode}
@@ -89,10 +105,10 @@
                 type="text"
                 class="search"
                 placeholder="Search"
-                bind:value={search}
+                bind:value={$searchStore.search}
             />
             <div class="participants">
-                {#each groupUsers as user}
+                {#each $searchStore.filtered as user}
                     <div class="user">
                         <img
                             src="https://picsum.photos/seed/test{user.name}/100"
