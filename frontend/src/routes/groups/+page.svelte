@@ -1,11 +1,12 @@
 <script lang="ts">
     import { createSearchStore, searchHandler } from "$stores/search";
+    import { GroupElement, CreateGroup, JoinGroup } from "$components";
     import type { GroupDetails } from "$lib/interfaces/models";
-    import { GroupElement, CreateGroup } from "$components";
     import { onDestroy } from "svelte";
 
     /* Variables */
     let createGroupActive: boolean = false;
+    let joinGroupActive: boolean = false;
 
     /* API Responses */
     const groupDetails: GroupDetails[] = [
@@ -33,6 +34,19 @@
 
         console.log("create group with following information:");
         console.log(groupDetails);
+    };
+
+    const joinGroup = (invite_id: string) => {
+        if (!invite_id) {
+            joinGroupActive = false;
+            return;
+        }
+
+        // SEND API REQUEST
+        joinGroupActive = false;
+
+        console.log("join group with following invite id:");
+        console.log(invite_id);
     };
 
     /* Search Logic */
@@ -75,7 +89,7 @@
             <i class="material-symbols-outlined">add</i>
             <p>Create a new group</p>
         </button>
-        <button class="btn join" on:click={() => alert(2)}>
+        <button class="btn join" on:click={() => (joinGroupActive = true)}>
             <i class="material-symbols-outlined">add</i>
             <p>Join a group</p>
         </button>
@@ -83,6 +97,9 @@
 </section>
 {#if createGroupActive}
     <CreateGroup {saveGroup} />
+{/if}
+{#if joinGroupActive}
+    <JoinGroup {joinGroup} />
 {/if}
 
 <style>

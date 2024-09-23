@@ -6,19 +6,36 @@
 
     let linkPrefix = "https://questapp.com/invite/";
     let linkValue = linkPrefix + linkId;
-    let iconState = "link";
+    let linkIconState = "link";
+
+    let idValue = linkId;
+    let idIconState = "pin";
 
     const copyLink = async () => {
         await navigator.clipboard.writeText(linkValue);
 
         let tempValue = linkValue;
 
-        iconState = "check";
+        linkIconState = "check";
         linkValue = "Copied";
 
         setTimeout(() => {
-            iconState = "link";
+            linkIconState = "link";
             linkValue = tempValue;
+        }, 1000);
+    };
+
+    const copyId = async () => {
+        await navigator.clipboard.writeText(linkId);
+
+        let tempValue = linkId;
+
+        idIconState = "check";
+        idValue = "Copied";
+
+        setTimeout(() => {
+            idIconState = "pin";
+            idValue = tempValue;
         }, 1000);
     };
 </script>
@@ -31,13 +48,25 @@
         <p>To add someone, send them the following link:</p>
         <button
             class="link"
-            on:mouseenter={() => (iconState = "content_copy")}
-            on:mouseleave={() => (iconState = "link")}
+            on:mouseenter={() => (linkIconState = "content_copy")}
+            on:mouseleave={() => (linkIconState = "link")}
             on:click={() => copyLink()}
         >
-            <i class="material-symbols-outlined">{iconState}</i>
+            <i class="material-symbols-outlined">{linkIconState}</i>
             <p>
                 {linkValue}
+            </p>
+        </button>
+        <p>or let them join using the following invite ID:</p>
+        <button
+            class="link"
+            on:mouseenter={() => (idIconState = "content_copy")}
+            on:mouseleave={() => (idIconState = "pin")}
+            on:click={() => copyId()}
+        >
+            <i class="material-symbols-outlined">{idIconState}</i>
+            <p>
+                {idValue}
             </p>
         </button>
     </div>
@@ -66,13 +95,16 @@
         align-items: center;
     }
 
+    .content {
+        padding-bottom: 1rem;
+    }
+
     .link {
         box-sizing: border-box;
         padding: 0.5rem;
         background-color: var(--color-primary-black);
         color: var(--color-text-white);
         width: 100%;
-        margin-bottom: 0.5rem;
         cursor: pointer;
 
         display: flex;

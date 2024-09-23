@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { UserDetails } from "$lib/interfaces/models";
     import { Popup } from "$components";
 
     export let saveGroup;

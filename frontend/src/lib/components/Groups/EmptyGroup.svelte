@@ -20,10 +20,7 @@
     </div>
 </div>
 {#if addMode}
-    <AddUsers
-        {closeAdd}
-        linkValue="https://questapp.com/invite/aca7a1c9-b691-480f-9511-edf45d932e11"
-    />
+    <AddUsers {closeAdd} linkId="aca7a1c9-b691-480f-9511-edf45d932e11" />
 {/if}
 
 <style>
