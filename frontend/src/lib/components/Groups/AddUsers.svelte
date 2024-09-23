@@ -1,9 +1,11 @@
 <script lang="ts">
     import { Popup } from "$components";
 
-    export let linkValue: string;
+    export let linkId: string;
     export let closeAdd;
 
+    let linkPrefix = "https://questapp.com/invite/";
+    let linkValue = linkPrefix + linkId;
     let iconState = "link";
 
     const copyLink = async () => {
