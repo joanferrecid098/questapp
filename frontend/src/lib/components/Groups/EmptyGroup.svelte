@@ -8,12 +8,6 @@
     };
 </script>
 
-{#if addMode}
-    <AddUsers
-        {closeAdd}
-        linkValue="https://questapp.com/invite/aca7a1c9-b691-480f-9511-edf45d932e11"
-    />
-{/if}
 <div class="information">
     <div class="container header">
         <h2>Information</h2>
@@ -25,6 +19,12 @@
         >
     </div>
 </div>
+{#if addMode}
+    <AddUsers
+        {closeAdd}
+        linkValue="https://questapp.com/invite/aca7a1c9-b691-480f-9511-edf45d932e11"
+    />
+{/if}
 
 <style>
     /* Sections */

@@ -69,9 +69,6 @@
 </svelte:head>
 
 <section>
-    {#if passwordMode}
-        <ChangePassword {updatePassword} />
-    {/if}
     <div class="header">
         <h1>Settings</h1>
     </div>
@@ -160,6 +157,9 @@
         </div>
     </div>
 </section>
+{#if passwordMode}
+    <ChangePassword {updatePassword} />
+{/if}
 
 <style>
     /* Sections */

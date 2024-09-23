@@ -48,9 +48,6 @@
     });
 </script>
 
-{#if addMode}
-    <AddUsers {closeAdd} linkId="aca7a1c9-b691-480f-9511-edf45d932e11" />
-{/if}
 <div class="information">
     {#if !editMode}
         <div class="container header">
@@ -129,6 +126,9 @@
         </div>
     {/if}
 </div>
+{#if addMode}
+    <AddUsers {closeAdd} linkId="aca7a1c9-b691-480f-9511-edf45d932e11" />
+{/if}
 
 <style>
     /* Sections */

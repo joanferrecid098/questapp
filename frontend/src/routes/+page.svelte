@@ -24,9 +24,6 @@
 </svelte:head>
 
 <section>
-    {#if createGroupActive}
-        <CreateGroup {saveGroup} />
-    {/if}
     <div class="header">
         <h1>Home</h1>
     </div>
@@ -83,6 +80,9 @@
         </div>
     </div>
 </section>
+{#if createGroupActive}
+    <CreateGroup {saveGroup} />
+{/if}
 
 <style>
     /* Sections */
