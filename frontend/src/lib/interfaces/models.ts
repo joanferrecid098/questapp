@@ -3,6 +3,7 @@ export interface UserDetails {
     name?: string;
     username?: string;
     percentage?: number;
+    searchTerms?: string;
 }
 
 export interface GroupDetails {
