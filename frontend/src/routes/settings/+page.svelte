@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { UserDetails } from "$lib/interfaces/models";
-    import { ChangePassword } from "$components";
+    import { ChangePassword, DeleteAccount } from "$components";
 
     /* API Responses */
     let accountDetails: UserDetails = {
@@ -11,6 +11,7 @@
 
     /* Variables */
     let editMode: boolean = false;
+    let deleteMode: boolean = false;
     let passwordMode: boolean = false;
     let cachedName: string = accountDetails.name!;
     let cachedUsername: string = accountDetails.username!;
@@ -62,6 +63,19 @@
         console.log("change password to the following");
         console.log(newPassword);
     };
+
+    const deleteAccount = (confirm: string) => {
+        if (confirm != accountDetails.username) {
+            deleteMode = false;
+            return;
+        }
+
+        // SEND API REQUEST
+        deleteMode = false;
+
+        console.log("delete following account:");
+        console.log(accountDetails);
+    };
 </script>
 
 <svelte:head>
@@ -100,7 +114,7 @@
                     <i class="material-symbols-outlined">logout</i>
                     <p>Log Off</p>
                 </button>
-                <button class="btn delete" on:click={() => alert(2)}>
+                <button class="btn delete" on:click={() => (deleteMode = true)}>
                     <i class="material-symbols-outlined">delete</i>
                     <p>Delete Account</p>
                 </button>
@@ -157,6 +171,9 @@
         </div>
     </div>
 </section>
+{#if deleteMode}
+    <DeleteAccount {deleteAccount} userDetails={accountDetails} />
+{/if}
 {#if passwordMode}
     <ChangePassword {updatePassword} />
 {/if}
