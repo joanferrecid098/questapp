@@ -114,10 +114,6 @@
                     <i class="material-symbols-outlined">logout</i>
                     <p>Log Off</p>
                 </button>
-                <button class="btn delete" on:click={() => (deleteMode = true)}>
-                    <i class="material-symbols-outlined">delete</i>
-                    <p>Delete Account</p>
-                </button>
             </div>
         </div>
     {:else}
@@ -158,6 +154,10 @@
                 >
                     <i class="material-symbols-outlined">password</i>
                     <p>Change Password</p>
+                </button>
+                <button class="btn delete" on:click={() => (deleteMode = true)}>
+                    <i class="material-symbols-outlined">delete</i>
+                    <p>Delete Account</p>
                 </button>
             </div>
         </div>
