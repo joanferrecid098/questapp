@@ -70,6 +70,10 @@ select {
     font-family: var(--font-body);
 }
 
+i {
+    font-variation-settings: "FILL" 0;
+}
+
 .visually-hidden {
     border: 0;
     clip: rect(0 0 0 0);

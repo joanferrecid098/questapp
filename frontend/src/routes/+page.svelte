@@ -1,9 +1,39 @@
 <script lang="ts">
     import { PendingNotification, LoadingBar, CreateGroup } from "$components";
-    import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+    import { getRelativeDate } from "$scripts/dates";
+    import type {
+        GroupDetails,
+        GroupStats,
+        UserDetails,
+        UserStats,
+    } from "$lib/interfaces/models";
 
     let createGroupActive: boolean = false;
 
+    /* API Responses */
+    const userStats: UserStats = {
+        dailyStreak: 8,
+        joinedGroups: 3,
+        ownedGroups: 1,
+        votedPercentage: 50,
+    };
+
+    const groupStats: GroupStats[] = [
+        {
+            id: 1,
+            name: "Example Group",
+            update: "2024-09-25",
+            notifications: 1,
+        },
+        {
+            id: 2,
+            name: "Example Group 2",
+            update: "2024-12-13",
+            notifications: 6,
+        },
+    ];
+
+    /* API Requests */
     const saveGroup = (
         groupDetails: GroupDetails,
         userArray: UserDetails[],
@@ -27,58 +57,69 @@
     <div class="header">
         <h1>Home</h1>
     </div>
-    <div class="pending">
-        <div class="container">
-            <h2>Pending</h2>
+    {#if userStats.joinedGroups == 0}
+        <div class="pending">
+            <div class="container">
+                <h2>Pending</h2>
+            </div>
+            <div class="container">
+                <p class="empty">No new notifications</p>
+            </div>
         </div>
-        <div class="container">
-            <p class="empty">No new notifications</p>
+        <button class="btn create" on:click={() => (createGroupActive = true)}>
+            <i class="material-symbols-outlined">add</i>
+            <p>Create your first group</p>
+        </button>
+        <button class="btn join" on:click={() => alert(2)}>
+            <i class="material-symbols-outlined">add</i>
+            <p>Join a group</p>
+        </button>
+    {:else}
+        <div class="pending">
+            <div class="container">
+                <h2>Pending</h2>
+            </div>
+            {#if groupStats.length == 0}
+                <div class="container">
+                    <p class="empty">No new notifications</p>
+                </div>
+            {:else}
+                {#each groupStats as group}
+                    <PendingNotification
+                        title={group.name}
+                        update={getRelativeDate(group.update)}
+                        notifications={group.notifications}
+                        groupId={group.id}
+                    />
+                {/each}
+            {/if}
         </div>
-    </div>
-    <button class="btn create" on:click={() => (createGroupActive = true)}>
-        <i class="material-symbols-outlined">add</i>
-        <p>Create your first group</p>
-    </button>
-    <button class="btn join" on:click={() => alert(2)}>
-        <i class="material-symbols-outlined">add</i>
-        <p>Join a group</p>
-    </button>
-    <div class="pending">
-        <div class="container">
-            <h2>Pending</h2>
+        <div class="statistics">
+            <div class="container">
+                <h2>Statistics</h2>
+            </div>
+            <div class="container stat-contents">
+                <p>How many times were you voted?</p>
+                <LoadingBar progress={userStats.votedPercentage} />
+            </div>
         </div>
-        <PendingNotification
-            title="Example Group"
-            update="Today"
-            notifications="1"
-            groupId="1"
-        />
-        <PendingNotification
-            title="Example Group 2"
-            update="Yesterday"
-            notifications="6"
-            groupId="2"
-        />
-    </div>
-    <div class="statistics">
-        <div class="container">
-            <h2>Statistics</h2>
+        <div class="information">
+            <div class="container">
+                <h2>Information</h2>
+            </div>
+            <div class="container info-contents">
+                <p><strong>Daily streak:</strong> {userStats.dailyStreak}</p>
+                <p>
+                    <strong>Groups you participate in:</strong>
+                    {userStats.joinedGroups}
+                </p>
+                <p>
+                    <strong>Groups you are the owner in:</strong>
+                    {userStats.ownedGroups}
+                </p>
+            </div>
         </div>
-        <div class="container stat-contents">
-            <p>How many times were you voted?</p>
-            <LoadingBar progress={50} />
-        </div>
-    </div>
-    <div class="information">
-        <div class="container">
-            <h2>Information</h2>
-        </div>
-        <div class="container info-contents">
-            <p><strong>Daily streak:</strong> 8</p>
-            <p><strong>Groups you participate in:</strong> 3</p>
-            <p><strong>Groups you are the owner in:</strong> 1</p>
-        </div>
-    </div>
+    {/if}
 </section>
 {#if createGroupActive}
     <CreateGroup {saveGroup} />

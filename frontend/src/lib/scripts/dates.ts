@@ -29,3 +29,53 @@ export const convertDateToTimeLeft = (date: Date) => {
         secondsString,
     };
 };
+
+export const getRelativeDate = (date: string) => {
+    // Target date & current date
+    const target = new Date(date);
+    const today = new Date();
+
+    // Normalize times
+    target.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    // Get the time difference in days
+    const dayDiff =
+        (today.getTime() - target.getTime()) / (1000 * 60 * 60 * 24);
+
+    // Check if the input date is today
+    if (dayDiff === 0) {
+        return "Today";
+    }
+
+    // Check if the input date was yesterday
+    if (dayDiff === 1) {
+        return "Yesterday";
+    }
+
+    // Check if the input date is within the same week
+    const inputDay = target.getDay();
+    const todayDay = today.getDay();
+
+    // Return the day of the week
+    if (dayDiff > 1 && dayDiff < 7 && inputDay <= todayDay) {
+        const weekdays = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+        ];
+        return weekdays[inputDay];
+    }
+
+    let monthString = (target.getMonth() + 1).toString();
+    let dayString = target.getDay().toString();
+
+    if (monthString.length < 2) monthString = "0" + monthString;
+    if (dayString.length < 2) dayString = "0" + dayString;
+
+    return `${target.getFullYear()}-${monthString}-${dayString}`;
+};
