@@ -2,11 +2,23 @@
 -- CREATE DATABASE questapp;
 USE questapp;
 
+-- @block users
+CREATE TABLE `users`
+(
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `username` VARCHAR(255) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id`)
+);
+
 -- @block groups
 CREATE TABLE `groups`
 (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
+    `owner_id` BIGINT NOT NULL,
+    FOREIGN KEY (`owner_id`) REFERENCES users(`id`),
     PRIMARY KEY (`id`)
 );
 
@@ -19,15 +31,6 @@ CREATE TABLE `questions`
     `group_id` BIGINT NOT NULL,
     `date` DATE NOT NULL,
     FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
-    PRIMARY KEY (`id`)
-);
-
--- @block users
-CREATE TABLE `users`
-(
-    `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(255) NOT NULL UNIQUE,
-    `password` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id`)
 );
 
@@ -52,5 +55,30 @@ CREATE TABLE `votes`
     FOREIGN KEY (`from_id`) REFERENCES users(`id`),
     FOREIGN KEY (`to_id`) REFERENCES users(`id`),
     FOREIGN KEY (`question_id`) REFERENCES questions(`id`),
+    PRIMARY KEY (`id`)
+);
+
+-- @block invites
+CREATE TABLE `invites`
+(
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `from_id` BIGINT NOT NULL,
+    `group_id` BIGINT NOT NULL,
+    `uuid` VARCHAR(36) NOT NULL UNIQUE,
+    FOREIGN KEY (`from_id`) REFERENCES users(`id`),
+    FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
+    PRIMARY KEY (`id`)
+);
+
+-- @block notifications
+CREATE TABLE `notifications`
+(
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `user_id` BIGINT NOT NULL,
+    `group_id` BIGINT NOT NULL,
+    `notifications` INT NOT NULL,
+    `last_update` DATE NOT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES users(`id`),
+    FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
     PRIMARY KEY (`id`)
 );
