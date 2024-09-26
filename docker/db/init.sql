@@ -7,6 +7,7 @@ CREATE TABLE `users`
 (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
+    `streak` INT(16) NOT NULL,
     `username` VARCHAR(255) NOT NULL UNIQUE,
     `password` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id`)
@@ -76,7 +77,7 @@ CREATE TABLE `notifications`
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `user_id` BIGINT NOT NULL,
     `group_id` BIGINT NOT NULL,
-    `notifications` INT NOT NULL,
+    `notifications` INT(8) NOT NULL,
     `last_update` DATE NOT NULL,
     FOREIGN KEY (`user_id`) REFERENCES users(`id`),
     FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
