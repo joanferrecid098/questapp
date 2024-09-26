@@ -1,16 +1,15 @@
-import { RowDataPacket } from "mysql2";
+import { UserRow } from "../interfaces/models";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import validator from "validator";
 import db from "../connection";
 import bcrypt from "bcrypt";
 
-interface User {
-    id: number;
-    username: string;
-    password: string;
-}
-
 // User signup method
-export const signup = async (username: string, password: string) => {
+export const signup = async (
+    name: string,
+    username: string,
+    password: string
+) => {
     // Validation
     if (!username || !password) {
         throw Error("All fields must be filled.");
@@ -35,10 +34,10 @@ export const signup = async (username: string, password: string) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const query = "INSERT INTO users VALUES (NULL, ?, ?)";
+    const query = "INSERT INTO users VALUES (NULL, ?, 0, ?, ?)";
 
     const user = await db
-        .query<RowDataPacket[]>(query, [username, hash])
+        .query<RowDataPacket[]>(query, [name, username, hash])
         .catch((err) => {
             if (err.errno == 1062) {
                 throw Error("Username already in use.");
@@ -50,22 +49,20 @@ export const signup = async (username: string, password: string) => {
 };
 
 // User login method
-export const login = async (username: string, password: string) => {
+export const login = async (id: string, password: string) => {
     // Validation
-    if (!username || !password) {
+    if (!id || !password) {
         throw Error("All fields must be filled.");
     }
 
-    const query = "SELECT * FROM users WHERE username = ?";
+    const query = "SELECT * FROM users WHERE id = ?";
 
-    const user = await db
-        .query<RowDataPacket[]>(query, [username])
-        .catch((err) => {
-            if (err.errno == 1062) {
-                throw Error("Username already in use.");
-            }
-            throw Error(err);
-        });
+    const user = await db.query<UserRow[]>(query, [id]).catch((err) => {
+        if (err.errno == 1062) {
+            throw Error("Username already in use.");
+        }
+        throw Error(err);
+    });
 
     if (!user[0][0]) {
         throw Error("Invalid login credentials.");
@@ -78,4 +75,60 @@ export const login = async (username: string, password: string) => {
     }
 
     return user[0];
+};
+
+// Change password
+export const changePassword = async (
+    id: string,
+    oldPassword: string,
+    newPassword: string
+) => {
+    // Validation
+    if (!id || !oldPassword || !newPassword) {
+        throw Error("All fields must be filled.");
+    }
+
+    const checkQuery = "SELECT * FROM users WHERE id = ?";
+
+    const user = await db.query<UserRow[]>(checkQuery, [id]).catch((err) => {
+        throw Error(err);
+    });
+
+    if (!user[0][0]) {
+        throw Error("Invalid login credentials.");
+    }
+
+    // Check old password
+    const match = await bcrypt.compare(oldPassword, user[0][0].password);
+
+    if (!match) {
+        throw Error("Password is not correct.");
+    }
+
+    // Check new password
+    if (
+        !validator.isStrongPassword(newPassword, {
+            minLength: 8,
+            minNumbers: 1,
+            minLowercase: 1,
+            minUppercase: 1,
+            minSymbols: 1,
+        })
+    ) {
+        throw Error("Password is not strong enough.");
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(newPassword, salt);
+
+    // Update password
+    const updateQuery = "UPDATE users SET password = ? WHERE id = ?";
+
+    const update = await db
+        .query<ResultSetHeader>(updateQuery, [hash, id])
+        .catch((err) => {
+            throw Error(err);
+        });
+
+    return update;
 };

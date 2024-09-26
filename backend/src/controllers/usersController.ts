@@ -1,5 +1,7 @@
-import { signup, login } from "../functions/usersManager";
+import { UserRow } from "../interfaces/models";
+import { signup, login, changePassword } from "../functions/usersManager";
 import { Response, Request } from "express";
+import { RowDataPacket } from "mysql2";
 import db from "../connection";
 
 // User Details
@@ -25,10 +27,10 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 export const signupUser = async (req: Request, res: Response) => {
-    const { username, password } = req.body;
+    const { name, username, password } = req.body;
 
     try {
-        const user = await signup(username, password);
+        const user = await signup(name, username, password);
 
         // SUCCESS
 
@@ -46,13 +48,13 @@ export const signupUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-    const { username, password } = req.body;
+    const { username } = req.body;
     const { id } = req.params;
 
-    const query = "UPDATE users SET username = ?, password = ? WHERE id = ?";
+    const query = "UPDATE users SET username = ? WHERE id = ?";
 
     await db
-        .query(query, [username, password, id])
+        .query(query, [username, id])
         .then((result) => {
             res.status(200).json(result[0]);
             return;
@@ -60,6 +62,33 @@ export const updateUser = async (req: Request, res: Response) => {
         .catch((err) => {
             res.status(400).json({ error: err });
         });
+};
+
+export const updatePassword = async (req: Request, res: Response) => {
+    const { oldPassword, newPassword } = req.body;
+    const { id } = req.params;
+
+    try {
+        const confirm = await changePassword(id, oldPassword, newPassword);
+
+        if (confirm[0].affectedRows != 1) {
+            res.status(400).json({ error: "Internal server error." });
+            return;
+        }
+
+        res.status(200).json({
+            message: "Password has been successfully updated.",
+        });
+        return;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+            return;
+        } else {
+            res.status(400).json({ error: "Internal server error." });
+            return;
+        }
+    }
 };
 
 export const removeUser = async (req: Request, res: Response) => {
@@ -79,12 +108,10 @@ export const removeUser = async (req: Request, res: Response) => {
         });
 };
 
-// User Memberships
-export const getGroups = async (req: Request, res: Response) => {
+export const getUserInfo = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const query =
-        "SELECT * FROM memberships INNER JOIN groups ON groups.id = memberships.group_id WHERE memberships.group_id = ?";
+    const query = "SELECT id, name, username FROM users WHERE id = ?";
 
     await db
         .query(query, [id])
@@ -96,4 +123,46 @@ export const getGroups = async (req: Request, res: Response) => {
             res.status(400).json({ error: err });
             return;
         });
+};
+
+export const getUserStats = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const userQuery = "SELECT streak FROM users WHERE id = ?";
+
+    const membershipQuery =
+        "SELECT (SELECT COUNT(*) FROM memberships WHERE user_id = ?) AS joined_groups, (SELECT COUNT(*) FROM groups WHERE owner_id = ?) AS owned_groups FROM dual";
+
+    const streak = await db.query<UserRow[]>(userQuery, [id]).catch((err) => {
+        res.status(400).json({ error: err });
+        return;
+    });
+
+    const counts = await db
+        .query<RowDataPacket[]>(membershipQuery, [id, id])
+        .catch((err) => {
+            res.status(400).json({ error: err });
+            return;
+        });
+
+    if (!streak || !counts) {
+        res.status(400).json({
+            error: "There was an error while getting the statistics.",
+        });
+        return;
+    }
+
+    try {
+        res.status(200).json([
+            {
+                streak: streak[0][0].streak,
+                joinedGroups: counts[0][0].joined_groups,
+                ownedGroups: counts[0][0].owned_groups,
+            },
+        ]);
+        return;
+    } catch (err) {
+        res.status(400).json({ error: err });
+        return;
+    }
 };
