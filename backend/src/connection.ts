@@ -6,6 +6,7 @@ const db = mysql.createPool({
     password: process.env.PASSWORD,
     port: Number(process.env.DB_PORT) || 3306,
     database: "questapp",
+    timezone: "Z",
 });
 
 export default db;

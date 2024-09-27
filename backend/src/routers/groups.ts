@@ -9,7 +9,6 @@ import {
     updateGroup,
     removeGroup,
     getUsers,
-    addUser,
     removeUser,
     getQuestion,
 } from "../controllers/groupsController";
