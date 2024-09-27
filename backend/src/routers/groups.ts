@@ -22,7 +22,6 @@ router.patch("/group/:id", updateGroup);
 router.delete("/group/:id", removeGroup);
 
 router.get("/users/:id", getUsers);
-router.post("/users", addUser);
 router.delete("/users", removeUser);
 
 router.get("/question/:id", getQuestion);

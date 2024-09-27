@@ -1,10 +1,28 @@
-export const convertDateToTimeLeft = (date: Date) => {
-    // Target date & current date
-    const targetDate = date.getTime();
-    const now = new Date().getTime();
+export const timeLeftToUTCMidnight = () => {
+    // Get current time in UTC
+    const now = new Date();
+    const nowUtc = new Date(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        now.getUTCMinutes(),
+        now.getUTCSeconds()
+    );
+
+    // Get the next UTC midnight
+    const nextUtcMidnight = new Date(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() + 1, // Move to the next day
+        0,
+        0,
+        0,
+        0 // Midnight UTC
+    );
 
     // Distance between the two
-    const distance = targetDate - now;
+    const distance = nextUtcMidnight.getTime() - nowUtc.getTime();
 
     // Time calculations
     const hours = Math.floor(
@@ -13,12 +31,10 @@ export const convertDateToTimeLeft = (date: Date) => {
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    let hoursString = hours.toString();
-    if (hoursString.length == 1) hoursString = "0" + hoursString;
-    let minutesString = minutes.toString();
-    if (minutesString.length == 1) minutesString = "0" + minutesString;
-    let secondsString = seconds.toString();
-    if (secondsString.length == 1) secondsString = "0" + secondsString;
+    // Format the time strings with leading zeros if needed
+    const hoursString = hours.toString().padStart(2, "0");
+    const minutesString = minutes.toString().padStart(2, "0");
+    const secondsString = seconds.toString().padStart(2, "0");
 
     return {
         hours,

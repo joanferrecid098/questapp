@@ -11,6 +11,7 @@ export interface GroupDetails {
     name: string;
     owner?: string;
     ownerId: number;
+    question?: string;
     nextQuestion?: string;
 }
 

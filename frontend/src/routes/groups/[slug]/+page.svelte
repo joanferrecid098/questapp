@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
-    import { convertDateToTimeLeft } from "$scripts/dates";
+    import { timeLeftToUTCMidnight } from "$scripts/dates";
     import { onDestroy, onMount } from "svelte";
     import { page } from "$app/stores";
     import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
@@ -25,12 +25,17 @@
         name: "Example Group",
         owner: "Russell",
         ownerId: 2,
-        nextQuestion: "2024-09-24 01:11:30",
+        question: "Who would be more likely to become an Olympic athelete?",
     };
     const groupUsers: UserDetails[] = [
-        { name: "Lynda", id: 1, percentage: 30 },
-        { name: "Russell", id: 2, percentage: 50 },
-        { name: "James", id: 3, percentage: 20 },
+        { name: "Lynda", username: "lynda-test-user", id: 1, percentage: 30 },
+        {
+            name: "Russell",
+            username: "russell-test-user",
+            id: 2,
+            percentage: 50,
+        },
+        { name: "James", username: "james-test-user", id: 3, percentage: 20 },
     ];
 
     /* API Requests */
@@ -57,9 +62,7 @@
     const resetInterval = () => {
         clearInterval(interval);
         interval = setInterval(() => {
-            const timerObject = convertDateToTimeLeft(
-                new Date(groupDetails.nextQuestion!),
-            );
+            const timerObject = timeLeftToUTCMidnight();
             if (timerObject.hours != 0) {
                 timer = `${timerObject.hoursString}:${timerObject.minutesString}:${timerObject.secondsString}`;
                 return;
@@ -76,9 +79,7 @@
             return;
         }, 1000);
 
-        const timerObject = convertDateToTimeLeft(
-            new Date(groupDetails.nextQuestion!),
-        );
+        const timerObject = timeLeftToUTCMidnight();
         if (timerObject.hours != 0) {
             timer = `${timerObject.hoursString}:${timerObject.minutesString}:${timerObject.secondsString}`;
             return;
@@ -113,7 +114,7 @@
             </p>
         </div>
         <div class="question">
-            <h2>Who would be more likely to become an Olympic athelete?</h2>
+            <h2>{groupDetails.question}</h2>
         </div>
     </div>
     {#if groupUsers.length == 0}

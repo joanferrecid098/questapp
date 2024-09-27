@@ -10,7 +10,6 @@
     export let groupDetails: GroupDetails;
     export let groupUsers: UserDetails[];
 
-    let search: string;
     let addMode: boolean;
     let editMode: boolean;
     let name: string = groupDetails.name;
