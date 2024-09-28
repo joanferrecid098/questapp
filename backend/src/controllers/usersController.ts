@@ -133,6 +133,9 @@ export const getUserStats = async (req: Request, res: Response) => {
     const membershipQuery =
         "SELECT (SELECT COUNT(*) FROM memberships WHERE user_id = ?) AS joined_groups, (SELECT COUNT(*) FROM groups WHERE owner_id = ?) AS owned_groups FROM dual";
 
+    const votesQuery =
+        "SELECT votes.id, question, group_id, from_id, to_id FROM questions INNER JOIN votes ON questions.id = votes.question_id WHERE date = CURDATE();";
+
     const streak = await db.query<UserRow[]>(userQuery, [id]).catch((err) => {
         res.status(400).json({ error: err });
         return;
@@ -145,7 +148,14 @@ export const getUserStats = async (req: Request, res: Response) => {
             return;
         });
 
-    if (!streak || !counts) {
+    const votes = await db
+        .query<RowDataPacket[]>(votesQuery, [id, id])
+        .catch((err) => {
+            res.status(400).json({ error: err });
+            return;
+        });
+
+    if (!streak || !counts || !votes) {
         res.status(400).json({
             error: "There was an error while getting the statistics.",
         });
@@ -153,11 +163,21 @@ export const getUserStats = async (req: Request, res: Response) => {
     }
 
     try {
+        const allVotes = votes[0];
+        const userVotes = votes[0].filter(
+            (vote) => vote.to_id.toString() === id
+        );
+
         res.status(200).json([
             {
                 streak: streak[0][0].streak,
                 joinedGroups: counts[0][0].joined_groups,
                 ownedGroups: counts[0][0].owned_groups,
+                votes: {
+                    votedPercentage: (userVotes.length / allVotes.length) * 100,
+                    allVotes: allVotes.length,
+                    userVotes: userVotes.length,
+                },
             },
         ]);
         return;
@@ -165,4 +185,22 @@ export const getUserStats = async (req: Request, res: Response) => {
         res.status(400).json({ error: err });
         return;
     }
+};
+
+export const getNotifications = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const query =
+        "SELECT * FROM notifications INNER JOIN groups ON notifications.group_id = groups.id WHERE user_id = ?";
+
+    await db
+        .query(query, [id])
+        .then((result) => {
+            res.status(200).json(result[0]);
+            return;
+        })
+        .catch((err) => {
+            res.status(400).json({ error: err });
+            return;
+        });
 };

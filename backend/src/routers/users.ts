@@ -10,6 +10,7 @@ import {
     removeUser,
     getUserInfo,
     getUserStats,
+    getNotifications,
 } from "../controllers/usersController";
 
 // REST API Endpoints
@@ -21,5 +22,6 @@ router.delete("/user/:id", removeUser);
 
 router.get("/user/:id", getUserInfo);
 router.get("/stats/:id", getUserStats);
+router.get("/notifications/:id", getNotifications);
 
 export default router;
