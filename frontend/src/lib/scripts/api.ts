@@ -157,7 +157,7 @@ export const getGroup = (id: number) => {
             question: "Who would be more likely to become an Olympic athelete?",
             group_id: 2,
             date: "2024-09-26T00:00:00.000Z",
-            hasVoted: true,
+            hasVoted: false,
         },
     ];
 
@@ -167,6 +167,7 @@ export const getGroup = (id: number) => {
         owner: "Russell",
         owner_id: response[0].owner_id,
         question: response[0].question,
+        hasVoted: response[0].hasVoted,
     };
 };
 

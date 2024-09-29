@@ -39,7 +39,7 @@
         font-size: 1.375rem;
     }
 
-    .update {
+    /* .update {
         text-align: end;
-    }
+    } */
 </style>
