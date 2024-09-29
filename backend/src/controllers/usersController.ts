@@ -48,7 +48,7 @@ export const signupUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-    const { username } = req.body;
+    const { name, username } = req.body;
     const { id } = req.params;
 
     if (!username || !id) {
@@ -58,10 +58,10 @@ export const updateUser = async (req: Request, res: Response) => {
         return;
     }
 
-    const query = "UPDATE users SET username = ? WHERE id = ?";
+    const query = "UPDATE users SET name = ?, username = ? WHERE id = ?";
 
     await db
-        .query(query, [username, id])
+        .query(query, [name, username, id])
         .then((result) => {
             res.status(200).json(result[0]);
             return;
@@ -233,7 +233,7 @@ export const getNotifications = async (req: Request, res: Response) => {
     }
 
     const query =
-        "SELECT * FROM notifications INNER JOIN groups ON notifications.group_id = groups.id WHERE user_id = ?";
+        "SELECT notifications.id, group_id, notifications, last_update, name FROM notifications INNER JOIN groups ON notifications.group_id = groups.id WHERE user_id = ?";
 
     await db
         .query(query, [id])

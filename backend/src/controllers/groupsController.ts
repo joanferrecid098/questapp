@@ -5,7 +5,7 @@ import { GroupRow, UserRow, VoteRow } from "../interfaces/models";
 // Group Details
 export const getGroups = async (req: Request, res: Response) => {
     await db
-        .query("SELECT * FROM groups")
+        .query("SELECT id, name, owner_id FROM groups")
         .then((result) => {
             res.status(200).json(result[0]);
             return;
@@ -28,10 +28,10 @@ export const getGroup = async (req: Request, res: Response) => {
     }
 
     const infoQuery =
-        "SELECT * FROM groups INNER JOIN questions ON groups.id = questions.group_id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        "SELECT groups.id, name, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
 
     const votedQuery =
-        "SELECT * FROM votes INNER JOIN questions ON votes.question_id = questions.id WHERE votes.from_id = ? AND questions.group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        "SELECT id FROM votes INNER JOIN questions ON votes.question_id = questions.id WHERE votes.from_id = ? AND questions.group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
 
     const info = await db
         .query<GroupRow[]>(infoQuery, [id, id])
@@ -163,7 +163,7 @@ export const getUsers = async (req: Request, res: Response) => {
         "SELECT users.id, user_id, group_id, name, streak, username FROM memberships INNER JOIN users ON users.id = memberships.user_id WHERE memberships.group_id = ?";
 
     const votesQuery =
-        "SELECT * FROM questions INNER JOIN votes ON votes.question_id = questions.id WHERE group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        "SELECT questions.id, date, from_id, to_id FROM questions INNER JOIN votes ON votes.question_id = questions.id WHERE group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
 
     const users = await db.query<UserRow[]>(usersQuery, [id]).catch((err) => {
         res.status(400).json({ error: err });
@@ -248,7 +248,8 @@ export const getQuestion = async (req: Request, res: Response) => {
         return;
     }
 
-    const query = "SELECT * FROM questions WHERE group_id = ? AND date = ?";
+    const query =
+        "SELECT id, category, question, date FROM questions WHERE group_id = ? AND date = ?";
 
     await db
         .query(query, [id, date])

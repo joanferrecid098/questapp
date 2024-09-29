@@ -13,7 +13,8 @@ export const getVotes = async (req: Request, res: Response) => {
         return;
     }
 
-    const query = "SELECT * FROM votes WHERE question_id = ?";
+    const query =
+        "SELECT id, from_id, to_id, question_id FROM votes WHERE question_id = ?";
 
     await db
         .query(query, [qid])
