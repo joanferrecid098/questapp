@@ -1,13 +1,15 @@
 <script lang="ts">
     import type { UserDetails } from "$lib/interfaces/models";
     import { ChangePassword, DeleteAccount } from "$components";
+    import {
+        changePassword,
+        getUserInfo,
+        removeAccount,
+        patchUser,
+    } from "$scripts/api";
 
     /* API Responses */
-    let accountDetails: UserDetails = {
-        id: 2,
-        name: "Russell",
-        username: "russell-test-user",
-    };
+    const accountDetails: UserDetails = getUserInfo(1);
 
     /* Variables */
     let editMode: boolean = false;
@@ -37,15 +39,13 @@
             return;
         }
 
-        // SEND API REQUEST
+        const response = patchUser({ id, name, username });
+
         accountDetails.name = name;
         accountDetails.username = username;
 
         cachedName = accountDetails.name;
         cachedUsername = accountDetails.username;
-
-        console.log("Account updated.");
-        console.log(id, name, username);
 
         editMode = false;
     };
@@ -56,12 +56,10 @@
             return;
         }
 
-        // SEND API REQUEST
+        const response = changePassword(oldPassword, newPassword);
+
         passwordMode = false;
         editMode = false;
-
-        console.log("change password to the following");
-        console.log(newPassword);
     };
 
     const deleteAccount = (confirm: string) => {
@@ -70,11 +68,8 @@
             return;
         }
 
-        // SEND API REQUEST
+        const response = removeAccount(accountDetails);
         deleteMode = false;
-
-        console.log("delete following account:");
-        console.log(accountDetails);
     };
 </script>
 

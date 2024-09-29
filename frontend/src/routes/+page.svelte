@@ -1,51 +1,31 @@
 <script lang="ts">
     import { PendingNotification, LoadingBar, CreateGroup } from "$components";
+    import { createGroup, getNotifications, getUserStats } from "$scripts/api";
     import { getRelativeDate } from "$scripts/dates";
+    import { goto } from "$app/navigation";
     import type {
         GroupDetails,
         GroupStats,
-        UserDetails,
         UserStats,
     } from "$lib/interfaces/models";
 
     let createGroupActive: boolean = false;
 
     /* API Responses */
-    const userStats: UserStats = {
-        dailyStreak: 8,
-        joinedGroups: 3,
-        ownedGroups: 1,
-        votedPercentage: 50,
-    };
+    const userStats: UserStats = getUserStats(1);
 
-    const groupStats: GroupStats[] = [
-        {
-            id: 1,
-            name: "Example Group",
-            update: "2024-09-25",
-            notifications: 1,
-        },
-        {
-            id: 2,
-            name: "Example Group 2",
-            update: "2024-12-13",
-            notifications: 6,
-        },
-    ];
+    const groupStats: GroupStats[] = getNotifications(1);
 
     /* API Requests */
-    const saveGroup = (
-        groupDetails: GroupDetails,
-        userArray: UserDetails[],
-    ) => {
-        if (!groupDetails || !userArray) {
+    const saveGroup = (groupDetails: GroupDetails) => {
+        if (!groupDetails) {
             createGroupActive = false;
             return;
         }
-        console.log("create group with following information:");
-        console.log(groupDetails);
-        console.log("create group with following users:");
-        console.log(userArray);
+
+        const response = createGroup(groupDetails);
+
+        goto("/groups/" + response.insertId);
     };
 </script>
 

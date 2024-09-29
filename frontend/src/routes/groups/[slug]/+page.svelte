@@ -1,9 +1,15 @@
 <script lang="ts">
+    import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+    import {
+        getGroup,
+        getGroupUsers,
+        postVote,
+        updateGroup,
+    } from "$scripts/api";
     import { invalidateAll } from "$app/navigation";
     import { timeLeftToUTCMidnight } from "$scripts/dates";
     import { onDestroy, onMount } from "svelte";
     import { page } from "$app/stores";
-    import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
     import {
         VotingForm,
         VotesChart,
@@ -15,42 +21,26 @@
     let slug = $page.params.slug;
     let interval: ReturnType<typeof setInterval>;
     let timer: string = "";
-    let currentVote = 0;
+    let hasVoted = false;
 
     let removedUsers: UserDetails[] = [];
 
     /* API Responses */
-    const groupDetails: GroupDetails = {
-        id: Number(slug),
-        name: "Example Group",
-        owner: "Russell",
-        ownerId: 2,
-        question: "Who would be more likely to become an Olympic athelete?",
-    };
-    const groupUsers: UserDetails[] = [
-        { name: "Lynda", username: "lynda-test-user", id: 1, percentage: 30 },
-        {
-            name: "Russell",
-            username: "russell-test-user",
-            id: 2,
-            percentage: 50,
-        },
-        { name: "James", username: "james-test-user", id: 3, percentage: 20 },
-    ];
+    const groupDetails: GroupDetails = getGroup(Number(slug));
+    const groupUsers: UserDetails[] = getGroupUsers(Number(slug));
+
+    hasVoted = groupDetails.hasVoted!;
 
     /* API Requests */
     const submitVote = (id: number) => {
-        // SEND API REQUEST
-        currentVote = id;
+        const response = postVote(id, 1, groupDetails.id);
+
+        hasVoted = true;
     };
 
     const submitChanges = (groupDetails: GroupDetails) => {
-        // COMPARE VALUES TO OLD
-        // SEND API REQUEST
-        console.log("update group details with following information");
-        console.log(groupDetails);
-        console.log("remove following users:");
-        console.log(removedUsers);
+        const response = updateGroup(groupDetails, removedUsers);
+
         invalidateAll();
     };
 
@@ -119,7 +109,7 @@
     </div>
     {#if groupUsers.length == 0}
         <EmptyGroup />
-    {:else if currentVote == 0}
+    {:else if !hasVoted}
         <VotingForm {groupUsers} {submitVote} />
     {:else}
         <VotesChart {groupUsers} />

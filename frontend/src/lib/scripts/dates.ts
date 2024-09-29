@@ -88,7 +88,7 @@ export const getRelativeDate = (date: string) => {
     }
 
     let monthString = (target.getMonth() + 1).toString();
-    let dayString = target.getDay().toString();
+    let dayString = target.getDate().toString();
 
     if (monthString.length < 2) monthString = "0" + monthString;
     if (dayString.length < 2) dayString = "0" + dayString;

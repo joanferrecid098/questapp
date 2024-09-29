@@ -10,9 +10,10 @@ export interface GroupDetails {
     id: number;
     name: string;
     owner?: string;
-    ownerId: number;
+    owner_id: number;
     question?: string;
     nextQuestion?: string;
+    hasVoted?: boolean;
 }
 
 export interface UserStats {

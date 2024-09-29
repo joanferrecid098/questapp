@@ -1,13 +1,13 @@
 <script lang="ts">
     export let title;
-    export let update;
+    // export let update;
     export let groupId;
 </script>
 
 <a class="container" href="/groups/{groupId}">
     <i class="material-symbols-outlined">groups</i>
     <p class="title"><strong>{title}</strong></p>
-    <p class="update">Last update: <strong>{update}</strong></p>
+    <!-- <p class="update">Last update: <strong>{update}</strong></p> -->
 </a>
 
 <style>

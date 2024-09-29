@@ -2,6 +2,8 @@
     import { createSearchStore, searchHandler } from "$stores/search";
     import { GroupElement, CreateGroup, JoinGroup } from "$components";
     import type { GroupDetails } from "$lib/interfaces/models";
+    import { createGroup, getGroups } from "$scripts/api";
+    import { goto } from "$app/navigation";
     import { onDestroy } from "svelte";
 
     /* Variables */
@@ -9,18 +11,7 @@
     let joinGroupActive: boolean = false;
 
     /* API Responses */
-    const groupDetails: GroupDetails[] = [
-        {
-            id: 1,
-            name: "Example Group",
-            ownerId: 2,
-        },
-        {
-            id: 2,
-            name: "Example Group 2",
-            ownerId: 1,
-        },
-    ];
+    const groupDetails: GroupDetails[] = getGroups();
 
     /* API Requests */
     const saveGroup = (groupDetails: GroupDetails) => {
@@ -29,11 +20,9 @@
             return;
         }
 
-        // SEND API REQUEST
-        createGroupActive = false;
+        const response = createGroup(groupDetails);
 
-        console.log("create group with following information:");
-        console.log(groupDetails);
+        goto("/groups/" + response.insertId);
     };
 
     const joinGroup = (invite_id: string) => {
@@ -79,11 +68,7 @@
     />
     <div class="groups">
         {#each $searchStore.filtered as group}
-            <GroupElement
-                title={group.name}
-                update="Today"
-                groupId={group.id}
-            />
+            <GroupElement title={group.name} groupId={group.id} />
         {/each}
         <button class="btn create" on:click={() => (createGroupActive = true)}>
             <i class="material-symbols-outlined">add</i>

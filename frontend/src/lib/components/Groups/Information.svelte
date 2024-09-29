@@ -13,7 +13,7 @@
     let addMode: boolean;
     let editMode: boolean;
     let name: string = groupDetails.name;
-    let owner: number = groupDetails.ownerId;
+    let owner: number = groupDetails.owner_id;
 
     $: if (!editMode) addMode = false;
 
@@ -22,7 +22,7 @@
         const groupChanges: GroupDetails = {
             id: groupDetails.id,
             name: name,
-            ownerId: owner,
+            owner_id: owner,
         };
 
         submitChanges(groupChanges);
