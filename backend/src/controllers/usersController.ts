@@ -51,6 +51,13 @@ export const updateUser = async (req: Request, res: Response) => {
     const { username } = req.body;
     const { id } = req.params;
 
+    if (!username || !id) {
+        res.status(400).json({
+            error: "All fields are required.",
+        });
+        return;
+    }
+
     const query = "UPDATE users SET username = ? WHERE id = ?";
 
     await db
@@ -67,6 +74,13 @@ export const updateUser = async (req: Request, res: Response) => {
 export const updatePassword = async (req: Request, res: Response) => {
     const { oldPassword, newPassword } = req.body;
     const { id } = req.params;
+
+    if (!oldPassword || !newPassword || !id) {
+        res.status(400).json({
+            error: "All fields are required.",
+        });
+        return;
+    }
 
     try {
         const confirm = await changePassword(id, oldPassword, newPassword);
@@ -94,6 +108,13 @@ export const updatePassword = async (req: Request, res: Response) => {
 export const removeUser = async (req: Request, res: Response) => {
     const { id } = req.params;
 
+    if (!id) {
+        res.status(400).json({
+            error: "All fields are required.",
+        });
+        return;
+    }
+
     const query = "DELETE FROM users WHERE id = ?";
 
     await db
@@ -111,6 +132,13 @@ export const removeUser = async (req: Request, res: Response) => {
 export const getUserInfo = async (req: Request, res: Response) => {
     const { id } = req.params;
 
+    if (!id) {
+        res.status(400).json({
+            error: "All fields are required.",
+        });
+        return;
+    }
+
     const query = "SELECT id, name, username FROM users WHERE id = ?";
 
     await db
@@ -127,6 +155,13 @@ export const getUserInfo = async (req: Request, res: Response) => {
 
 export const getUserStats = async (req: Request, res: Response) => {
     const { id } = req.params;
+
+    if (!id) {
+        res.status(400).json({
+            error: "All fields are required.",
+        });
+        return;
+    }
 
     const userQuery = "SELECT streak FROM users WHERE id = ?";
 
@@ -189,6 +224,13 @@ export const getUserStats = async (req: Request, res: Response) => {
 
 export const getNotifications = async (req: Request, res: Response) => {
     const { id } = req.params;
+
+    if (!id) {
+        res.status(400).json({
+            error: "All fields are required.",
+        });
+        return;
+    }
 
     const query =
         "SELECT * FROM notifications INNER JOIN groups ON notifications.group_id = groups.id WHERE user_id = ?";
