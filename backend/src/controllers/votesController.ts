@@ -56,8 +56,6 @@ export const submitVote = async (req: Request, res: Response) => {
         return;
     }
 
-    console.log(question[0]);
-
     let question_id: number;
 
     try {

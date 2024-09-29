@@ -169,7 +169,7 @@ export const getUserStats = async (req: Request, res: Response) => {
         "SELECT (SELECT COUNT(*) FROM memberships WHERE user_id = ?) AS joined_groups, (SELECT COUNT(*) FROM groups WHERE owner_id = ?) AS owned_groups FROM dual";
 
     const votesQuery =
-        "SELECT votes.id, question, group_id, from_id, to_id FROM questions INNER JOIN votes ON questions.id = votes.question_id WHERE date = CURDATE();";
+        "SELECT votes.id, question, group_id, from_id, to_id, date FROM questions INNER JOIN votes ON questions.id = votes.question_id WHERE date = CURDATE();";
 
     const streak = await db.query<UserRow[]>(userQuery, [id]).catch((err) => {
         res.status(400).json({ error: err });
@@ -209,7 +209,8 @@ export const getUserStats = async (req: Request, res: Response) => {
                 joinedGroups: counts[0][0].joined_groups,
                 ownedGroups: counts[0][0].owned_groups,
                 votes: {
-                    votedPercentage: (userVotes.length / allVotes.length) * 100,
+                    votedPercentage:
+                        (userVotes.length / allVotes.length || 0) * 100,
                     allVotes: allVotes.length,
                     userVotes: userVotes.length,
                 },

@@ -31,7 +31,7 @@ export const getGroup = async (req: Request, res: Response) => {
         "SELECT groups.id, name, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
 
     const votedQuery =
-        "SELECT id FROM votes INNER JOIN questions ON votes.question_id = questions.id WHERE votes.from_id = ? AND questions.group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        "SELECT votes.id FROM votes INNER JOIN questions ON votes.question_id = questions.id WHERE votes.from_id = ? AND questions.group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
 
     const info = await db
         .query<GroupRow[]>(infoQuery, [id, id])

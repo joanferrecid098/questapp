@@ -49,15 +49,15 @@ export const signup = async (
 };
 
 // User login method
-export const login = async (id: string, password: string) => {
+export const login = async (username: string, password: string) => {
     // Validation
-    if (!id || !password) {
+    if (!username || !password) {
         throw Error("All fields must be filled.");
     }
 
-    const query = "SELECT * FROM users WHERE id = ?";
+    const query = "SELECT * FROM users WHERE username = ?";
 
-    const user = await db.query<UserRow[]>(query, [id]).catch((err) => {
+    const user = await db.query<UserRow[]>(query, [username]).catch((err) => {
         if (err.errno == 1062) {
             throw Error("Username already in use.");
         }
