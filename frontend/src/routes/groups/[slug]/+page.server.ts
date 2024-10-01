@@ -3,3 +3,5 @@ export const load = ({ params }) => {
         slug: params.slug,
     };
 };
+
+export const prerender = false;
