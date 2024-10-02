@@ -1,5 +1,5 @@
 import { createAuthStore } from "$stores/auth";
-import { redirect } from "@sveltejs/kit";
+import { redirect, type HandleFetch } from "@sveltejs/kit";
 
 export const handle = async ({ event, resolve }) => {
     const authStore = createAuthStore(event);
@@ -12,4 +12,12 @@ export const handle = async ({ event, resolve }) => {
     }
 
     return await resolve(event);
+};
+
+export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
+    if (event.locals.token && event.locals.token !== "") {
+        request.headers.set("Authorization", "Bearer " + event.locals.token);
+    }
+
+    return fetch(request);
 };
