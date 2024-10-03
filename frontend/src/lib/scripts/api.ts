@@ -1,5 +1,49 @@
 import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
 
+const base = "http://localhost:8080";
+
+/* Fetching */
+interface SendOptions<T> {
+    method: string;
+    path: string;
+    data?: T;
+    token?: string;
+}
+
+export const send = async <T, R = unknown>({
+    method,
+    path,
+    data,
+    token,
+}: SendOptions<T>): Promise<R> => {
+    const opts: RequestInit = { method, headers: {}, body: undefined };
+
+    if (data) {
+        opts.headers = {
+            ...opts.headers,
+            "Content-Type": "application/json",
+        };
+        opts.body = JSON.stringify(data);
+    }
+
+    if (token) {
+        opts.headers = {
+            ...opts.headers,
+            Authorization: `Token ${token}`,
+        };
+    }
+
+    return fetch(`${base}${path}`, opts)
+        .then((r) => r.text())
+        .then((json) => {
+            try {
+                return JSON.parse(json);
+            } catch (err) {
+                return json;
+            }
+        });
+};
+
 /* Users */
 export const getUserInfo = (id: number) => {
     const response = [
