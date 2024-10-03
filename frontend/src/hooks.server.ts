@@ -8,7 +8,5 @@ export const handle: Handle = async ({ event, resolve }) => {
         sessionStore.set(token);
     }
 
-    console.log(token);
-
     return await resolve(event);
 };
