@@ -1,4 +1,6 @@
 import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+import { sessionStore } from "$stores/auth";
+import { get } from "svelte/store";
 
 const base = "http://localhost:8080";
 
@@ -14,7 +16,6 @@ export const send = async <T, R = unknown>({
     method,
     path,
     data,
-    token,
 }: SendOptions<T>): Promise<R> => {
     const opts: RequestInit = { method, headers: {}, body: undefined };
 
@@ -26,10 +27,10 @@ export const send = async <T, R = unknown>({
         opts.body = JSON.stringify(data);
     }
 
-    if (token) {
+    if (get(sessionStore) != "") {
         opts.headers = {
             ...opts.headers,
-            Authorization: `Token ${token}`,
+            Authorization: `Token ${get(sessionStore)}`,
         };
     }
 
