@@ -1,6 +1,7 @@
 <script lang="ts">
-    import type { UserDetails } from "$lib/interfaces/models";
     import { ChangePassword, DeleteAccount } from "$components";
+    import type { UserDetails } from "$lib/interfaces/models";
+    import { onMount } from "svelte";
     import {
         changePassword,
         getUserInfo,
@@ -9,14 +10,21 @@
     } from "$scripts/api";
 
     /* API Responses */
-    const accountDetails: UserDetails = getUserInfo(1);
+    let accountDetails: UserDetails;
 
     /* Variables */
     let editMode: boolean = false;
     let deleteMode: boolean = false;
     let passwordMode: boolean = false;
-    let cachedName: string = accountDetails.name!;
-    let cachedUsername: string = accountDetails.username!;
+    let cachedName: string;
+    let cachedUsername: string;
+
+    onMount(async () => {
+        accountDetails = await getUserInfo(1);
+        console.log(accountDetails);
+        cachedName = accountDetails.name!;
+        cachedUsername = accountDetails.username!;
+    });
 
     /* API Requests */
     const updateAccount = ({ id, name, username }: UserDetails) => {
@@ -94,11 +102,19 @@
                     <div class="text">
                         <p>
                             <strong>Display name:</strong>
-                            {accountDetails.name}
+                            {#if accountDetails}
+                                {accountDetails.name}
+                            {:else}
+                                Loading...
+                            {/if}
                         </p>
                         <p>
                             <strong>Username:</strong>
-                            {accountDetails.username}
+                            {#if accountDetails}
+                                {accountDetails.username}
+                            {:else}
+                                Loading...
+                            {/if}
                         </p>
                     </div>
                     <div class="image">

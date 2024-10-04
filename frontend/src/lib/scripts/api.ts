@@ -1,22 +1,28 @@
 import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+import type {
+    GetGroup,
+    GetGroupUsers,
+    GetNotifications,
+    GetUserInfo,
+    GetUserStats,
+} from "$lib/interfaces/responses";
 import { sessionStore } from "$stores/auth";
 import { get } from "svelte/store";
 
 const base = "http://localhost:8080";
 
 /* Fetching */
-interface SendOptions<T> {
+interface SendOptions {
     method: string;
     path: string;
-    data?: T;
-    token?: string;
+    data?: unknown;
 }
 
-export const send = async <T, R = unknown>({
+export const send = async <T>({
     method,
     path,
     data,
-}: SendOptions<T>): Promise<R> => {
+}: SendOptions): Promise<T> => {
     const opts: RequestInit = { method, headers: {}, body: undefined };
 
     if (data) {
@@ -27,33 +33,28 @@ export const send = async <T, R = unknown>({
         opts.body = JSON.stringify(data);
     }
 
-    if (get(sessionStore) != "") {
+    if (get(sessionStore) !== "") {
         opts.headers = {
             ...opts.headers,
             Authorization: `Token ${get(sessionStore)}`,
         };
     }
 
-    return fetch(`${base}${path}`, opts)
-        .then((r) => r.text())
-        .then((json) => {
-            try {
-                return JSON.parse(json);
-            } catch (err) {
-                return json;
-            }
-        });
+    const response = await fetch(`${base}${path}`, opts);
+
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
+
+    return (await response.json()) as T;
 };
 
 /* Users */
-export const getUserInfo = (id: number) => {
-    const response = [
-        {
-            id: 1,
-            name: "name-1",
-            username: "test-1",
-        },
-    ];
+export const getUserInfo = async (id: number) => {
+    const response = await send<GetUserInfo[]>({
+        method: "get",
+        path: `/api/users/user/${id}`,
+    });
 
     return {
         id: response[0].id,
@@ -62,19 +63,11 @@ export const getUserInfo = (id: number) => {
     };
 };
 
-export const getUserStats = (id: number) => {
-    const response = [
-        {
-            streak: 0,
-            joinedGroups: 1,
-            ownedGroups: 1,
-            votes: {
-                votedPercentage: 66.66666666666666,
-                allVotes: 3,
-                userVotes: 2,
-            },
-        },
-    ];
+export const getUserStats = async (id: number) => {
+    const response = await send<GetUserStats[]>({
+        method: "get",
+        path: `/api/users/stats/${id}`,
+    });
 
     return {
         dailyStreak: response[0].streak,
@@ -89,7 +82,7 @@ export const changePassword = (oldPassword: string, newPassword: string) => {
     console.log(newPassword);
 
     const response = {
-        message: "Password has been successfully updated.",
+        success: true,
     };
 
     return response;
@@ -109,7 +102,7 @@ export const patchUser = ({ id, name, username }: UserDetails) => {
         changedRows: 1,
     };
 
-    return;
+    return response;
 };
 
 export const removeAccount = (accountDetails: UserDetails) => {
@@ -129,27 +122,11 @@ export const removeAccount = (accountDetails: UserDetails) => {
     return response;
 };
 
-export const getNotifications = (id: number) => {
-    const response = [
-        {
-            id: 1,
-            user_id: 1,
-            group_id: 1,
-            notifications: 5,
-            last_update: "2024-09-28",
-            name: "Example Group",
-            owner_id: 1,
-        },
-        {
-            id: 2,
-            user_id: 2,
-            group_id: 2,
-            notifications: 4,
-            last_update: "2024-09-26",
-            name: "Example Group 2",
-            owner_id: 2,
-        },
-    ];
+export const getNotifications = async (id: number) => {
+    const response = await send<GetNotifications[]>({
+        method: "get",
+        path: `/api/users/notifications/${id}`,
+    });
 
     return response.map((notification) => ({
         id: notification.group_id,
@@ -160,51 +137,23 @@ export const getNotifications = (id: number) => {
 };
 
 /* Groups */
-export const getGroups = () => {
-    const response = [
-        {
-            id: 1,
-            name: "group-1",
-            owner_id: 1,
-        },
-        {
-            id: 2,
-            name: "group-2",
-            owner_id: 2,
-        },
-        {
-            id: 3,
-            name: "group-3",
-            owner_id: 3,
-        },
-        {
-            id: 4,
-            name: "group-4",
-            owner_id: 4,
-        },
-        {
-            id: 5,
-            name: "group1",
-            owner_id: 1,
-        },
-    ];
+export const getGroups = async () => {
+    const response = await send<GroupDetails[]>({
+        method: "get",
+        path: `/api/groups`,
+    });
 
     return response;
 };
 
-export const getGroup = (id: number) => {
-    const response = [
-        {
-            id: 2,
-            name: "Example Group",
-            owner_id: 2,
-            category: "category-2",
-            question: "Who would be more likely to become an Olympic athelete?",
-            group_id: 2,
-            date: "2024-09-26T00:00:00.000Z",
-            hasVoted: false,
+export const getGroup = async (id: number) => {
+    const response = await send<GetGroup[]>({
+        method: "post",
+        path: `/api/groups/group/${id}`,
+        data: {
+            from_id: "2",
         },
-    ];
+    });
 
     return {
         id: id,
@@ -255,27 +204,11 @@ export const updateGroup = (
     return response;
 };
 
-export const getGroupUsers = (id: number) => {
-    const response = [
-        {
-            id: 3,
-            user_id: 3,
-            group_id: 3,
-            name: "name-3",
-            streak: 0,
-            username: "test-3",
-            voteCount: 2,
-        },
-        {
-            id: 4,
-            user_id: 4,
-            group_id: 3,
-            name: "name-4",
-            streak: 0,
-            username: "test-4",
-            voteCount: 2,
-        },
-    ];
+export const getGroupUsers = async (id: number) => {
+    const response = await send<GetGroupUsers[]>({
+        method: "get",
+        path: `/api/groups/users/${id}`,
+    });
 
     let totalVotes = 0;
     response.forEach((user) => (totalVotes += user.voteCount));
@@ -284,7 +217,7 @@ export const getGroupUsers = (id: number) => {
         id: user.id,
         name: user.name,
         username: user.username,
-        percentage: (user.voteCount / totalVotes) * 100,
+        percentage: Math.round((user.voteCount / totalVotes) * 100) || 0,
     }));
 };
 

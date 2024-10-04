@@ -1,17 +1,21 @@
 <script lang="ts">
-    import { createSearchStore, searchHandler } from "$stores/search";
     import { GroupElement, CreateGroup, JoinGroup } from "$components";
     import type { GroupDetails } from "$lib/interfaces/models";
     import { createGroup, getGroups } from "$scripts/api";
+    import { onDestroy, onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { onDestroy } from "svelte";
+    import {
+        createSearchStore,
+        searchHandler,
+        type SearchStoreModel,
+    } from "$stores/search";
 
     /* Variables */
     let createGroupActive: boolean = false;
     let joinGroupActive: boolean = false;
 
     /* API Responses */
-    const groupDetails: GroupDetails[] = getGroups();
+    let groupDetails: GroupDetails[];
 
     /* API Requests */
     const saveGroup = (groupDetails: GroupDetails) => {
@@ -38,17 +42,27 @@
         console.log(invite_id);
     };
 
-    /* Search Logic */
-    const searchGroups: GroupDetails[] = groupDetails.map((group) => ({
-        ...group,
-        searchTerms: `${group.name}`,
-    }));
+    /* Search Stores */
+    let searchStore: ReturnType<typeof createSearchStore>;
+    let unsubscribe: () => void;
 
-    const searchStore = createSearchStore(searchGroups);
-    const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
+    onMount(async () => {
+        groupDetails = await getGroups();
+
+        const searchGroups: GroupDetails[] = groupDetails.map((group) => ({
+            ...group,
+            searchTerms: `${group.name}`,
+        }));
+
+        searchStore = createSearchStore(searchGroups);
+        unsubscribe = searchStore.subscribe(
+            (model: SearchStoreModel<Record<PropertyKey, any>>) =>
+                searchHandler(model),
+        );
+    });
 
     onDestroy(() => {
-        unsubscribe();
+        if (unsubscribe) unsubscribe();
     });
 </script>
 
@@ -60,25 +74,30 @@
     <div class="header">
         <h1>My Groups</h1>
     </div>
-    <input
-        type="text"
-        class="search"
-        placeholder=" Search"
-        bind:value={$searchStore.search}
-    />
-    <div class="groups">
-        {#each $searchStore.filtered as group}
-            <GroupElement title={group.name} groupId={group.id} />
-        {/each}
-        <button class="btn create" on:click={() => (createGroupActive = true)}>
-            <i class="material-symbols-outlined">add</i>
-            <p>Create a new group</p>
-        </button>
-        <button class="btn join" on:click={() => (joinGroupActive = true)}>
-            <i class="material-symbols-outlined">add</i>
-            <p>Join a group</p>
-        </button>
-    </div>
+    {#if groupDetails && searchStore}
+        <input
+            type="text"
+            class="search"
+            placeholder=" Search"
+            bind:value={$searchStore.search}
+        />
+        <div class="groups">
+            {#each $searchStore.filtered as group}
+                <GroupElement title={group.name} groupId={group.id} />
+            {/each}
+            <button
+                class="btn create"
+                on:click={() => (createGroupActive = true)}
+            >
+                <i class="material-symbols-outlined">add</i>
+                <p>Create a new group</p>
+            </button>
+            <button class="btn join" on:click={() => (joinGroupActive = true)}>
+                <i class="material-symbols-outlined">add</i>
+                <p>Join a group</p>
+            </button>
+        </div>
+    {/if}
 </section>
 {#if createGroupActive}
     <CreateGroup {saveGroup} />

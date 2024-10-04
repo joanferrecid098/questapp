@@ -1,13 +1,7 @@
 <script lang="ts">
     import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
-    import {
-        getGroup,
-        getGroupUsers,
-        postVote,
-        updateGroup,
-    } from "$scripts/api";
-    import { invalidateAll } from "$app/navigation";
     import { timeLeftToUTCMidnight } from "$scripts/dates";
+    import { invalidateAll } from "$app/navigation";
     import { onDestroy, onMount } from "svelte";
     import { page } from "$app/stores";
     import {
@@ -16,6 +10,12 @@
         Information,
         EmptyGroup,
     } from "$components";
+    import {
+        getGroup,
+        getGroupUsers,
+        postVote,
+        updateGroup,
+    } from "$scripts/api";
 
     /* Variables */
     let slug = $page.params.slug;
@@ -26,10 +26,14 @@
     let removedUsers: UserDetails[] = [];
 
     /* API Responses */
-    const groupDetails: GroupDetails = getGroup(Number(slug));
-    const groupUsers: UserDetails[] = getGroupUsers(Number(slug));
+    let groupDetails: GroupDetails;
+    let groupUsers: UserDetails[];
 
-    hasVoted = groupDetails.hasVoted!;
+    onMount(async () => {
+        groupDetails = await getGroup(Number(slug));
+        groupUsers = await getGroupUsers(Number(slug));
+        hasVoted = groupDetails.hasVoted!;
+    });
 
     /* API Requests */
     const submitVote = (id: number) => {
@@ -96,24 +100,33 @@
 </script>
 
 <section>
-    <div class="header">
-        <div class="details">
-            <p><strong>{groupDetails.name}</strong></p>
-            <p class="end">
-                New question in: <strong>{timer}</strong>
-            </p>
+    {#if groupDetails}
+        <div class="header">
+            <div class="details">
+                <p><strong>{groupDetails.name}</strong></p>
+                <p class="end">
+                    New question in: <strong>{timer}</strong>
+                </p>
+            </div>
+            <div class="question">
+                <h2>{groupDetails.question}</h2>
+            </div>
         </div>
-        <div class="question">
-            <h2>{groupDetails.question}</h2>
-        </div>
-    </div>
-    {#if groupUsers.length == 0}
-        <EmptyGroup />
-    {:else if !hasVoted}
-        <VotingForm {groupUsers} {submitVote} />
-    {:else}
-        <VotesChart {groupUsers} />
-        <Information {groupUsers} {groupDetails} {submitChanges} {removeUser} />
+        {#if groupUsers}
+            {#if groupUsers.length == 0}
+                <EmptyGroup />
+            {:else if !hasVoted}
+                <VotingForm {groupUsers} {submitVote} />
+            {:else}
+                <VotesChart {groupUsers} />
+                <Information
+                    {groupUsers}
+                    {groupDetails}
+                    {submitChanges}
+                    {removeUser}
+                />
+            {/if}
+        {/if}
     {/if}
 </section>
 
