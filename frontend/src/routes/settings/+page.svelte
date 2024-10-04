@@ -105,10 +105,12 @@
                         <img src="https://picsum.photos/256/256" alt="" />
                     </div>
                 </div>
-                <button class="btn logoff" on:click={() => alert(1)}>
-                    <i class="material-symbols-outlined">logout</i>
-                    <p>Log Off</p>
-                </button>
+                <form action="?/logout" method="post">
+                    <button class="btn logoff" type="submit">
+                        <i class="material-symbols-outlined">logout</i>
+                        <p>Log Off</p>
+                    </button>
+                </form>
             </div>
         </div>
     {:else}
@@ -283,6 +285,12 @@
         padding: 0.5rem;
         background-color: var(--color-primary-black);
         color: var(--color-text-white);
+        width: 100%;
+    }
+
+    form {
+        padding: 0;
+        margin: 0;
         width: 100%;
     }
 
