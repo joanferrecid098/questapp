@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import db from "../connection";
-import { GroupRow, UserRow, VoteRow } from "../interfaces/models";
+import { GroupRow, QuestionRow, UserRow, VoteRow } from "../interfaces/models";
 
 // Group Details
 export const getGroups = async (req: Request, res: Response) => {
@@ -28,7 +28,7 @@ export const getGroup = async (req: Request, res: Response) => {
     }
 
     const infoQuery =
-        "SELECT groups.id, name, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        "SELECT groups.id, groups.name, users.name AS owner, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id INNER JOIN users ON groups.owner_id = users.id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
 
     const votedQuery =
         "SELECT votes.id FROM votes INNER JOIN questions ON votes.question_id = questions.id WHERE votes.from_id = ? AND questions.group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
@@ -64,7 +64,8 @@ export const getGroup = async (req: Request, res: Response) => {
             },
         ];
 
-        res.status(200).json(infoWithVoted);
+        if (info[0].length >= 1) res.status(200).json(infoWithVoted);
+        else res.status(404).json({ error: "Group not found." });
         return;
     } catch (err: unknown) {
         if (err instanceof Error) {
@@ -184,6 +185,11 @@ export const getUsers = async (req: Request, res: Response) => {
         return;
     }
 
+    if (users[0].length < 1) {
+        res.status(404).json({ error: "Group not found." });
+        return;
+    }
+
     try {
         const voteCounts = votes[0].reduce((acc, vote) => {
             if (acc[vote.to_id]) {
@@ -252,8 +258,13 @@ export const getQuestion = async (req: Request, res: Response) => {
         "SELECT id, category, question, date FROM questions WHERE group_id = ? AND date = ?";
 
     await db
-        .query(query, [id, date])
+        .query<QuestionRow[]>(query, [id, date])
         .then((result) => {
+            if (result[0].length < 1) {
+                res.status(404).json({ error: "Question not found." });
+                return;
+            }
+
             res.status(200).json(result[0]);
             return;
         })

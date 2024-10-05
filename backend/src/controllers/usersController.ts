@@ -1,4 +1,4 @@
-import { UserRow } from "../interfaces/models";
+import { NotificationRow, UserRow } from "../interfaces/models";
 import { signup, login, changePassword } from "../functions/usersManager";
 import { Response, Request } from "express";
 import { RowDataPacket } from "mysql2";
@@ -142,8 +142,13 @@ export const getUserInfo = async (req: Request, res: Response) => {
     const query = "SELECT id, name, username FROM users WHERE id = ?";
 
     await db
-        .query(query, [id])
+        .query<UserRow[]>(query, [id])
         .then((result) => {
+            if (result[0].length < 1) {
+                res.status(404).json({ error: "Question not found." });
+                return;
+            }
+
             res.status(200).json(result[0]);
             return;
         })
@@ -197,6 +202,11 @@ export const getUserStats = async (req: Request, res: Response) => {
         return;
     }
 
+    if (streak[0].length < 1) {
+        res.status(404).json({ error: "User not found." });
+        return;
+    }
+
     try {
         const allVotes = votes[0];
         const userVotes = votes[0].filter(
@@ -237,8 +247,13 @@ export const getNotifications = async (req: Request, res: Response) => {
         "SELECT notifications.id, group_id, notifications, last_update, name FROM notifications INNER JOIN groups ON notifications.group_id = groups.id WHERE user_id = ?";
 
     await db
-        .query(query, [id])
+        .query<NotificationRow[]>(query, [id])
         .then((result) => {
+            if (result[0].length < 1) {
+                res.status(404).json({ error: "User not found." });
+                return;
+            }
+
             res.status(200).json(result[0]);
             return;
         })
