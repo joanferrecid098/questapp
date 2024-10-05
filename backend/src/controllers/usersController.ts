@@ -150,7 +150,7 @@ export const getUserInfo = async (req: Request, res: Response) => {
         .query<UserRow[]>(query, [id])
         .then((result) => {
             if (result[0].length < 1) {
-                res.status(404).json({ error: "Question not found." });
+                res.status(404).json({ error: "User not found." });
                 return;
             }
 

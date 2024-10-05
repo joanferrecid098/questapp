@@ -1,15 +1,18 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import dotenv from "dotenv";
 
 dotenv.config();
 const app = express();
 
 // Middleware
+import requireAuth from "./middleware/requireAuth";
+
 app.use(express.json());
 app.use((req, res, next) => {
     console.log("Connection to: " + req.path + " With method: " + req.method);
     next();
 });
+app.use(requireAuth);
 
 // Express Routers
 import usersRouter from "./routers/users";
