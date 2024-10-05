@@ -16,12 +16,12 @@ import {
 // REST API Endpoints
 router.post("/login", loginUser);
 router.post("/signup", signupUser);
-router.patch("/user/:id", updateUser);
-router.patch("/password/:id", updatePassword);
-router.delete("/user/:id", removeUser);
+router.patch("/user", updateUser);
+router.patch("/password", updatePassword);
+router.delete("/user", removeUser);
 
-router.get("/user/:id", getUserInfo);
-router.get("/stats/:id", getUserStats);
-router.get("/notifications/:id", getNotifications);
+router.get("/user", getUserInfo);
+router.get("/stats", getUserStats);
+router.get("/notifications", getNotifications);
 
 export default router;

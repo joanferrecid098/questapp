@@ -29,9 +29,9 @@ export const getVotes = async (req: Request, res: Response) => {
 };
 
 export const submitVote = async (req: Request, res: Response) => {
-    const { from_id, to_id, group_id } = req.body;
+    const { to_id, group_id } = req.body;
 
-    if (!from_id || !to_id || !group_id) {
+    if (!req.user.id || !to_id || !group_id) {
         res.status(400).json({
             error: "All fields are required.",
         });
@@ -71,7 +71,7 @@ export const submitVote = async (req: Request, res: Response) => {
     }
 
     await db
-        .query(insertQuery, [from_id, to_id, question_id])
+        .query(insertQuery, [req.user.id, to_id, question_id])
         .then((result) => {
             res.status(200).json(result[0]);
             return;
@@ -82,10 +82,10 @@ export const submitVote = async (req: Request, res: Response) => {
 };
 
 export const updateVote = async (req: Request, res: Response) => {
-    const { from_id, to_id, question_id } = req.body;
+    const { to_id, question_id } = req.body;
     const { id } = req.params;
 
-    if (!from_id || !to_id || !question_id) {
+    if (!req.user.id || !to_id || !question_id) {
         res.status(400).json({
             error: "All fields are required.",
         });
@@ -96,7 +96,7 @@ export const updateVote = async (req: Request, res: Response) => {
         "UPDATE votes SET from_id = ?, to_id = ?, question_id = ? WHERE id = ?";
 
     await db
-        .query(query, [from_id, to_id, question_id, id])
+        .query(query, [req.user.id, to_id, question_id, id])
         .then((result) => {
             res.status(200).json(result[0]);
             return;

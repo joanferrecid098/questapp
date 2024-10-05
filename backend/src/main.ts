@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -7,12 +7,25 @@ const app = express();
 // Middleware
 import requireAuth from "./middleware/requireAuth";
 
+const unless = (
+    paths: string[],
+    middleware: (req: Request, res: Response, next: NextFunction) => void
+) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        if (paths.some((path) => req.path.startsWith(path))) {
+            return next();
+        } else {
+            return middleware(req, res, next);
+        }
+    };
+};
+
 app.use(express.json());
 app.use((req, res, next) => {
     console.log("Connection to: " + req.path + " With method: " + req.method);
     next();
 });
-app.use(requireAuth);
+app.use(unless(["/api/users/login", "/api/users/signup"], requireAuth));
 
 // Express Routers
 import usersRouter from "./routers/users";

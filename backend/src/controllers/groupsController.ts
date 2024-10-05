@@ -18,9 +18,8 @@ export const getGroups = async (req: Request, res: Response) => {
 
 export const getGroup = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { from_id } = req.body;
 
-    if (!from_id || !id) {
+    if (!req.user.id || !id) {
         res.status(400).json({
             error: "All fields are required.",
         });
@@ -41,7 +40,7 @@ export const getGroup = async (req: Request, res: Response) => {
         });
 
     const voted = await db
-        .query<VoteRow[]>(votedQuery, [from_id, id, id])
+        .query<VoteRow[]>(votedQuery, [req.user.id, id, id])
         .catch((err) => {
             res.status(400).json({ error: err });
             return;
@@ -79,9 +78,10 @@ export const getGroup = async (req: Request, res: Response) => {
 };
 
 export const createGroup = async (req: Request, res: Response) => {
-    const { name, owner } = req.body;
+    const { name } = req.body;
+    const { id } = req.user;
 
-    if (!name || !owner) {
+    if (!name) {
         res.status(400).json({
             error: "All fields are required.",
         });
@@ -91,7 +91,7 @@ export const createGroup = async (req: Request, res: Response) => {
     const query = "INSERT INTO groups VALUES (NULL, ?, ?)";
 
     await db
-        .query(query, [name, owner])
+        .query(query, [name, id])
         .then((result) => {
             res.status(200).json(result[0]);
             return;
