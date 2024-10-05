@@ -44,6 +44,7 @@ export interface GetNotifications {
 export interface GetGroup {
     id: number;
     name: string;
+    owner: string;
     owner_id: number;
     category: string;
     question: string;

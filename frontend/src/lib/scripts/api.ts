@@ -9,7 +9,7 @@ import type {
 import { sessionStore } from "$stores/auth";
 import { get } from "svelte/store";
 
-const base = "http://localhost:8080";
+export const base = "http://localhost:8080";
 
 /* Fetching */
 interface SendOptions {
@@ -158,7 +158,7 @@ export const getGroup = async (id: number) => {
     return {
         id: id,
         name: response[0].name,
-        owner: "Russell",
+        owner: response[0].owner,
         owner_id: response[0].owner_id,
         question: response[0].question,
         hasVoted: response[0].hasVoted,

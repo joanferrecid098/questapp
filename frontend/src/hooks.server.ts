@@ -1,4 +1,3 @@
-import { sessionStore } from "$stores/auth";
 import type { Handle } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
 
@@ -7,9 +6,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     const unprotectedRoutes = ["/login", "/register"];
 
-    if (token) {
-        sessionStore.set(token);
-    }
+    if (token) event.locals.token = token;
 
     if (
         (!token || token === "") &&
