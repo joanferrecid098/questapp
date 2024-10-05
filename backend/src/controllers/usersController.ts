@@ -1,8 +1,13 @@
-import { NotificationRow, UserRow } from "../interfaces/models";
 import { signup, login, changePassword } from "../functions/usersManager";
+import { NotificationRow, UserRow } from "../interfaces/models";
 import { Response, Request } from "express";
 import { RowDataPacket } from "mysql2";
+import jwt from "jsonwebtoken";
 import db from "../connection";
+
+const createToken = (_id: number) => {
+    return jwt.sign({ _id }, process.env.SECRET!, { expiresIn: "3d" });
+};
 
 // User Details
 export const loginUser = async (req: Request, res: Response) => {
@@ -11,9 +16,9 @@ export const loginUser = async (req: Request, res: Response) => {
     try {
         const user = await login(username, password);
 
-        // SUCCESS
+        const token = createToken(user[0].id);
 
-        res.status(200).json({ username });
+        res.status(200).json({ username, token });
         return;
     } catch (err: unknown) {
         if (err instanceof Error) {
@@ -32,9 +37,9 @@ export const signupUser = async (req: Request, res: Response) => {
     try {
         const user = await signup(name, username, password);
 
-        // SUCCESS
+        const token = createToken(user.insertId);
 
-        res.status(200).json({ username });
+        res.status(200).json({ username, token });
         return;
     } catch (err: unknown) {
         if (err instanceof Error) {

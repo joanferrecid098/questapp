@@ -37,7 +37,7 @@ export const signup = async (
     const query = "INSERT INTO users VALUES (NULL, ?, 0, ?, ?)";
 
     const user = await db
-        .query<RowDataPacket[]>(query, [name, username, hash])
+        .query<ResultSetHeader>(query, [name, username, hash])
         .catch((err) => {
             if (err.errno == 1062) {
                 throw Error("Username already in use.");
