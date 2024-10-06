@@ -17,18 +17,18 @@
     let groupStats: GroupStats[];
 
     onMount(async () => {
-        userStats = await getUserStats(1);
-        groupStats = await getNotifications(1);
+        userStats = await getUserStats();
+        groupStats = await getNotifications();
     });
 
     /* API Requests */
-    const saveGroup = (groupDetails: GroupDetails) => {
+    const saveGroup = async (groupDetails: GroupDetails) => {
         if (!groupDetails) {
             createGroupActive = false;
             return;
         }
 
-        const response = createGroup(groupDetails);
+        const response = await createGroup(groupDetails);
 
         goto("/groups/" + response.insertId);
     };

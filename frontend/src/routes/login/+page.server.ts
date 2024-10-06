@@ -20,7 +20,7 @@ export const actions: Actions = {
         };
 
         const response = await fetch(`${base}/api/users/login`, {
-            method: "post",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -52,7 +52,7 @@ export const actions: Actions = {
         };
 
         const response = await fetch(`${base}/api/users/signup`, {
-            method: "post",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },

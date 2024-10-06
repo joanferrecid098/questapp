@@ -18,13 +18,13 @@
     let groupDetails: GroupDetails[];
 
     /* API Requests */
-    const saveGroup = (groupDetails: GroupDetails) => {
+    const saveGroup = async (groupDetails: GroupDetails) => {
         if (!groupDetails) {
             createGroupActive = false;
             return;
         }
 
-        const response = createGroup(groupDetails);
+        const response = await createGroup(groupDetails);
 
         goto("/groups/" + response.insertId);
     };

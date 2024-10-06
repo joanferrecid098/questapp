@@ -1,4 +1,5 @@
-import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+import { sessionStore } from "$stores/auth";
+import { get } from "svelte/store";
 import type {
     GetGroup,
     GetGroupUsers,
@@ -6,8 +7,11 @@ import type {
     GetUserInfo,
     GetUserStats,
 } from "$lib/interfaces/responses";
-import { sessionStore } from "$stores/auth";
-import { get } from "svelte/store";
+import type {
+    GroupDetails,
+    ResultSetHeader,
+    UserDetails,
+} from "$lib/interfaces/models";
 
 export const base = "http://localhost:8080";
 
@@ -50,10 +54,10 @@ export const send = async <T>({
 };
 
 /* Users */
-export const getUserInfo = async (id: number) => {
+export const getUserInfo = async () => {
     const response = await send<GetUserInfo[]>({
-        method: "get",
-        path: `/api/users/user/${id}`,
+        method: "GET",
+        path: `/api/users/user`,
     });
 
     return {
@@ -63,10 +67,10 @@ export const getUserInfo = async (id: number) => {
     };
 };
 
-export const getUserStats = async (id: number) => {
+export const getUserStats = async () => {
     const response = await send<GetUserStats[]>({
-        method: "get",
-        path: `/api/users/stats/${id}`,
+        method: "GET",
+        path: `/api/users/stats`,
     });
 
     return {
@@ -77,55 +81,48 @@ export const getUserStats = async (id: number) => {
     };
 };
 
-export const changePassword = (oldPassword: string, newPassword: string) => {
-    console.log("change password to the following");
-    console.log(newPassword);
-
-    const response = {
-        success: true,
-    };
-
-    return response;
-};
-
-export const patchUser = ({ id, name, username }: UserDetails) => {
-    console.log("Account updated.");
-    console.log(id, name, username);
-
-    const response = {
-        fieldCount: 0,
-        affectedRows: 1,
-        insertId: 0,
-        info: "Rows matched: 1  Changed: 1  Warnings: 0",
-        serverStatus: 2,
-        warningStatus: 0,
-        changedRows: 1,
-    };
+export const changePassword = async (
+    oldPassword: string,
+    newPassword: string
+) => {
+    const response = await send<GetUserStats[]>({
+        method: "PATCH",
+        path: `/api/users/password`,
+        data: {
+            oldPassword,
+            newPassword,
+        },
+    });
 
     return response;
 };
 
-export const removeAccount = (accountDetails: UserDetails) => {
-    console.log("delete following account:");
-    console.log(accountDetails);
-
-    const response = {
-        fieldCount: 0,
-        affectedRows: 1,
-        insertId: 0,
-        info: "",
-        serverStatus: 2,
-        warningStatus: 0,
-        changedRows: 0,
-    };
+export const patchUser = async ({ name, username }: UserDetails) => {
+    const response = await send({
+        method: "PATCH",
+        path: `/api/users/user`,
+        data: {
+            name,
+            username,
+        },
+    });
 
     return response;
 };
 
-export const getNotifications = async (id: number) => {
+export const removeAccount = async (accountDetails: UserDetails) => {
+    const response = await send({
+        method: "DELETE",
+        path: `/api/users/user`,
+    });
+
+    return response;
+};
+
+export const getNotifications = async () => {
     const response = await send<GetNotifications[]>({
-        method: "get",
-        path: `/api/users/notifications/${id}`,
+        method: "GET",
+        path: `/api/users/notifications`,
     });
 
     return response.map((notification) => ({
@@ -139,7 +136,7 @@ export const getNotifications = async (id: number) => {
 /* Groups */
 export const getGroups = async () => {
     const response = await send<GroupDetails[]>({
-        method: "get",
+        method: "GET",
         path: `/api/groups`,
     });
 
@@ -148,11 +145,8 @@ export const getGroups = async () => {
 
 export const getGroup = async (id: number) => {
     const response = await send<GetGroup[]>({
-        method: "post",
+        method: "GET",
         path: `/api/groups/group/${id}`,
-        data: {
-            from_id: "2",
-        },
     });
 
     return {
@@ -165,48 +159,57 @@ export const getGroup = async (id: number) => {
     };
 };
 
-export const createGroup = (groupDetails: GroupDetails) => {
-    console.log("create group with following information:");
-    console.log(groupDetails);
-
-    const response = {
-        fieldCount: 0,
-        affectedRows: 1,
-        insertId: 5,
-        info: "",
-        serverStatus: 2,
-        warningStatus: 0,
-        changedRows: 0,
-    };
+export const createGroup = async (groupDetails: GroupDetails) => {
+    const response = await send<ResultSetHeader>({
+        method: "POST",
+        path: `/api/groups`,
+        data: {
+            name: groupDetails.name,
+        },
+    });
 
     return response;
 };
 
-export const updateGroup = (
+export const updateGroup = async (
     groupDetails: GroupDetails,
     removedUsers: UserDetails[]
 ) => {
-    console.log("update group details with following information");
-    console.log(groupDetails);
-    console.log("remove following users:");
-    console.log(removedUsers);
+    const update = await send<ResultSetHeader>({
+        method: "PATCH",
+        path: `/api/groups/group/${groupDetails.id}`,
+        data: {
+            name: groupDetails.name,
+            owner: groupDetails.owner_id,
+        },
+    });
 
-    const response = {
-        fieldCount: 0,
-        affectedRows: 1,
-        insertId: 0,
-        info: "Rows matched: 1  Changed: 1  Warnings: 0",
-        serverStatus: 2,
-        warningStatus: 0,
-        changedRows: 1,
+    if (removedUsers.length > 0) {
+        const user_id = removedUsers.map((user) => user.id);
+
+        const remove = await send<ResultSetHeader>({
+            method: "DELETE",
+            path: `/api/groups/users`,
+            data: {
+                user_id,
+                group_id: groupDetails.id,
+            },
+        });
+
+        return {
+            update,
+            remove,
+        };
+    }
+
+    return {
+        update,
     };
-
-    return response;
 };
 
 export const getGroupUsers = async (id: number) => {
     const response = await send<GetGroupUsers[]>({
-        method: "get",
+        method: "GET",
         path: `/api/groups/users/${id}`,
     });
 
@@ -222,16 +225,17 @@ export const getGroupUsers = async (id: number) => {
 };
 
 /* Votes */
-export const postVote = (from_id: number, to_id: number, group_id: number) => {
-    const response = {
-        fieldCount: 0,
-        affectedRows: 1,
-        insertId: 8,
-        info: "",
-        serverStatus: 2,
-        warningStatus: 0,
-        changedRows: 0,
-    };
+export const postVote = async (to_id: number, group_id: number) => {
+    const response = await send<GetGroupUsers[]>({
+        method: "POST",
+        path: `/api/votes`,
+        data: {
+            to_id,
+            group_id,
+        },
+    });
+
+    console.log(response);
 
     return response;
 };

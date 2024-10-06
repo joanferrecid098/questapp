@@ -36,14 +36,14 @@
     });
 
     /* API Requests */
-    const submitVote = (id: number) => {
-        const response = postVote(id, 1, groupDetails.id);
+    const submitVote = async (id: number) => {
+        const response = await postVote(id, groupDetails.id);
 
         hasVoted = true;
     };
 
-    const submitChanges = (groupDetails: GroupDetails) => {
-        const response = updateGroup(groupDetails, removedUsers);
+    const submitChanges = async (groupDetails: GroupDetails) => {
+        const response = await updateGroup(groupDetails, removedUsers);
 
         invalidateAll();
     };

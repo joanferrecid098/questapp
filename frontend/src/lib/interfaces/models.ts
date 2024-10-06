@@ -1,3 +1,12 @@
+export interface ResultSetHeader {
+    affectedRows: number;
+    fieldCount: number;
+    info: string;
+    insertId: number;
+    serverStatus: number;
+    warningStatus: number;
+}
+
 export interface UserDetails {
     id: number;
     name?: string;

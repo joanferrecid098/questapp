@@ -20,14 +20,13 @@
     let cachedUsername: string;
 
     onMount(async () => {
-        accountDetails = await getUserInfo(1);
-        console.log(accountDetails);
+        accountDetails = await getUserInfo();
         cachedName = accountDetails.name!;
         cachedUsername = accountDetails.username!;
     });
 
     /* API Requests */
-    const updateAccount = ({ id, name, username }: UserDetails) => {
+    const updateAccount = async ({ id, name, username }: UserDetails) => {
         if (!name || !username) {
             editMode = false;
             console.log("Nothing changed.");
@@ -47,7 +46,7 @@
             return;
         }
 
-        const response = patchUser({ id, name, username });
+        const response = await patchUser({ id, name, username });
 
         accountDetails.name = name;
         accountDetails.username = username;
@@ -58,25 +57,25 @@
         editMode = false;
     };
 
-    const updatePassword = (oldPassword: string, newPassword: string) => {
+    const updatePassword = async (oldPassword: string, newPassword: string) => {
         if (!oldPassword || !newPassword) {
             passwordMode = false;
             return;
         }
 
-        const response = changePassword(oldPassword, newPassword);
+        const response = await changePassword(oldPassword, newPassword);
 
         passwordMode = false;
         editMode = false;
     };
 
-    const deleteAccount = (confirm: string) => {
+    const deleteAccount = async (confirm: string) => {
         if (confirm != accountDetails.username) {
             deleteMode = false;
             return;
         }
 
-        const response = removeAccount(accountDetails);
+        const response = await removeAccount(accountDetails);
         deleteMode = false;
     };
 </script>
