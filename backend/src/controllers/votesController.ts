@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import db from "../connection";
 import { RowDataPacket } from "mysql2";
+import db from "../connection";
 
 // Vote Details
 export const getVotes = async (req: Request, res: Response) => {

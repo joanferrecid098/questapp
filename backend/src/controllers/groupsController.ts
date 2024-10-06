@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
-import db from "../connection";
 import { GroupRow, QuestionRow, UserRow, VoteRow } from "../interfaces/models";
+import { Request, Response } from "express";
+import { ResultSetHeader } from "mysql2";
+import db from "../connection";
 
 // Group Details
 export const getGroups = async (req: Request, res: Response) => {
@@ -63,9 +64,13 @@ export const getGroup = async (req: Request, res: Response) => {
             },
         ];
 
-        if (info[0].length >= 1) res.status(200).json(infoWithVoted);
-        else res.status(404).json({ error: "Group not found." });
-        return;
+        if (info[0].length >= 1) {
+            res.status(200).json(infoWithVoted);
+            return;
+        } else {
+            res.status(404).json({ error: "Group not found." });
+            return;
+        }
     } catch (err: unknown) {
         if (err instanceof Error) {
             res.status(400).json({ error: err.message });
@@ -88,17 +93,37 @@ export const createGroup = async (req: Request, res: Response) => {
         return;
     }
 
-    const query = "INSERT INTO groups VALUES (NULL, ?, ?)";
+    const groupQuery = "INSERT INTO groups VALUES (NULL, ?, ?)";
+    const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
 
-    await db
-        .query(query, [name, id])
-        .then((result) => {
-            res.status(200).json(result[0]);
-            return;
-        })
+    const group = await db
+        .query<ResultSetHeader>(groupQuery, [name, id])
         .catch((err) => {
             res.status(400).json({ error: err });
         });
+
+    if (!group || !group[0].insertId || group[0].insertId === 0) {
+        res.status(400).json({
+            error: "There was an error while creating the group.",
+        });
+        return;
+    }
+
+    const membership = await db
+        .query<ResultSetHeader>(membershipQuery, [id, group[0].insertId])
+        .catch((err) => {
+            res.status(400).json({ error: err });
+        });
+
+    if (!membership || !membership[0].insertId || group[0].insertId === 0) {
+        res.status(400).json({
+            error: "There was an error while creating the group membership.",
+        });
+        return;
+    }
+
+    res.status(200).json(group[0]);
+    return;
 };
 
 export const updateGroup = async (req: Request, res: Response) => {
@@ -229,17 +254,39 @@ export const removeUser = async (req: Request, res: Response) => {
         return;
     }
 
-    const query = "DELETE FROM memberships WHERE user_id = ? AND group_id = ?";
+    const singleQuery =
+        "DELETE FROM memberships WHERE user_id = ? AND group_id = ?";
+    const multipleQuery =
+        "DELETE FROM memberships WHERE user_id IN (?) AND group_id = ?";
 
-    await db
-        .query(query, [user_id, group_id])
-        .then((result) => {
-            res.status(200).json(result[0]);
-            return;
-        })
-        .catch((err) => {
-            res.status(400).json({ error: err });
+    if (typeof user_id === "string" || typeof user_id === "number") {
+        await db
+            .query(singleQuery, [user_id, group_id])
+            .then((result) => {
+                res.status(200).json(result[0]);
+                return;
+            })
+            .catch((err) => {
+                res.status(400).json({ error: err });
+                return;
+            });
+    } else if (Array.isArray(user_id)) {
+        await db
+            .query(multipleQuery, [user_id, group_id])
+            .then((result) => {
+                res.status(200).json(result[0]);
+                return;
+            })
+            .catch((err) => {
+                res.status(400).json({ error: err });
+                return;
+            });
+    } else {
+        res.status(400).json({
+            error: "Type is not compatible.",
         });
+        return;
+    }
 };
 
 // Group Question
