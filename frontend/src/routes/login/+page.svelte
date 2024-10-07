@@ -1,4 +1,27 @@
 <script lang="ts">
+    import type { MessageContent } from "$lib/interfaces/components";
+    import { Message } from "$components";
+    import { page } from "$app/stores";
+
+    let messageList: MessageContent[] = [];
+
+    if ($page.url.searchParams.has("invalid-creds")) {
+        messageList.push({
+            title: "Error",
+            content: "Incorrect username or password",
+        });
+    }
+
+    const closeDialogue = (messageContent: MessageContent) => {
+        const index = messageList.indexOf(messageContent);
+
+        if (index > -1) {
+            messageList = [
+                ...messageList.slice(0, index),
+                ...messageList.slice(index + 1),
+            ];
+        }
+    };
 </script>
 
 <section>
@@ -30,6 +53,13 @@
         </form>
     </div>
 </section>
+{#if messageList.length > 0}
+    <div class="message-tray">
+        {#each messageList as messageContent}
+            <Message {messageContent} {closeDialogue} />
+        {/each}
+    </div>
+{/if}
 
 <style>
     /* Sections */
@@ -110,6 +140,21 @@
         align-content: stretch;
         justify-content: center;
         gap: 0.75rem;
+    }
+
+    .message-tray {
+        position: fixed;
+        top: 95%;
+        left: 97.5%;
+        transform: translate(-100%, -100%);
+        min-width: 18rem;
+
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        align-content: stretch;
+        justify-content: start;
+        gap: 1rem;
     }
 
     /* Elements */

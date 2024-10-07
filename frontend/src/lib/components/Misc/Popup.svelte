@@ -12,7 +12,7 @@
 <style>
     /* Sections */
     .contents {
-        position: absolute;
+        position: fixed;
         width: 75%;
         display: flex;
         flex-direction: column;

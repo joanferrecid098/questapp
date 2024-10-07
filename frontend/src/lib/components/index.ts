@@ -10,4 +10,5 @@ export { default as DeleteAccount } from "./Settings/DeleteAccount.svelte";
 export { default as EmptyGroup } from "./Groups/EmptyGroup.svelte";
 export { default as JoinGroup } from "./Groups/JoinGroup.svelte";
 export { default as AddUsers } from "./Groups/AddUsers.svelte";
+export { default as Message } from "./Misc/Message.svelte";
 export { default as Popup } from "./Misc/Popup.svelte";
