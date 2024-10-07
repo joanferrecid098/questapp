@@ -47,6 +47,7 @@ export const submitVote = async (req: Request, res: Response) => {
         .query<RowDataPacket[]>(questionQuery, [group_id, group_id])
         .catch((err) => {
             res.status(400).json({ error: err });
+            return;
         });
 
     if (!question) {
@@ -78,6 +79,7 @@ export const submitVote = async (req: Request, res: Response) => {
         })
         .catch((err) => {
             res.status(400).json({ error: err });
+            return;
         });
 };
 
@@ -103,6 +105,7 @@ export const updateVote = async (req: Request, res: Response) => {
         })
         .catch((err) => {
             res.status(400).json({ error: err });
+            return;
         });
 };
 
@@ -122,8 +125,10 @@ export const removeVote = async (req: Request, res: Response) => {
         .query(query, [id])
         .then((result) => {
             res.status(200).json(result[0]);
+            return;
         })
         .catch((err) => {
             res.status(400).json({ error: err });
+            return;
         });
 };

@@ -2,6 +2,7 @@ import { signup, login, changePassword } from "../functions/usersManager";
 import { NotificationRow, UserRow } from "../interfaces/models";
 import { Response, Request } from "express";
 import { RowDataPacket } from "mysql2";
+import validator from "validator";
 import jwt from "jsonwebtoken";
 import db from "../connection";
 
@@ -63,6 +64,11 @@ export const updateUser = async (req: Request, res: Response) => {
         return;
     }
 
+    if (!validator.isAlphanumeric(username)) {
+        res.status(400).json({ error: "Username is not valid." });
+        return;
+    }
+
     const query = "UPDATE users SET name = ?, username = ? WHERE id = ?";
 
     await db
@@ -73,6 +79,7 @@ export const updateUser = async (req: Request, res: Response) => {
         })
         .catch((err) => {
             res.status(400).json({ error: err });
+            return;
         });
 };
 

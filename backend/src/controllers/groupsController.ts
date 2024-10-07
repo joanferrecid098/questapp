@@ -100,6 +100,7 @@ export const createGroup = async (req: Request, res: Response) => {
         .query<ResultSetHeader>(groupQuery, [name, id])
         .catch((err) => {
             res.status(400).json({ error: err });
+            return;
         });
 
     if (!group || !group[0].insertId || group[0].insertId === 0) {
@@ -113,6 +114,7 @@ export const createGroup = async (req: Request, res: Response) => {
         .query<ResultSetHeader>(membershipQuery, [id, group[0].insertId])
         .catch((err) => {
             res.status(400).json({ error: err });
+            return;
         });
 
     if (!membership || !membership[0].insertId || group[0].insertId === 0) {
@@ -147,6 +149,7 @@ export const updateGroup = async (req: Request, res: Response) => {
         })
         .catch((err) => {
             res.status(400).json({ error: err });
+            return;
         });
 };
 
@@ -317,5 +320,6 @@ export const getQuestion = async (req: Request, res: Response) => {
         })
         .catch((err) => {
             res.status(400).json({ error: err });
+            return;
         });
 };
