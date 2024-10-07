@@ -3,7 +3,7 @@
     $: currentRoute = $page.url.pathname;
 </script>
 
-<nav>
+<nav data-sveltekit-reload>
     <a class="container home" href="/">
         <i
             class="material-symbols-outlined"

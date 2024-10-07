@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { UserDetails } from "$lib/interfaces/models";
+    import type { UserDetails } from "$interfaces/models";
     import { Popup } from "$components";
 
     export let userDetails: UserDetails;

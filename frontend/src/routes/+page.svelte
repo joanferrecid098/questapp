@@ -1,14 +1,20 @@
 <script lang="ts">
     import { createGroup, getNotifications, getUserStats } from "$scripts/api";
-    import { PendingNotification, LoadingBar, CreateGroup } from "$components";
+    import type { MessageContent } from "$interfaces/components";
     import { getRelativeDate } from "$scripts/dates";
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
+    import {
+        PendingNotification,
+        LoadingBar,
+        CreateGroup,
+        Message,
+    } from "$components";
     import type {
         GroupDetails,
         GroupStats,
         UserStats,
-    } from "$lib/interfaces/models";
+    } from "$interfaces/models";
 
     let createGroupActive: boolean = false;
 
@@ -21,6 +27,20 @@
         groupStats = await getNotifications();
     });
 
+    /* Messages */
+    let messageList: MessageContent[] = [];
+
+    const closeDialogue = (messageContent: MessageContent) => {
+        const index = messageList.indexOf(messageContent);
+
+        if (index > -1) {
+            messageList = [
+                ...messageList.slice(0, index),
+                ...messageList.slice(index + 1),
+            ];
+        }
+    };
+
     /* API Requests */
     const saveGroup = async (groupDetails: GroupDetails) => {
         if (!groupDetails) {
@@ -28,9 +48,29 @@
             return;
         }
 
-        const response = await createGroup(groupDetails);
+        await createGroup(groupDetails)
+            .then((response) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Success",
+                        content: "Successfully created group.",
+                        type: "info",
+                    },
+                ];
 
-        goto("/groups/" + response.insertId);
+                goto("/groups/" + response.insertId + "?new-group");
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
     };
 </script>
 
@@ -116,6 +156,13 @@
 </section>
 {#if createGroupActive}
     <CreateGroup {saveGroup} />
+{/if}
+{#if messageList.length > 0}
+    <div class="message-tray">
+        {#each messageList as messageContent}
+            <Message {messageContent} {closeDialogue} />
+        {/each}
+    </div>
 {/if}
 
 <style>

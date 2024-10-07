@@ -6,12 +6,12 @@ import type {
     GetNotifications,
     GetUserInfo,
     GetUserStats,
-} from "$lib/interfaces/responses";
+} from "$interfaces/responses";
 import type {
     GroupDetails,
     ResultSetHeader,
     UserDetails,
-} from "$lib/interfaces/models";
+} from "$interfaces/models";
 
 export const base = "http://localhost:8080";
 
@@ -47,7 +47,7 @@ export const send = async <T>({
     const response = await fetch(`${base}${path}`, opts);
 
     if (!response.ok) {
-        throw new Error(response.statusText);
+        throw new Error((await response.json()).error || response.statusText);
     }
 
     return (await response.json()) as T;
@@ -98,7 +98,7 @@ export const changePassword = async (
 };
 
 export const patchUser = async ({ name, username }: UserDetails) => {
-    const response = await send({
+    const response = await send<ResultSetHeader>({
         method: "PATCH",
         path: `/api/users/user`,
         data: {
@@ -110,8 +110,8 @@ export const patchUser = async ({ name, username }: UserDetails) => {
     return response;
 };
 
-export const removeAccount = async (accountDetails: UserDetails) => {
-    const response = await send({
+export const removeAccount = async () => {
+    const response = await send<ResultSetHeader>({
         method: "DELETE",
         path: `/api/users/user`,
     });
@@ -234,8 +234,6 @@ export const postVote = async (to_id: number, group_id: number) => {
             group_id,
         },
     });
-
-    console.log(response);
 
     return response;
 };

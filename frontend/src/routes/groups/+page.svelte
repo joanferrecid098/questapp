@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { GroupElement, CreateGroup, JoinGroup } from "$components";
-    import type { GroupDetails } from "$lib/interfaces/models";
+    import { GroupElement, CreateGroup, JoinGroup, Message } from "$components";
+    import type { MessageContent } from "$interfaces/components";
+    import type { GroupDetails } from "$interfaces/models";
     import { createGroup, getGroups } from "$scripts/api";
     import { onDestroy, onMount } from "svelte";
     import { goto } from "$app/navigation";
@@ -17,6 +18,20 @@
     /* API Responses */
     let groupDetails: GroupDetails[];
 
+    /* Messages */
+    let messageList: MessageContent[] = [];
+
+    const closeDialogue = (messageContent: MessageContent) => {
+        const index = messageList.indexOf(messageContent);
+
+        if (index > -1) {
+            messageList = [
+                ...messageList.slice(0, index),
+                ...messageList.slice(index + 1),
+            ];
+        }
+    };
+
     /* API Requests */
     const saveGroup = async (groupDetails: GroupDetails) => {
         if (!groupDetails) {
@@ -24,9 +39,29 @@
             return;
         }
 
-        const response = await createGroup(groupDetails);
+        await createGroup(groupDetails)
+            .then((response) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Success",
+                        content: "Successfully created group.",
+                        type: "info",
+                    },
+                ];
 
-        goto("/groups/" + response.insertId);
+                goto("/groups/" + response.insertId + "?new-group");
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
     };
 
     const joinGroup = (invite_id: string) => {
@@ -104,6 +139,13 @@
 {/if}
 {#if joinGroupActive}
     <JoinGroup {joinGroup} />
+{/if}
+{#if messageList.length > 0}
+    <div class="message-tray">
+        {#each messageList as messageContent}
+            <Message {messageContent} {closeDialogue} />
+        {/each}
+    </div>
 {/if}
 
 <style>

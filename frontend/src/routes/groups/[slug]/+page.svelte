@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+    import type { GroupDetails, UserDetails } from "$interfaces/models";
+    import type { MessageContent } from "$interfaces/components";
     import { timeLeftToUTCMidnight } from "$scripts/dates";
-    import { invalidateAll } from "$app/navigation";
     import { onDestroy, onMount } from "svelte";
     import { page } from "$app/stores";
     import {
@@ -9,6 +9,7 @@
         VotesChart,
         Information,
         EmptyGroup,
+        Message,
     } from "$components";
     import {
         getGroup,
@@ -35,17 +36,73 @@
         hasVoted = groupDetails.hasVoted!;
     });
 
+    /* Messages */
+    let messageList: MessageContent[] = [];
+
+    if ($page.url.searchParams.has("new-group")) {
+        messageList = [
+            ...messageList,
+            {
+                title: "Success",
+                content: "Successfully created group.",
+                type: "info",
+            },
+        ];
+    }
+
+    const closeDialogue = (messageContent: MessageContent) => {
+        const index = messageList.indexOf(messageContent);
+
+        if (index > -1) {
+            messageList = [
+                ...messageList.slice(0, index),
+                ...messageList.slice(index + 1),
+            ];
+        }
+    };
+
     /* API Requests */
     const submitVote = async (id: number) => {
-        const response = await postVote(id, groupDetails.id);
-
-        hasVoted = true;
+        await postVote(id, groupDetails.id)
+            .then((response) => {
+                hasVoted = true;
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
     };
 
     const submitChanges = async (groupDetails: GroupDetails) => {
-        const response = await updateGroup(groupDetails, removedUsers);
+        await updateGroup(groupDetails, removedUsers)
+            .then((response) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Success",
+                        content: "Successfully updated group.",
+                        type: "info",
+                    },
+                ];
 
-        invalidateAll();
+                window.location.reload();
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
     };
 
     const removeUser = (userDetails: UserDetails) => {
@@ -69,7 +126,7 @@
                 timer = `${timerObject.secondsString}s`;
                 return;
             }
-            invalidateAll();
+            window.location.reload();
             return;
         }, 1000);
 
@@ -86,7 +143,7 @@
             timer = `${timerObject.secondsString}s`;
             return;
         }
-        invalidateAll();
+        window.location.reload();
         return;
     };
 
@@ -129,6 +186,13 @@
         {/if}
     {/if}
 </section>
+{#if messageList.length > 0}
+    <div class="message-tray">
+        {#each messageList as messageContent}
+            <Message {messageContent} {closeDialogue} />
+        {/each}
+    </div>
+{/if}
 
 <style>
     /* Sections */

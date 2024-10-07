@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { GroupDetails, UserDetails } from "$lib/interfaces/models";
+    import type { GroupDetails, UserDetails } from "$interfaces/models";
     import { createSearchStore, searchHandler } from "$stores/search";
     import { AddUsers } from "$components";
     import { onDestroy } from "svelte";

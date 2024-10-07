@@ -1,11 +1,14 @@
 <script lang="ts">
-    import type { MessageContent } from "$lib/interfaces/components";
+    import type { MessageContent } from "$interfaces/components";
 
     export let messageContent: MessageContent;
     export let closeDialogue;
 </script>
 
-<section>
+<section
+    class:info={messageContent.type === "info"}
+    class:error={messageContent.type === "error"}
+>
     <div class="header">
         <h3>{messageContent.title}</h3>
         <button on:click={() => closeDialogue(messageContent)}>
@@ -55,5 +58,13 @@
         padding: 0;
         max-height: 1.5rem;
         max-width: 1.5rem;
+    }
+
+    .info {
+        border-top: 0.125rem var(--color-secondary-blue) solid;
+    }
+
+    .error {
+        border-top: 0.125rem var(--color-danger-red) solid;
     }
 </style>

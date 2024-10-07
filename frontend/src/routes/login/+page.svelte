@@ -1,15 +1,20 @@
 <script lang="ts">
-    import type { MessageContent } from "$lib/interfaces/components";
+    import type { MessageContent } from "$interfaces/components";
     import { Message } from "$components";
     import { page } from "$app/stores";
 
+    /* Messages */
     let messageList: MessageContent[] = [];
 
     if ($page.url.searchParams.has("invalid-creds")) {
-        messageList.push({
-            title: "Error",
-            content: "Incorrect username or password",
-        });
+        messageList = [
+            ...messageList,
+            {
+                title: "Error",
+                content: "Incorrect username or password",
+                type: "error",
+            },
+        ];
     }
 
     const closeDialogue = (messageContent: MessageContent) => {
@@ -140,21 +145,6 @@
         align-content: stretch;
         justify-content: center;
         gap: 0.75rem;
-    }
-
-    .message-tray {
-        position: fixed;
-        top: 95%;
-        left: 97.5%;
-        transform: translate(-100%, -100%);
-        min-width: 18rem;
-
-        display: flex;
-        flex-direction: column;
-        align-items: start;
-        align-content: stretch;
-        justify-content: start;
-        gap: 1rem;
     }
 
     /* Elements */

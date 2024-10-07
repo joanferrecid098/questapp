@@ -1,6 +1,8 @@
 <script lang="ts">
-    import { ChangePassword, DeleteAccount } from "$components";
-    import type { UserDetails } from "$lib/interfaces/models";
+    import { ChangePassword, DeleteAccount, Message } from "$components";
+    import type { MessageContent } from "$interfaces/components";
+    import type { UserDetails } from "$interfaces/models";
+    import { goto } from "$app/navigation";
     import { onMount } from "svelte";
     import {
         changePassword,
@@ -25,6 +27,20 @@
         cachedUsername = accountDetails.username!;
     });
 
+    /* Messages */
+    let messageList: MessageContent[] = [];
+
+    const closeDialogue = (messageContent: MessageContent) => {
+        const index = messageList.indexOf(messageContent);
+
+        if (index > -1) {
+            messageList = [
+                ...messageList.slice(0, index),
+                ...messageList.slice(index + 1),
+            ];
+        }
+    };
+
     /* API Requests */
     const updateAccount = async ({ id, name, username }: UserDetails) => {
         if (!name || !username) {
@@ -46,13 +62,32 @@
             return;
         }
 
-        const response = await patchUser({ id, name, username });
+        await patchUser({ id, name, username })
+            .then((response) => {
+                accountDetails.name = name;
+                accountDetails.username = username;
 
-        accountDetails.name = name;
-        accountDetails.username = username;
-
-        cachedName = accountDetails.name;
-        cachedUsername = accountDetails.username;
+                cachedName = accountDetails.name;
+                cachedUsername = accountDetails.username;
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Success",
+                        content: "Successfully updated account details.",
+                        type: "info",
+                    },
+                ];
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
 
         editMode = false;
     };
@@ -63,7 +98,27 @@
             return;
         }
 
-        const response = await changePassword(oldPassword, newPassword);
+        await changePassword(oldPassword, newPassword)
+            .then((response) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Success",
+                        content: "Successfully changed account password.",
+                        type: "info",
+                    },
+                ];
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
 
         passwordMode = false;
         editMode = false;
@@ -75,8 +130,29 @@
             return;
         }
 
-        const response = await removeAccount(accountDetails);
-        deleteMode = false;
+        await removeAccount()
+            .then((response) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Success",
+                        content: "Successfully removed account.",
+                        type: "info",
+                    },
+                ];
+
+                goto("/login");
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
     };
 </script>
 
@@ -188,6 +264,13 @@
 {/if}
 {#if passwordMode}
     <ChangePassword {updatePassword} />
+{/if}
+{#if messageList.length > 0}
+    <div class="message-tray">
+        {#each messageList as messageContent}
+            <Message {messageContent} {closeDialogue} />
+        {/each}
+    </div>
 {/if}
 
 <style>
