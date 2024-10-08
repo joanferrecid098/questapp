@@ -31,8 +31,34 @@
     let groupUsers: UserDetails[];
 
     onMount(async () => {
-        groupDetails = await getGroup(Number(slug));
-        groupUsers = await getGroupUsers(Number(slug));
+        await getGroup(Number(slug))
+            .then((response) => {
+                groupDetails = response;
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
+        await getGroupUsers(Number(slug))
+            .then((response) => {
+                groupUsers = response;
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
         hasVoted = groupDetails.hasVoted!;
     });
 

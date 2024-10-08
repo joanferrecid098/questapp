@@ -82,7 +82,20 @@
     let unsubscribe: () => void;
 
     onMount(async () => {
-        groupDetails = await getGroups();
+        await getGroups()
+            .then((response) => {
+                groupDetails = response;
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
 
         const searchGroups: GroupDetails[] = groupDetails.map((group) => ({
             ...group,

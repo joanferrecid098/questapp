@@ -47,6 +47,7 @@ export const send = async <T>({
     const response = await fetch(`${base}${path}`, opts);
 
     if (!response.ok) {
+        // if (response.status === 401) sessionStore.set("");
         throw new Error((await response.json()).error || response.statusText);
     }
 

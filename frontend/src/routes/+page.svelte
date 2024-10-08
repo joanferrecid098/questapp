@@ -23,8 +23,34 @@
     let groupStats: GroupStats[];
 
     onMount(async () => {
-        userStats = await getUserStats();
-        groupStats = await getNotifications();
+        await getUserStats()
+            .then((response) => {
+                userStats = response;
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
+        await getNotifications()
+            .then((response) => {
+                groupStats = response;
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
     });
 
     /* Messages */

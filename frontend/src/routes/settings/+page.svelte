@@ -22,7 +22,21 @@
     let cachedUsername: string;
 
     onMount(async () => {
-        accountDetails = await getUserInfo();
+        await getUserInfo()
+            .then((response) => {
+                accountDetails = response;
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
+
         cachedName = accountDetails.name!;
         cachedUsername = accountDetails.username!;
     });
