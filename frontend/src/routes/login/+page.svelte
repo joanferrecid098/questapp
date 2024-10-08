@@ -1,7 +1,12 @@
 <script lang="ts">
     import type { MessageContent } from "$interfaces/components";
+    import { passwordStrength } from "check-password-strength";
     import { Message } from "$components";
     import { page } from "$app/stores";
+
+    /* Variables */
+    let signupMode = false;
+    let password: string;
 
     /* Messages */
     let messageList: MessageContent[] = [];
@@ -17,6 +22,17 @@
         ];
     }
 
+    if ($page.url.searchParams.has("not-strong-pass")) {
+        messageList = [
+            ...messageList,
+            {
+                title: "Error",
+                content: "The password in not strong enough.",
+                type: "error",
+            },
+        ];
+    }
+
     const closeDialogue = (messageContent: MessageContent) => {
         const index = messageList.indexOf(messageContent);
 
@@ -27,36 +43,99 @@
             ];
         }
     };
+
+    /* Password Strength */
+    $: strength = passwordStrength(password);
 </script>
 
 <section>
-    <div class="login">
-        <div class="container header">
-            <h2>Login</h2>
+    {#if !signupMode}
+        <div class="login">
+            <div class="container header">
+                <h2>Login</h2>
+            </div>
+            <form class="container" action="?/login" method="post">
+                <div class="input">
+                    <input
+                        type="text"
+                        name="username"
+                        placeholder="Username"
+                        required={true}
+                    />
+                </div>
+                <div class="input">
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        required={true}
+                    />
+                </div>
+                <button class="btn submit">
+                    <i class="material-symbols-outlined">key</i>
+                    <p>Login</p>
+                </button>
+            </form>
         </div>
-        <form class="container" action="?/login" method="post">
-            <div class="input">
-                <input
-                    type="text"
-                    name="username"
-                    placeholder="Username"
-                    required={true}
-                />
+        <button class="btn mode" on:click={() => (signupMode = true)}>
+            <p>Create a new account</p>
+        </button>
+    {:else}
+        <div class="login">
+            <div class="container header">
+                <h2>Sign up</h2>
             </div>
-            <div class="input">
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    required={true}
-                />
-            </div>
-            <button class="btn submit">
-                <i class="material-symbols-outlined">key</i>
-                <p>Login</p>
-            </button>
-        </form>
-    </div>
+            <form class="container" action="?/register" method="post">
+                <div class="input">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Display name"
+                        required={true}
+                    />
+                </div>
+                <div class="input">
+                    <input
+                        type="text"
+                        name="username"
+                        placeholder="Username"
+                        required={true}
+                    />
+                </div>
+                <div class="input">
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        required={true}
+                        bind:value={password}
+                    />
+                </div>
+                <ul>
+                    <li class:valid={strength.length >= 8}>8 characters</li>
+                    <li class:valid={strength.contains.includes("number")}>
+                        1 number
+                    </li>
+                    <li class:valid={strength.contains.includes("lowercase")}>
+                        1 lowercase
+                    </li>
+                    <li class:valid={strength.contains.includes("uppercase")}>
+                        1 uppercase
+                    </li>
+                    <li class:valid={strength.contains.includes("symbol")}>
+                        1 symbol
+                    </li>
+                </ul>
+                <button class="btn submit">
+                    <i class="material-symbols-outlined">key</i>
+                    <p>Sign up</p>
+                </button>
+            </form>
+        </div>
+        <button class="btn mode" on:click={() => (signupMode = false)}>
+            <p>Already have an account?</p>
+        </button>
+    {/if}
 </section>
 {#if messageList.length > 0}
     <div class="message-tray">
@@ -75,7 +154,7 @@
         align-items: start;
         align-content: stretch;
         justify-content: start;
-        gap: 1.5rem;
+        gap: 0.5rem;
         width: 100%;
         height: 100%;
     }
@@ -147,9 +226,28 @@
         gap: 0.75rem;
     }
 
+    .mode {
+        background: none;
+    }
+
     /* Elements */
     .btn {
         font-size: 1rem;
+    }
+
+    ul {
+        list-style-position: inside;
+        list-style-type: disc;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        color: var(--color-accent-yellow);
+    }
+
+    .valid {
+        color: var(--color-text-white);
     }
 
     .submit {
@@ -160,5 +258,12 @@
     i {
         width: auto;
         font-size: 1.5rem;
+    }
+
+    .mode > p {
+        background-color: var(--color-primary-black);
+        padding: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 </style>

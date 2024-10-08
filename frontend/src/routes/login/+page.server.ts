@@ -66,7 +66,7 @@ export const actions: Actions = {
             sessionStore.set(result.token);
         } else {
             console.error(result.error);
-            throw redirect(303, "/login?invalid-creds");
+            throw redirect(303, "/login?not-strong-pass");
         }
 
         throw redirect(303, "/");

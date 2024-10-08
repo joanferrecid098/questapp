@@ -261,10 +261,11 @@
 
     .btn {
         cursor: pointer;
-        height: 3rem;
+        height: 2.375rem;
         width: 100%;
-        padding: 1rem 1.5rem;
+        padding: 0.5rem 1rem;
         box-sizing: border-box;
+        font-size: 1rem;
 
         display: flex;
         flex-direction: row;
@@ -297,10 +298,6 @@
     .empty {
         font-size: 1rem;
         font-style: italic;
-    }
-
-    .btn {
-        font-size: 1.25rem;
     }
 
     .create > p {
