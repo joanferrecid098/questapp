@@ -1,4 +1,11 @@
-import { GroupRow, QuestionRow, UserRow, VoteRow } from "../interfaces/models";
+import {
+    GroupRow,
+    InviteRow,
+    MembershipRow,
+    QuestionRow,
+    UserRow,
+    VoteRow,
+} from "../interfaces/models";
 import { Request, Response } from "express";
 import { ResultSetHeader } from "mysql2";
 import db from "../connection";
@@ -289,6 +296,62 @@ export const removeUser = async (req: Request, res: Response) => {
             error: "Type is not compatible.",
         });
         return;
+    }
+};
+
+export const joinGroup = async (req: Request, res: Response) => {
+    const { uuid } = req.params;
+    const { id } = req.user;
+
+    if (!uuid) {
+        res.status(400).json({
+            error: "All fields are required.",
+        });
+        return;
+    }
+
+    const inviteQuery = "SELECT group_id FROM invites WHERE uuid = ?";
+    const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
+
+    const invite = await db
+        .query<InviteRow[]>(inviteQuery, [uuid])
+        .catch((err) => {
+            res.status(400).json({ error: err });
+            return;
+        });
+
+    if (!invite || invite[0].length !== 1) {
+        res.status(400).json({
+            error: "Invite not found.",
+        });
+        return;
+    }
+
+    const membership = await db
+        .query<ResultSetHeader>(membershipQuery, [id, invite[0][0].group_id])
+        .catch((err) => {
+            res.status(400).json({ error: err });
+            return;
+        });
+
+    if (!membership) {
+        res.status(400).json({
+            error: "There was an error while joining the group.",
+        });
+        return;
+    }
+
+    try {
+        res.status(200).json(membership[0]);
+        return;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+            return;
+        } else {
+            res.status(400).json({ error: "Internal server error." });
+            return;
+        }
     }
 };
 

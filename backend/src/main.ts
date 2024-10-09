@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
@@ -21,6 +22,7 @@ const unless = (
 };
 
 app.use(express.json());
+app.use(cors());
 app.use((req, res, next) => {
     console.log("Connection to: " + req.path + " With method: " + req.method);
     next();
