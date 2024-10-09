@@ -76,6 +76,17 @@
         ];
     }
 
+    if ($page.url.searchParams.has("join-group")) {
+        messageList = [
+            ...messageList,
+            {
+                title: "Success",
+                content: "Successfully joined group.",
+                type: "info",
+            },
+        ];
+    }
+
     const closeDialogue = (messageContent: MessageContent) => {
         const index = messageList.indexOf(messageContent);
 

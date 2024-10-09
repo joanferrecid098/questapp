@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { createGroup, getNotifications, getUserStats } from "$scripts/api";
     import type { MessageContent } from "$interfaces/components";
     import { getRelativeDate } from "$scripts/dates";
     import { goto } from "$app/navigation";
@@ -10,13 +9,22 @@
         CreateGroup,
         Message,
     } from "$components";
+    import {
+        acceptInvite,
+        createGroup,
+        getNotifications,
+        getUserStats,
+    } from "$scripts/api";
     import type {
         GroupDetails,
         GroupStats,
         UserStats,
     } from "$interfaces/models";
+    import JoinGroup from "$components/Groups/JoinGroup.svelte";
 
+    /* Variables */
     let createGroupActive: boolean = false;
+    let joinGroupActive: boolean = false;
 
     /* API Responses */
     let userStats: UserStats;
@@ -98,6 +106,38 @@
                 ];
             });
     };
+
+    const joinGroup = async (invite_id: string) => {
+        if (!invite_id) {
+            joinGroupActive = false;
+            return;
+        }
+
+        await acceptInvite(invite_id)
+            .then((response) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Success",
+                        content: "Successfully joined group.",
+                        type: "info",
+                    },
+                ];
+
+                joinGroupActive = false;
+                goto("/groups/" + response.groupId + "?join-group");
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
+    };
 </script>
 
 <svelte:head>
@@ -125,7 +165,7 @@
                 <i class="material-symbols-outlined">add</i>
                 <p>Create your first group</p>
             </button>
-            <button class="btn join" on:click={() => alert(2)}>
+            <button class="btn join" on:click={() => (joinGroupActive = true)}>
                 <i class="material-symbols-outlined">add</i>
                 <p>Join a group</p>
             </button>
@@ -182,6 +222,9 @@
 </section>
 {#if createGroupActive}
     <CreateGroup {saveGroup} />
+{/if}
+{#if joinGroupActive}
+    <JoinGroup {joinGroup} />
 {/if}
 {#if messageList.length > 0}
     <div class="message-tray">

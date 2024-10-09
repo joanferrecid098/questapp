@@ -350,7 +350,10 @@ export const joinGroup = async (req: Request, res: Response) => {
     }
 
     try {
-        res.status(200).json(membership[0]);
+        res.status(200).json({
+            ...membership[0],
+            groupId: invite[0][0].group_id,
+        });
         return;
     } catch (err: unknown) {
         if (err instanceof Error) {

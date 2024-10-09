@@ -6,7 +6,7 @@
     let invite_id: string;
     let errorMessage = false;
 
-    $: errorMessage = testIdRegex(invite_id);
+    $: errorMessage = !testIdRegex(invite_id);
 
     const testIdRegex = (invite_id: string) => {
         const regexCheck = new RegExp(
@@ -14,11 +14,21 @@
         );
 
         if (!invite_id) {
-            return false;
-        } else if (regexCheck.test(invite_id)) {
-            return false;
-        } else {
             return true;
+        } else if (regexCheck.test(invite_id)) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    const handleSubmit = async () => {
+        console.log(invite_id);
+
+        if (testIdRegex(invite_id)) {
+            await joinGroup(invite_id);
+        } else {
+            errorMessage = true;
         }
     };
 </script>
@@ -26,7 +36,7 @@
 <Popup closeMethod={joinGroup}>
     <div class="container header">
         <h2>Join a group</h2>
-        <button on:click={() => joinGroup(invite_id)}>
+        <button on:click={() => handleSubmit()}>
             <i class="material-symbols-outlined">send</i>
         </button>
     </div>

@@ -2,7 +2,7 @@
     import { GroupElement, CreateGroup, JoinGroup, Message } from "$components";
     import type { MessageContent } from "$interfaces/components";
     import type { GroupDetails } from "$interfaces/models";
-    import { createGroup, getGroups } from "$scripts/api";
+    import { acceptInvite, createGroup, getGroups } from "$scripts/api";
     import { onDestroy, onMount } from "svelte";
     import { goto } from "$app/navigation";
     import {
@@ -64,17 +64,36 @@
             });
     };
 
-    const joinGroup = (invite_id: string) => {
+    const joinGroup = async (invite_id: string) => {
         if (!invite_id) {
             joinGroupActive = false;
             return;
         }
 
-        // SEND API REQUEST
-        joinGroupActive = false;
+        await acceptInvite(invite_id)
+            .then((response) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Success",
+                        content: "Successfully joined group.",
+                        type: "info",
+                    },
+                ];
 
-        console.log("join group with following invite id:");
-        console.log(invite_id);
+                joinGroupActive = false;
+                goto("/groups/" + response.groupId + "?join-group");
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
     };
 
     /* Search Stores */
