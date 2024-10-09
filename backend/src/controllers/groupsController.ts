@@ -310,8 +310,9 @@ export const joinGroup = async (req: Request, res: Response) => {
         return;
     }
 
-    const inviteQuery = "SELECT group_id FROM invites WHERE uuid = ?";
+    const inviteQuery = "SELECT id, group_id FROM invites WHERE uuid = ?";
     const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
+    const deleteQuery = "DELETE FROM invites WHERE id = ?";
 
     const invite = await db
         .query<InviteRow[]>(inviteQuery, [uuid])
@@ -334,7 +335,14 @@ export const joinGroup = async (req: Request, res: Response) => {
             return;
         });
 
-    if (!membership) {
+    const inviteDelete = await db
+        .query<ResultSetHeader>(deleteQuery, [invite[0][0].id])
+        .catch((err) => {
+            res.status(400).json({ error: err });
+            return;
+        });
+
+    if (!membership || !inviteDelete || inviteDelete[0].affectedRows != 1) {
         res.status(400).json({
             error: "There was an error while joining the group.",
         });
