@@ -163,56 +163,41 @@ export const getUserInfo = async (req: Request, res: Response) => {
 export const getUserStats = async (req: Request, res: Response) => {
     const { id } = req.user;
 
-    const userQuery = "SELECT streak FROM users WHERE id = ?";
-
-    const membershipQuery =
-        "SELECT (SELECT COUNT(*) FROM memberships WHERE user_id = ?) AS joined_groups, (SELECT COUNT(*) FROM groups WHERE owner_id = ?) AS owned_groups FROM dual";
-
-    const votesQuery =
-        "SELECT votes.id, question, group_id, from_id, to_id, date FROM questions INNER JOIN votes ON questions.id = votes.question_id WHERE date = CURDATE();";
-
-    const streak = await db.query<UserRow[]>(userQuery, [id]).catch((err) => {
-        res.status(400).json({ error: err });
-        return;
-    });
-
-    const counts = await db
-        .query<RowDataPacket[]>(membershipQuery, [id, id])
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-
-    const votes = await db
-        .query<RowDataPacket[]>(votesQuery, [id, id])
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-
-    if (!streak || !counts || !votes) {
-        res.status(400).json({
-            error: "There was an error while getting the statistics.",
-        });
-        return;
-    }
-
-    if (streak[0].length < 1) {
-        res.status(404).json({ error: "User not found." });
-        return;
-    }
-
     try {
-        const allVotes = votes[0];
-        const userVotes = votes[0].filter(
-            (vote) => vote.to_id.toString() === id
-        );
+        const streakQuery = "SELECT streak FROM users WHERE id = ?";
+        const [streak] = await db.query<UserRow[]>(streakQuery, [id]);
+
+        const membershipQuery =
+            "SELECT (SELECT COUNT(*) FROM memberships WHERE user_id = ?) AS joined_groups, (SELECT COUNT(*) FROM groups WHERE owner_id = ?) AS owned_groups FROM dual";
+        const [counts] = await db.query<RowDataPacket[]>(membershipQuery, [
+            id,
+            id,
+        ]);
+
+        const votesQuery =
+            "SELECT votes.id, question, group_id, from_id, to_id, date FROM questions INNER JOIN votes ON questions.id = votes.question_id WHERE date = CURDATE();";
+        const [votes] = await db.query<RowDataPacket[]>(votesQuery, [id, id]);
+
+        if (!streak || !counts || !votes) {
+            res.status(400).json({
+                error: "There was an error while getting the statistics.",
+            });
+            return;
+        }
+
+        if (streak.length < 1) {
+            res.status(404).json({ error: "User not found." });
+            return;
+        }
+
+        const allVotes = votes;
+        const userVotes = votes.filter((vote) => vote.to_id.toString() === id);
 
         res.status(200).json([
             {
-                streak: streak[0][0].streak,
-                joinedGroups: counts[0][0].joined_groups,
-                ownedGroups: counts[0][0].owned_groups,
+                streak: streak[0].streak,
+                joinedGroups: counts[0].joined_groups,
+                ownedGroups: counts[0].owned_groups,
                 votes: {
                     votedPercentage:
                         (userVotes.length / allVotes.length || 0) * 100,
@@ -222,9 +207,14 @@ export const getUserStats = async (req: Request, res: Response) => {
             },
         ]);
         return;
-    } catch (err) {
-        res.status(400).json({ error: err });
-        return;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+            return;
+        } else {
+            res.status(400).json({ error: "Internal server error." });
+            return;
+        }
     }
 };
 

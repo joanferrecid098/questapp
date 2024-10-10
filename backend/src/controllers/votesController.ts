@@ -38,29 +38,30 @@ export const submitVote = async (req: Request, res: Response) => {
         return;
     }
 
-    const questionQuery =
-        "SELECT id FROM questions WHERE group_id = ? AND date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
-
-    const insertQuery = "INSERT INTO votes VALUES (NULL, ?, ?, ?)";
-
-    const question = await db
-        .query<RowDataPacket[]>(questionQuery, [group_id, group_id])
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-
-    if (!question) {
-        res.status(400).json({
-            error: "There was an error while getting the question.",
-        });
-        return;
-    }
-
-    let question_id: number;
-
     try {
-        question_id = question[0][0].id;
+        const questionQuery =
+            "SELECT id FROM questions WHERE group_id = ? AND date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        const [question] = await db.query<RowDataPacket[]>(questionQuery, [
+            group_id,
+            group_id,
+        ]);
+
+        if (!question) {
+            res.status(400).json({
+                error: "There was an error while getting the question.",
+            });
+            return;
+        }
+
+        const insertQuery = "INSERT INTO votes VALUES (NULL, ?, ?, ?)";
+        const [insert] = await db.query(insertQuery, [
+            req.user.id,
+            to_id,
+            question[0].id,
+        ]);
+
+        res.status(200).json(insert);
+        return;
     } catch (err: unknown) {
         if (err instanceof Error) {
             res.status(400).json({ error: err.message });
@@ -70,17 +71,6 @@ export const submitVote = async (req: Request, res: Response) => {
             return;
         }
     }
-
-    await db
-        .query(insertQuery, [req.user.id, to_id, question_id])
-        .then((result) => {
-            res.status(200).json(result[0]);
-            return;
-        })
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
 };
 
 export const updateVote = async (req: Request, res: Response) => {
