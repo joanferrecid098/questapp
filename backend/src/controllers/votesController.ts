@@ -39,8 +39,12 @@ export const submitVote = async (req: Request, res: Response) => {
     }
 
     try {
-        const questionQuery = "SELECT id FROM questions WHERE group_id = ? AND date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
-        const [question] = await db.query<RowDataPacket[]>(questionQuery, [group_id, group_id]);
+        const questionQuery =
+            "SELECT id FROM questions WHERE group_id = ? AND date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        const [question] = await db.query<RowDataPacket[]>(questionQuery, [
+            group_id,
+            group_id,
+        ]);
 
         if (!question) {
             res.status(400).json({
@@ -50,7 +54,11 @@ export const submitVote = async (req: Request, res: Response) => {
         }
 
         const insertQuery = "INSERT INTO votes VALUES (NULL, ?, ?, ?)";
-        const [insert] = await db.query(insertQuery, [req.user.id, to_id, question[0][0].id]);
+        const [insert] = await db.query(insertQuery, [
+            req.user.id,
+            to_id,
+            question[0].id,
+        ]);
 
         res.status(200).json(insert);
         return;
@@ -63,7 +71,7 @@ export const submitVote = async (req: Request, res: Response) => {
             return;
         }
     }
-}
+};
 
 export const updateVote = async (req: Request, res: Response) => {
     const { to_id, question_id } = req.body;

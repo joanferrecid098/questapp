@@ -167,10 +167,15 @@ export const getUserStats = async (req: Request, res: Response) => {
         const streakQuery = "SELECT streak FROM users WHERE id = ?";
         const [streak] = await db.query<UserRow[]>(streakQuery, [id]);
 
-        const membershipQuery = "SELECT (SELECT COUNT(*) FROM memberships WHERE user_id = ?) AS joined_groups, (SELECT COUNT(*) FROM groups WHERE owner_id = ?) AS owned_groups FROM dual";
-        const [counts] = await db.query<RowDataPacket[]>(membershipQuery, [id, id]);
+        const membershipQuery =
+            "SELECT (SELECT COUNT(*) FROM memberships WHERE user_id = ?) AS joined_groups, (SELECT COUNT(*) FROM groups WHERE owner_id = ?) AS owned_groups FROM dual";
+        const [counts] = await db.query<RowDataPacket[]>(membershipQuery, [
+            id,
+            id,
+        ]);
 
-        const votesQuery = "SELECT votes.id, question, group_id, from_id, to_id, date FROM questions INNER JOIN votes ON questions.id = votes.question_id WHERE date = CURDATE();";
+        const votesQuery =
+            "SELECT votes.id, question, group_id, from_id, to_id, date FROM questions INNER JOIN votes ON questions.id = votes.question_id WHERE date = CURDATE();";
         const [votes] = await db.query<RowDataPacket[]>(votesQuery, [id, id]);
 
         if (!streak || !counts || !votes) {
@@ -186,9 +191,7 @@ export const getUserStats = async (req: Request, res: Response) => {
         }
 
         const allVotes = votes;
-        const userVotes = votes.filter(
-            (vote) => vote.to_id.toString() === id
-        );
+        const userVotes = votes.filter((vote) => vote.to_id.toString() === id);
 
         res.status(200).json([
             {

@@ -1,14 +1,13 @@
+import { Request, Response } from "express";
+import { ResultSetHeader } from "mysql2";
+import db from "../connection";
 import {
     GroupRow,
     InviteRow,
-    MembershipRow,
     QuestionRow,
     UserRow,
     VoteRow,
 } from "../interfaces/models";
-import { Request, Response } from "express";
-import { ResultSetHeader } from "mysql2";
-import db from "../connection";
 
 // Group Details
 export const getGroups = async (req: Request, res: Response) => {
@@ -35,11 +34,17 @@ export const getGroup = async (req: Request, res: Response) => {
     }
 
     try {
-        const infoQuery = "SELECT groups.id, groups.name, users.name AS owner, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id INNER JOIN users ON groups.owner_id = users.id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        const infoQuery =
+            "SELECT groups.id, groups.name, users.name AS owner, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id INNER JOIN users ON groups.owner_id = users.id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
         const [info] = await db.query<GroupRow[]>(infoQuery, [id, id]);
 
-        const votedQuery = "SELECT votes.id FROM votes INNER JOIN questions ON votes.question_id = questions.id WHERE votes.from_id = ? AND questions.group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
-        const [voted] = await db.query<VoteRow[]>(votedQuery, [req.user.id, id, id])
+        const votedQuery =
+            "SELECT votes.id FROM votes INNER JOIN questions ON votes.question_id = questions.id WHERE votes.from_id = ? AND questions.group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        const [voted] = await db.query<VoteRow[]>(votedQuery, [
+            req.user.id,
+            id,
+            id,
+        ]);
 
         if (!info || !voted) {
             res.status(400).json({
@@ -57,7 +62,7 @@ export const getGroup = async (req: Request, res: Response) => {
             },
         ];
 
-        if (info[0].length >= 1) {
+        if (info.length >= 1) {
             res.status(200).json(infoWithVoted);
             return;
         } else {
@@ -96,7 +101,10 @@ export const createGroup = async (req: Request, res: Response) => {
         }
 
         const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
-        const [membership] = await db.query<ResultSetHeader>(membershipQuery, [id, group.insertId]);
+        const [membership] = await db.query<ResultSetHeader>(membershipQuery, [
+            id,
+            group.insertId,
+        ]);
 
         if (!membership || !membership.insertId || group.insertId === 0) {
             res.status(400).json({
@@ -177,10 +185,12 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 
     try {
-        const usersQuery = "SELECT users.id, user_id, group_id, name, streak, username FROM memberships INNER JOIN users ON users.id = memberships.user_id WHERE memberships.group_id = ?";
+        const usersQuery =
+            "SELECT users.id, user_id, group_id, name, streak, username FROM memberships INNER JOIN users ON users.id = memberships.user_id WHERE memberships.group_id = ?";
         const [users] = await db.query<UserRow[]>(usersQuery, [id]);
 
-        const votesQuery = "SELECT questions.id, date, from_id, to_id FROM questions INNER JOIN votes ON votes.question_id = questions.id WHERE group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        const votesQuery =
+            "SELECT questions.id, date, from_id, to_id FROM questions INNER JOIN votes ON votes.question_id = questions.id WHERE group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
         const [votes] = await db.query<VoteRow[]>(votesQuery, [id, id]);
 
         if (!users || !votes) {
@@ -234,7 +244,8 @@ export const removeUser = async (req: Request, res: Response) => {
     }
 
     if (typeof user_id === "string" || typeof user_id === "number") {
-        const query = "DELETE FROM memberships WHERE user_id = ? AND group_id = ?";
+        const query =
+            "DELETE FROM memberships WHERE user_id = ? AND group_id = ?";
 
         await db
             .query(query, [user_id, group_id])
@@ -247,8 +258,9 @@ export const removeUser = async (req: Request, res: Response) => {
                 return;
             });
     } else if (Array.isArray(user_id)) {
-        const query = "DELETE FROM memberships WHERE user_id IN (?) AND group_id = ?";
-        
+        const query =
+            "DELETE FROM memberships WHERE user_id IN (?) AND group_id = ?";
+
         await db
             .query(query, [user_id, group_id])
             .then((result) => {
@@ -328,7 +340,7 @@ export const joinGroup = async (req: Request, res: Response) => {
         const inviteQuery = "SELECT id, group_id FROM invites WHERE uuid = ?";
         const [invite] = await db.query<InviteRow[]>(inviteQuery, [uuid]);
 
-        if (!invite || invite[0].length !== 1) {
+        if (!invite || invite.length !== 1) {
             res.status(404).json({
                 error: "Invite not found.",
             });
@@ -336,10 +348,15 @@ export const joinGroup = async (req: Request, res: Response) => {
         }
 
         const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
-        const [membership] = await db.query<ResultSetHeader>(membershipQuery, [id, invite[0][0].group_id]);
+        const [membership] = await db.query<ResultSetHeader>(membershipQuery, [
+            id,
+            invite[0].group_id,
+        ]);
 
         const deleteQuery = "DELETE FROM invites WHERE id = ?";
-        const [inviteDelete] = await db.query<ResultSetHeader>(deleteQuery, [invite[0][0].id]);
+        const [inviteDelete] = await db.query<ResultSetHeader>(deleteQuery, [
+            invite[0].id,
+        ]);
 
         if (!membership || !inviteDelete || inviteDelete.affectedRows != 1) {
             res.status(400).json({
