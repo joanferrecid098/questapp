@@ -34,39 +34,25 @@ export const getGroup = async (req: Request, res: Response) => {
         return;
     }
 
-    const infoQuery =
-        "SELECT groups.id, groups.name, users.name AS owner, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id INNER JOIN users ON groups.owner_id = users.id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
-
-    const votedQuery =
-        "SELECT votes.id FROM votes INNER JOIN questions ON votes.question_id = questions.id WHERE votes.from_id = ? AND questions.group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
-
-    const info = await db
-        .query<GroupRow[]>(infoQuery, [id, id])
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-
-    const voted = await db
-        .query<VoteRow[]>(votedQuery, [req.user.id, id, id])
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-
-    if (!info || !voted) {
-        res.status(400).json({
-            error: "There was an error while getting the statistics.",
-        });
-        return;
-    }
-
     try {
-        const hasVoted = voted[0].length > 0 ? true : false;
+        const infoQuery = "SELECT groups.id, groups.name, users.name AS owner, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id INNER JOIN users ON groups.owner_id = users.id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        const [info] = await db.query<GroupRow[]>(infoQuery, [id, id]);
+
+        const votedQuery = "SELECT votes.id FROM votes INNER JOIN questions ON votes.question_id = questions.id WHERE votes.from_id = ? AND questions.group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        const [voted] = await db.query<VoteRow[]>(votedQuery, [req.user.id, id, id])
+
+        if (!info || !voted) {
+            res.status(400).json({
+                error: "There was an error while getting the statistics.",
+            });
+            return;
+        }
+
+        const hasVoted = voted.length > 0 ? true : false;
 
         const infoWithVoted = [
             {
-                ...info[0][0],
+                ...info[0],
                 hasVoted: hasVoted,
             },
         ];
@@ -80,11 +66,9 @@ export const getGroup = async (req: Request, res: Response) => {
         }
     } catch (err: unknown) {
         if (err instanceof Error) {
-            res.status(400).json({ error: err.message });
-            return;
+            return res.status(400).json({ error: err.message });
         } else {
-            res.status(400).json({ error: "Internal server error." });
-            return;
+            return res.status(400).json({ error: "Internal server error." });
         }
     }
 };
@@ -100,39 +84,36 @@ export const createGroup = async (req: Request, res: Response) => {
         return;
     }
 
-    const groupQuery = "INSERT INTO groups VALUES (NULL, ?, ?)";
-    const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
+    try {
+        const groupQuery = "INSERT INTO groups VALUES (NULL, ?, ?)";
+        const [group] = await db.query<ResultSetHeader>(groupQuery, [name, id]);
 
-    const group = await db
-        .query<ResultSetHeader>(groupQuery, [name, id])
-        .catch((err) => {
-            res.status(400).json({ error: err });
+        if (!group || !group.insertId || group.insertId === 0) {
+            res.status(400).json({
+                error: "There was an error while creating the group.",
+            });
             return;
-        });
+        }
 
-    if (!group || !group[0].insertId || group[0].insertId === 0) {
-        res.status(400).json({
-            error: "There was an error while creating the group.",
-        });
-        return;
-    }
+        const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
+        const [membership] = await db.query<ResultSetHeader>(membershipQuery, [id, group.insertId]);
 
-    const membership = await db
-        .query<ResultSetHeader>(membershipQuery, [id, group[0].insertId])
-        .catch((err) => {
-            res.status(400).json({ error: err });
+        if (!membership || !membership.insertId || group.insertId === 0) {
+            res.status(400).json({
+                error: "There was an error while creating the group membership.",
+            });
             return;
-        });
+        }
 
-    if (!membership || !membership[0].insertId || group[0].insertId === 0) {
-        res.status(400).json({
-            error: "There was an error while creating the group membership.",
-        });
+        res.status(200).json(group);
         return;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            return res.status(400).json({ error: err.message });
+        } else {
+            return res.status(400).json({ error: "Internal server error." });
+        }
     }
-
-    res.status(200).json(group[0]);
-    return;
 };
 
 export const updateGroup = async (req: Request, res: Response) => {
@@ -195,38 +176,26 @@ export const getUsers = async (req: Request, res: Response) => {
         return;
     }
 
-    const usersQuery =
-        "SELECT users.id, user_id, group_id, name, streak, username FROM memberships INNER JOIN users ON users.id = memberships.user_id WHERE memberships.group_id = ?";
-
-    const votesQuery =
-        "SELECT questions.id, date, from_id, to_id FROM questions INNER JOIN votes ON votes.question_id = questions.id WHERE group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
-
-    const users = await db.query<UserRow[]>(usersQuery, [id]).catch((err) => {
-        res.status(400).json({ error: err });
-        return;
-    });
-
-    const votes = await db
-        .query<VoteRow[]>(votesQuery, [id, id])
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-
-    if (!users || !votes) {
-        res.status(400).json({
-            error: "There was an error while getting the statistics.",
-        });
-        return;
-    }
-
-    if (users[0].length < 1) {
-        res.status(404).json({ error: "Group not found." });
-        return;
-    }
-
     try {
-        const voteCounts = votes[0].reduce((acc, vote) => {
+        const usersQuery = "SELECT users.id, user_id, group_id, name, streak, username FROM memberships INNER JOIN users ON users.id = memberships.user_id WHERE memberships.group_id = ?";
+        const [users] = await db.query<UserRow[]>(usersQuery, [id]);
+
+        const votesQuery = "SELECT questions.id, date, from_id, to_id FROM questions INNER JOIN votes ON votes.question_id = questions.id WHERE group_id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+        const [votes] = await db.query<VoteRow[]>(votesQuery, [id, id]);
+
+        if (!users || !votes) {
+            res.status(400).json({
+                error: "There was an error while getting the statistics.",
+            });
+            return;
+        }
+
+        if (users.length < 1) {
+            res.status(404).json({ error: "Group not found." });
+            return;
+        }
+
+        const voteCounts = votes.reduce((acc, vote) => {
             if (acc[vote.to_id]) {
                 acc[vote.to_id]++;
             } else {
@@ -236,7 +205,7 @@ export const getUsers = async (req: Request, res: Response) => {
             return acc;
         }, {} as Record<number, number>);
 
-        const usersWithVotes = users[0].map((user) => ({
+        const usersWithVotes = users.map((user) => ({
             ...user,
             voteCount: voteCounts[user.id] || 0,
         }));
@@ -264,14 +233,11 @@ export const removeUser = async (req: Request, res: Response) => {
         return;
     }
 
-    const singleQuery =
-        "DELETE FROM memberships WHERE user_id = ? AND group_id = ?";
-    const multipleQuery =
-        "DELETE FROM memberships WHERE user_id IN (?) AND group_id = ?";
-
     if (typeof user_id === "string" || typeof user_id === "number") {
+        const query = "DELETE FROM memberships WHERE user_id = ? AND group_id = ?";
+
         await db
-            .query(singleQuery, [user_id, group_id])
+            .query(query, [user_id, group_id])
             .then((result) => {
                 res.status(200).json(result[0]);
                 return;
@@ -281,8 +247,10 @@ export const removeUser = async (req: Request, res: Response) => {
                 return;
             });
     } else if (Array.isArray(user_id)) {
+        const query = "DELETE FROM memberships WHERE user_id IN (?) AND group_id = ?";
+        
         await db
-            .query(multipleQuery, [user_id, group_id])
+            .query(query, [user_id, group_id])
             .then((result) => {
                 res.status(200).json(result[0]);
                 return;
@@ -356,49 +324,33 @@ export const joinGroup = async (req: Request, res: Response) => {
         return;
     }
 
-    const inviteQuery = "SELECT id, group_id FROM invites WHERE uuid = ?";
-    const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
-    const deleteQuery = "DELETE FROM invites WHERE id = ?";
-
-    const invite = await db
-        .query<InviteRow[]>(inviteQuery, [uuid])
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-
-    if (!invite || invite[0].length !== 1) {
-        res.status(404).json({
-            error: "Invite not found.",
-        });
-        return;
-    }
-
-    const membership = await db
-        .query<ResultSetHeader>(membershipQuery, [id, invite[0][0].group_id])
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-
-    const inviteDelete = await db
-        .query<ResultSetHeader>(deleteQuery, [invite[0][0].id])
-        .catch((err) => {
-            res.status(400).json({ error: err });
-            return;
-        });
-
-    if (!membership || !inviteDelete || inviteDelete[0].affectedRows != 1) {
-        res.status(400).json({
-            error: "There was an error while joining the group.",
-        });
-        return;
-    }
-
     try {
+        const inviteQuery = "SELECT id, group_id FROM invites WHERE uuid = ?";
+        const [invite] = await db.query<InviteRow[]>(inviteQuery, [uuid]);
+
+        if (!invite || invite[0].length !== 1) {
+            res.status(404).json({
+                error: "Invite not found.",
+            });
+            return;
+        }
+
+        const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
+        const [membership] = await db.query<ResultSetHeader>(membershipQuery, [id, invite[0][0].group_id]);
+
+        const deleteQuery = "DELETE FROM invites WHERE id = ?";
+        const [inviteDelete] = await db.query<ResultSetHeader>(deleteQuery, [invite[0][0].id]);
+
+        if (!membership || !inviteDelete || inviteDelete.affectedRows != 1) {
+            res.status(400).json({
+                error: "There was an error while joining the group.",
+            });
+            return;
+        }
+
         res.status(200).json({
-            ...membership[0],
-            groupId: invite[0][0].group_id,
+            ...membership,
+            groupId: invite[0].group_id,
         });
         return;
     } catch (err: unknown) {
