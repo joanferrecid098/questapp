@@ -299,6 +299,52 @@ export const removeUser = async (req: Request, res: Response) => {
     }
 };
 
+export const createInvite = async (req: Request, res: Response) => {
+    const { group_id } = req.body;
+    const { id } = req.user;
+
+    if (!group_id) {
+        return res.status(400).json({
+            error: "All fields are required.",
+        });
+    }
+
+    try {
+        const insertQuery = "INSERT INTO invites VALUES (NULL, ?, ?, UUID())";
+        const [insert] = await db.query<ResultSetHeader>(insertQuery, [
+            id,
+            group_id,
+        ]);
+
+        if (!insert || insert.affectedRows === 0) {
+            return res.status(400).json({
+                error: "There was an error creating the invite.",
+            });
+        }
+
+        const inviteQuery = "SELECT uuid FROM invites WHERE id = ?";
+        const [invite] = await db.query<InviteRow[]>(inviteQuery, [
+            insert.insertId,
+        ]);
+
+        if (!invite || invite.length === 0) {
+            return res.status(400).json({
+                error: "There was an error retrieving the invite.",
+            });
+        }
+
+        return res.status(200).json({
+            invite_uuid: invite[0].uuid,
+        });
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            return res.status(400).json({ error: err.message });
+        } else {
+            return res.status(400).json({ error: "Internal server error." });
+        }
+    }
+};
+
 export const joinGroup = async (req: Request, res: Response) => {
     const { uuid } = req.params;
     const { id } = req.user;
@@ -322,7 +368,7 @@ export const joinGroup = async (req: Request, res: Response) => {
         });
 
     if (!invite || invite[0].length !== 1) {
-        res.status(400).json({
+        res.status(404).json({
             error: "Invite not found.",
         });
         return;

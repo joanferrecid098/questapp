@@ -12,6 +12,7 @@ import {
     removeUser,
     getQuestion,
     joinGroup,
+    createInvite,
 } from "../controllers/groupsController";
 
 // REST API Endpoints
@@ -23,6 +24,7 @@ router.delete("/group/:id", removeGroup);
 
 router.get("/users/:id", getUsers);
 router.delete("/users", removeUser);
+router.post("/invite", createInvite);
 router.post("/invite/:uuid", joinGroup);
 
 router.get("/question/:id", getQuestion);
