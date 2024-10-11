@@ -11,8 +11,13 @@ import {
 
 // Group Details
 export const getGroups = async (req: Request, res: Response) => {
+    const { id } = req.user;
+
+    const query =
+        "SELECT id, name, owner_id FROM groups WHERE groups.id IN (SELECT group_id FROM memberships WHERE user_id = ?)";
+
     await db
-        .query("SELECT id, name, owner_id FROM groups")
+        .query(query, [id])
         .then((result) => {
             res.status(200).json(result[0]);
             return;
@@ -34,6 +39,18 @@ export const getGroup = async (req: Request, res: Response) => {
     }
 
     try {
+        const membershipQuery =
+            "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?;";
+        const [membership] = await db.query<GroupRow[]>(membershipQuery, [
+            id,
+            req.user.id,
+        ]);
+
+        if (membership.length < 1) {
+            res.status(404).json({ error: "Group not found." });
+            return;
+        }
+
         const infoQuery =
             "SELECT groups.id, groups.name, users.name AS owner, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id INNER JOIN users ON groups.owner_id = users.id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
         const [info] = await db.query<GroupRow[]>(infoQuery, [id, id]);
@@ -135,10 +152,11 @@ export const updateGroup = async (req: Request, res: Response) => {
         return;
     }
 
-    const query = "UPDATE groups SET name = ?, owner_id = ? WHERE id = ?";
+    const query =
+        "UPDATE groups SET name = ?, owner_id = ? WHERE id = ? AND owner_id = ?";
 
     await db
-        .query(query, [name, owner, id])
+        .query(query, [name, owner, id, req.user.id])
         .then((result) => {
             res.status(200).json(result[0]);
             return;
@@ -159,10 +177,10 @@ export const removeGroup = async (req: Request, res: Response) => {
         return;
     }
 
-    const query = "DELETE FROM groups WHERE id = ?";
+    const query = "DELETE FROM groups WHERE id = ? AND owner_id = ?";
 
     await db
-        .query(query, [id])
+        .query(query, [id, req.user.id])
         .then((result) => {
             res.status(200).json(result[0]);
             return;
@@ -185,6 +203,25 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 
     try {
+        const joinedQuery =
+            "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?";
+        const [joined] = await db.query<UserRow[]>(joinedQuery, [
+            id,
+            req.user.id,
+        ]);
+
+        if (!joined) {
+            res.status(400).json({
+                error: "There was an error while getting the statistics.",
+            });
+            return;
+        }
+
+        if (joined.length < 1) {
+            res.status(404).json({ error: "Group not found." });
+            return;
+        }
+
         const usersQuery =
             "SELECT users.id, user_id, group_id, name, streak, username FROM memberships INNER JOIN users ON users.id = memberships.user_id WHERE memberships.group_id = ?";
         const [users] = await db.query<UserRow[]>(usersQuery, [id]);
@@ -243,39 +280,52 @@ export const removeUser = async (req: Request, res: Response) => {
         return;
     }
 
-    if (typeof user_id === "string" || typeof user_id === "number") {
-        const query =
-            "DELETE FROM memberships WHERE user_id = ? AND group_id = ?";
+    try {
+        const ownedQuery =
+            "SELECT id FROM groups WHERE id = ? AND owner_id = ?";
+        const [owned] = await db.query<UserRow[]>(ownedQuery, [
+            group_id,
+            req.user.id,
+        ]);
 
-        await db
-            .query(query, [user_id, group_id])
-            .then((result) => {
-                res.status(200).json(result[0]);
-                return;
-            })
-            .catch((err) => {
-                res.status(400).json({ error: err });
-                return;
+        if (!owned) {
+            res.status(400).json({
+                error: "There was an error while removing the user.",
             });
-    } else if (Array.isArray(user_id)) {
-        const query =
-            "DELETE FROM memberships WHERE user_id IN (?) AND group_id = ?";
+            return;
+        }
 
-        await db
-            .query(query, [user_id, group_id])
-            .then((result) => {
-                res.status(200).json(result[0]);
-                return;
-            })
-            .catch((err) => {
-                res.status(400).json({ error: err });
-                return;
+        if (owned.length < 1) {
+            res.status(404).json({ error: "Group not found." });
+            return;
+        }
+
+        if (typeof user_id === "string" || typeof user_id === "number") {
+            const deleteQuery =
+                "DELETE FROM memberships WHERE user_id = ? AND group_id = ?";
+            const [result] = await db.query(deleteQuery, [user_id, group_id]);
+
+            res.status(200).json(result);
+            return;
+        } else if (Array.isArray(user_id)) {
+            const deleteQuery =
+                "DELETE FROM memberships WHERE user_id IN (?) AND group_id = ?";
+            const [result] = await db.query(deleteQuery, [user_id, group_id]);
+
+            res.status(200).json(result);
+            return;
+        } else {
+            res.status(400).json({
+                error: "Type is not compatible.",
             });
-    } else {
-        res.status(400).json({
-            error: "Type is not compatible.",
-        });
-        return;
+            return;
+        }
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            return res.status(400).json({ error: err.message });
+        } else {
+            return res.status(400).json({ error: "Internal server error." });
+        }
     }
 };
 
@@ -347,6 +397,25 @@ export const joinGroup = async (req: Request, res: Response) => {
             return;
         }
 
+        const joinedQuery =
+            "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?";
+        const [joined] = await db.query<UserRow[]>(joinedQuery, [
+            invite[0].group_id,
+            id,
+        ]);
+
+        if (!joined) {
+            res.status(400).json({
+                error: "There was an error while getting the statistics.",
+            });
+            return;
+        }
+
+        if (joined.length > 0) {
+            res.status(400).json({ error: "You are already in the group." });
+            return;
+        }
+
         const membershipQuery = "INSERT INTO memberships VALUES (NULL, ?, ?)";
         const [membership] = await db.query<ResultSetHeader>(membershipQuery, [
             id,
@@ -393,22 +462,47 @@ export const getQuestion = async (req: Request, res: Response) => {
         return;
     }
 
-    const query =
-        "SELECT id, category, question, date FROM questions WHERE group_id = ? AND date = ?";
+    try {
+        const joinedQuery =
+            "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?";
+        const [joined] = await db.query<UserRow[]>(joinedQuery, [
+            id,
+            req.user.id,
+        ]);
 
-    await db
-        .query<QuestionRow[]>(query, [id, date])
-        .then((result) => {
-            if (result[0].length < 1) {
-                res.status(404).json({ error: "Question not found." });
-                return;
-            }
+        if (!joined) {
+            res.status(400).json({
+                error: "There was an error while getting the statistics.",
+            });
+            return;
+        }
 
-            res.status(200).json(result[0]);
+        if (joined.length < 1) {
+            res.status(404).json({ error: "Group not found." });
             return;
-        })
-        .catch((err) => {
-            res.status(400).json({ error: err });
+        }
+
+        const questionQuery =
+            "SELECT id, category, question, date FROM questions WHERE group_id = ? AND date = ?";
+        const [question] = await db.query<QuestionRow[]>(questionQuery, [
+            id,
+            date,
+        ]);
+
+        if (question.length < 1) {
+            res.status(404).json({ error: "Question not found." });
             return;
-        });
+        }
+
+        res.status(200).json(question);
+        return;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+            return;
+        } else {
+            res.status(400).json({ error: "Internal server error." });
+            return;
+        }
+    }
 };
