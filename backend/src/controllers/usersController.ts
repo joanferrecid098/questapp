@@ -1,5 +1,5 @@
+import { NotificationRow, QuestionRow, UserRow } from "../interfaces/models";
 import { signup, login, changePassword } from "../functions/usersManager";
-import { NotificationRow, UserRow } from "../interfaces/models";
 import { Response, Request } from "express";
 import { RowDataPacket } from "mysql2";
 import validator from "validator";
@@ -176,7 +176,7 @@ export const getUserStats = async (req: Request, res: Response) => {
 
         const votesQuery =
             "SELECT votes.id, question, group_id, from_id, to_id, date FROM questions INNER JOIN votes ON questions.id = votes.question_id WHERE date = CURDATE();";
-        const [votes] = await db.query<RowDataPacket[]>(votesQuery, [id, id]);
+        const [votes] = await db.query<QuestionRow[]>(votesQuery, [id, id]);
 
         if (!streak || !counts || !votes) {
             res.status(400).json({

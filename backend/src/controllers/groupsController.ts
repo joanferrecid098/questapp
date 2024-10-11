@@ -4,6 +4,7 @@ import db from "../connection";
 import {
     GroupRow,
     InviteRow,
+    MembershipRow,
     QuestionRow,
     UserRow,
     VoteRow,
@@ -41,7 +42,7 @@ export const getGroup = async (req: Request, res: Response) => {
     try {
         const membershipQuery =
             "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?;";
-        const [membership] = await db.query<GroupRow[]>(membershipQuery, [
+        const [membership] = await db.query<MembershipRow[]>(membershipQuery, [
             id,
             req.user.id,
         ]);
@@ -65,7 +66,7 @@ export const getGroup = async (req: Request, res: Response) => {
 
         if (!info || !voted) {
             res.status(400).json({
-                error: "There was an error while getting the statistics.",
+                error: "There was an error while getting the group.",
             });
             return;
         }
@@ -205,14 +206,14 @@ export const getUsers = async (req: Request, res: Response) => {
     try {
         const joinedQuery =
             "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?";
-        const [joined] = await db.query<UserRow[]>(joinedQuery, [
+        const [joined] = await db.query<MembershipRow[]>(joinedQuery, [
             id,
             req.user.id,
         ]);
 
         if (!joined) {
             res.status(400).json({
-                error: "There was an error while getting the statistics.",
+                error: "There was an error while getting the users.",
             });
             return;
         }
@@ -232,7 +233,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
         if (!users || !votes) {
             res.status(400).json({
-                error: "There was an error while getting the statistics.",
+                error: "There was an error while getting the users.",
             });
             return;
         }
@@ -283,7 +284,7 @@ export const removeUser = async (req: Request, res: Response) => {
     try {
         const ownedQuery =
             "SELECT id FROM groups WHERE id = ? AND owner_id = ?";
-        const [owned] = await db.query<UserRow[]>(ownedQuery, [
+        const [owned] = await db.query<GroupRow[]>(ownedQuery, [
             group_id,
             req.user.id,
         ]);
@@ -303,14 +304,20 @@ export const removeUser = async (req: Request, res: Response) => {
         if (typeof user_id === "string" || typeof user_id === "number") {
             const deleteQuery =
                 "DELETE FROM memberships WHERE user_id = ? AND group_id = ?";
-            const [result] = await db.query(deleteQuery, [user_id, group_id]);
+            const [result] = await db.query<ResultSetHeader>(deleteQuery, [
+                user_id,
+                group_id,
+            ]);
 
             res.status(200).json(result);
             return;
         } else if (Array.isArray(user_id)) {
             const deleteQuery =
                 "DELETE FROM memberships WHERE user_id IN (?) AND group_id = ?";
-            const [result] = await db.query(deleteQuery, [user_id, group_id]);
+            const [result] = await db.query<ResultSetHeader>(deleteQuery, [
+                user_id,
+                group_id,
+            ]);
 
             res.status(200).json(result);
             return;
@@ -399,14 +406,14 @@ export const joinGroup = async (req: Request, res: Response) => {
 
         const joinedQuery =
             "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?";
-        const [joined] = await db.query<UserRow[]>(joinedQuery, [
+        const [joined] = await db.query<MembershipRow[]>(joinedQuery, [
             invite[0].group_id,
             id,
         ]);
 
         if (!joined) {
             res.status(400).json({
-                error: "There was an error while getting the statistics.",
+                error: "There was an error while joining the group.",
             });
             return;
         }
@@ -465,14 +472,14 @@ export const getQuestion = async (req: Request, res: Response) => {
     try {
         const joinedQuery =
             "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?";
-        const [joined] = await db.query<UserRow[]>(joinedQuery, [
+        const [joined] = await db.query<MembershipRow[]>(joinedQuery, [
             id,
             req.user.id,
         ]);
 
         if (!joined) {
             res.status(400).json({
-                error: "There was an error while getting the statistics.",
+                error: "There was an error while getting the question.",
             });
             return;
         }
