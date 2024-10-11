@@ -234,6 +234,18 @@ export const acceptInvite = async (uuid: string) => {
     return response;
 };
 
+export const postInvite = async (group_id: number) => {
+    const response = await send<{ invite_uuid: string }>({
+        method: "POST",
+        path: `/api/groups/invite`,
+        data: {
+            group_id,
+        },
+    });
+
+    return response;
+};
+
 /* Votes */
 export const postVote = async (to_id: number, group_id: number) => {
     const response = await send<GetGroupUsers[]>({

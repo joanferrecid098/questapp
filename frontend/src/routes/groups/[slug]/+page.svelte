@@ -14,6 +14,7 @@
     import {
         getGroup,
         getGroupUsers,
+        postInvite,
         postVote,
         updateGroup,
     } from "$scripts/api";
@@ -146,6 +147,29 @@
         removedUsers.push(userDetails);
     };
 
+    const createInvite = async (id: number) => {
+        let invite_uuid = "Loading";
+
+        await postInvite(id)
+            .then((response) => {
+                invite_uuid = response.invite_uuid;
+            })
+            .catch((error) => {
+                messageList = [
+                    ...messageList,
+                    {
+                        title: "Error",
+                        content: error.message,
+                        type: "error",
+                    },
+                ];
+            });
+
+        return {
+            invite_uuid,
+        };
+    };
+
     /* Intervals */
     const resetInterval = () => {
         clearInterval(interval);
@@ -218,6 +242,7 @@
                     {groupDetails}
                     {submitChanges}
                     {removeUser}
+                    {createInvite}
                 />
             {/if}
         {/if}

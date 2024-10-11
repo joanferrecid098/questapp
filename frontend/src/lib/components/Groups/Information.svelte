@@ -5,11 +5,13 @@
     import { onDestroy } from "svelte";
 
     export let submitChanges;
+    export let createInvite;
     export let removeUser;
 
     export let groupDetails: GroupDetails;
     export let groupUsers: UserDetails[];
 
+    let linkId: string;
     let addMode: boolean;
     let editMode: boolean;
     let name: string = groupDetails.name;
@@ -27,6 +29,16 @@
 
         submitChanges(groupChanges);
         editMode = false;
+    };
+
+    const handleAdd = async () => {
+        if (!linkId) {
+            const { invite_uuid } = await createInvite(groupDetails.id);
+
+            linkId = invite_uuid;
+        }
+
+        addMode = true;
     };
 
     const closeAdd = () => {
@@ -119,14 +131,14 @@
                     </div>
                 {/each}
             </div>
-            <button class="add" on:click={() => (addMode = true)}
+            <button class="add" on:click={() => handleAdd()}
                 ><strong>Add user</strong></button
             >
         </div>
     {/if}
 </div>
 {#if addMode}
-    <AddUsers {closeAdd} linkId="aca7a1c9-b691-480f-9511-edf45d932e11" />
+    <AddUsers {closeAdd} {linkId} />
 {/if}
 
 <style>

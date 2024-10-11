@@ -23,8 +23,6 @@
     };
 
     const handleSubmit = async () => {
-        console.log(invite_id);
-
         if (testIdRegex(invite_id)) {
             await joinGroup(invite_id);
         } else {
