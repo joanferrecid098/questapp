@@ -21,8 +21,12 @@ const unless = (
     };
 };
 
+const corsOptions = {
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+};
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use((req, res, next) => {
     console.log("Connection to: " + req.path + " With method: " + req.method);
     next();
