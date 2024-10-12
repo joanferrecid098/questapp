@@ -243,6 +243,7 @@
                     {submitChanges}
                     {removeUser}
                     {createInvite}
+                    isOwner={groupDetails.isOwner}
                 />
             {/if}
         {/if}

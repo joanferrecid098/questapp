@@ -41,7 +41,7 @@ export const getGroup = async (req: Request, res: Response) => {
 
     try {
         const membershipQuery =
-            "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?;";
+            "SELECT id FROM memberships WHERE group_id = ? AND user_id = ?";
         const [membership] = await db.query<MembershipRow[]>(membershipQuery, [
             id,
             req.user.id,
@@ -71,16 +71,18 @@ export const getGroup = async (req: Request, res: Response) => {
             return;
         }
 
-        const hasVoted = voted.length > 0 ? true : false;
-
-        const infoWithVoted = [
-            {
-                ...info[0],
-                hasVoted: hasVoted,
-            },
-        ];
-
         if (info.length >= 1) {
+            const hasVoted = voted.length > 0 ? true : false;
+            const isOwner = info[0].owner_id === req.user.id;
+
+            const infoWithVoted = [
+                {
+                    ...info[0],
+                    hasVoted: hasVoted,
+                    isOwner: isOwner,
+                },
+            ];
+
             res.status(200).json(infoWithVoted);
             return;
         } else {

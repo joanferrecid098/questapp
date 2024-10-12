@@ -157,6 +157,7 @@ export const getGroup = async (id: number) => {
         owner_id: response[0].owner_id,
         question: response[0].question,
         hasVoted: response[0].hasVoted,
+        isOwner: response[0].isOwner,
     };
 };
 
@@ -201,6 +202,10 @@ export const updateGroup = async (
             update,
             remove,
         };
+    }
+
+    if (update.affectedRows === 0) {
+        throw new Error("You are not the group owner.");
     }
 
     return {

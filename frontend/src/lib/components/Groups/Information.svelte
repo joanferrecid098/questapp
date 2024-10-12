@@ -7,6 +7,7 @@
     export let submitChanges;
     export let createInvite;
     export let removeUser;
+    export let isOwner;
 
     export let groupDetails: GroupDetails;
     export let groupUsers: UserDetails[];
@@ -63,9 +64,11 @@
     {#if !editMode}
         <div class="container header">
             <h2>Information</h2>
-            <button on:click={() => (editMode = true)}>
-                <i class="material-symbols-outlined">edit</i>
-            </button>
+            {#if isOwner}
+                <button on:click={() => (editMode = true)}>
+                    <i class="material-symbols-outlined">edit</i>
+                </button>
+            {/if}
         </div>
         <div class="container content">
             <p><strong>Name:</strong> {groupDetails.name}</p>

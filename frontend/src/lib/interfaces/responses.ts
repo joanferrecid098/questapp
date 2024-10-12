@@ -51,6 +51,7 @@ export interface GetGroup {
     group_id: number;
     date: string;
     hasVoted: boolean;
+    isOwner: boolean;
 }
 
 export interface GetGroupUsers {
