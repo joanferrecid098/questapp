@@ -102,7 +102,22 @@
     /* API Requests */
     const submitVote = async (id: number) => {
         await postVote(id, groupDetails.id)
-            .then((response) => {
+            .then(async (response) => {
+                await getGroupUsers(Number(slug))
+                    .then((response) => {
+                        groupUsers = response;
+                    })
+                    .catch((error) => {
+                        messageList = [
+                            ...messageList,
+                            {
+                                title: "Error",
+                                content: error.message,
+                                type: "error",
+                            },
+                        ];
+                    });
+
                 hasVoted = true;
             })
             .catch((error) => {

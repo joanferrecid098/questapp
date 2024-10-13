@@ -65,7 +65,6 @@ export const actions: Actions = {
             cookies.set("session", result.token, { path: "/" });
             sessionStore.set(result.token);
         } else {
-            console.error(result.error);
             throw redirect(303, "/login?not-strong-pass");
         }
 
