@@ -1,3 +1,5 @@
+import { getRandomQuestion } from "../functions/questionsManager";
+import { Question } from "../interfaces/questions";
 import { Request, Response } from "express";
 import { ResultSetHeader } from "mysql2";
 import db from "../connection";
@@ -9,15 +11,13 @@ import {
     UserRow,
     VoteRow,
 } from "../interfaces/models";
-import { getRandomQuestion } from "../functions/questionsManager";
-import { Question } from "../interfaces/questions";
 
 // Group Details
 export const getGroups = async (req: Request, res: Response) => {
     const { id } = req.user;
 
     const query =
-        "SELECT id, name, owner_id FROM groups WHERE groups.id IN (SELECT group_id FROM memberships WHERE user_id = ?)";
+        "SELECT id, name, owner_id, last_updated FROM groups WHERE groups.id IN (SELECT group_id FROM memberships WHERE user_id = ?)";
 
     await db
         .query(query, [id])
@@ -55,7 +55,7 @@ export const getGroup = async (req: Request, res: Response) => {
         }
 
         const infoQuery =
-            "SELECT groups.id, groups.name, users.name AS owner, owner_id, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id INNER JOIN users ON groups.owner_id = users.id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
+            "SELECT groups.id, groups.name, users.name AS owner, owner_id, groups.last_updated, question, date FROM groups INNER JOIN questions ON groups.id = questions.group_id INNER JOIN users ON groups.owner_id = users.id WHERE groups.id = ? AND questions.date = (SELECT MAX(date) FROM questions WHERE group_id = ?)";
         const [info] = await db.query<GroupRow[]>(infoQuery, [id, id]);
 
         const votedQuery =
@@ -112,8 +112,14 @@ export const createGroup = async (req: Request, res: Response) => {
     }
 
     try {
-        const groupQuery = "INSERT INTO groups VALUES (NULL, ?, ?)";
-        const [group] = await db.query<ResultSetHeader>(groupQuery, [name, id]);
+        const date = new Date().toISOString();
+
+        const groupQuery = "INSERT INTO groups VALUES (NULL, ?, ?, ?)";
+        const [group] = await db.query<ResultSetHeader>(groupQuery, [
+            name,
+            id,
+            date.slice(0, 19).replace("T", " "),
+        ]);
 
         if (!group || !group.insertId || group.insertId === 0) {
             res.status(400).json({
@@ -129,7 +135,6 @@ export const createGroup = async (req: Request, res: Response) => {
         ]);
 
         const randomQuestion: Question = getRandomQuestion();
-        const date = new Date().toISOString();
 
         const questionQuery = "INSERT INTO questions VALUES (NULL, ?, ?, ?, ?)";
         const [question] = await db.query<ResultSetHeader>(questionQuery, [
@@ -174,11 +179,19 @@ export const updateGroup = async (req: Request, res: Response) => {
         return;
     }
 
+    const date = new Date().toISOString();
+
     const query =
-        "UPDATE groups SET name = ?, owner_id = ? WHERE id = ? AND owner_id = ?";
+        "UPDATE groups SET name = ?, owner_id = ?, last_updated = ? WHERE id = ? AND owner_id = ?";
 
     await db
-        .query(query, [name, owner, id, req.user.id])
+        .query(query, [
+            name,
+            owner,
+            date.slice(0, 19).replace("T", " "),
+            id,
+            req.user.id,
+        ])
         .then((result) => {
             res.status(200).json(result[0]);
             return;
