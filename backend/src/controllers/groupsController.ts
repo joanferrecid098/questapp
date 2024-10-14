@@ -9,6 +9,8 @@ import {
     UserRow,
     VoteRow,
 } from "../interfaces/models";
+import { getRandomQuestion } from "../functions/questionsManager";
+import { Question } from "../interfaces/questions";
 
 // Group Details
 export const getGroups = async (req: Request, res: Response) => {
@@ -126,7 +128,24 @@ export const createGroup = async (req: Request, res: Response) => {
             group.insertId,
         ]);
 
-        if (!membership || !membership.insertId || group.insertId === 0) {
+        const randomQuestion: Question = getRandomQuestion();
+        const date = new Date().toISOString();
+
+        const questionQuery = "INSERT INTO questions VALUES (NULL, ?, ?, ?, ?)";
+        const [question] = await db.query<ResultSetHeader>(questionQuery, [
+            randomQuestion.category,
+            randomQuestion.question,
+            group.insertId,
+            date.split("T")[0],
+        ]);
+
+        if (
+            !membership ||
+            !membership.insertId ||
+            group.insertId === 0 ||
+            !question ||
+            question.insertId === 0
+        ) {
             res.status(400).json({
                 error: "There was an error while creating the group membership.",
             });
