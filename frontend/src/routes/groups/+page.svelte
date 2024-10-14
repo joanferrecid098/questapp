@@ -5,6 +5,7 @@
     import { acceptInvite, createGroup, getGroups } from "$scripts/api";
     import { onDestroy, onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import { page } from "$app/stores";
     import {
         createSearchStore,
         searchHandler,
@@ -20,6 +21,17 @@
 
     /* Messages */
     let messageList: MessageContent[] = [];
+
+    if ($page.url.searchParams.has("invite-not-found")) {
+        messageList = [
+            ...messageList,
+            {
+                title: "Error",
+                content: "The invite was not found.",
+                type: "error",
+            },
+        ];
+    }
 
     const closeDialogue = (messageContent: MessageContent) => {
         const index = messageList.indexOf(messageContent);
