@@ -123,6 +123,21 @@ export const submitVote = async (req: Request, res: Response) => {
             question[0].id,
         ]);
 
+        const date = new Date().toISOString();
+
+        const groupQuery = "UPDATE groups SET last_updated = ? WHERE id = ?";
+        const [group] = await db.query<ResultSetHeader>(groupQuery, [
+            date.slice(0, 19).replace("T", " "),
+            group_id,
+        ]);
+
+        if (!group) {
+            res.status(400).json({
+                error: "There was an error while submitting the vote.",
+            });
+            return;
+        }
+
         res.status(200).json(insert);
         return;
     } catch (err: unknown) {
@@ -175,6 +190,21 @@ export const updateVote = async (req: Request, res: Response) => {
             question[0].id,
         ]);
 
+        const date = new Date().toISOString();
+
+        const groupQuery = "UPDATE groups SET last_updated = ? WHERE id = ?";
+        const [group] = await db.query<ResultSetHeader>(groupQuery, [
+            date.slice(0, 19).replace("T", " "),
+            id,
+        ]);
+
+        if (!group) {
+            res.status(400).json({
+                error: "There was an error while submitting the vote.",
+            });
+            return;
+        }
+
         res.status(200).json(update);
         return;
     } catch (err: unknown) {
@@ -224,6 +254,21 @@ export const removeVote = async (req: Request, res: Response) => {
             req.user.id,
             question[0].id,
         ]);
+
+        const date = new Date().toISOString();
+
+        const groupQuery = "UPDATE groups SET last_updated = ? WHERE id = ?";
+        const [group] = await db.query<ResultSetHeader>(groupQuery, [
+            date.slice(0, 19).replace("T", " "),
+            id,
+        ]);
+
+        if (!group) {
+            res.status(400).json({
+                error: "There was an error while submitting the vote.",
+            });
+            return;
+        }
 
         res.status(200).json(vote);
         return;

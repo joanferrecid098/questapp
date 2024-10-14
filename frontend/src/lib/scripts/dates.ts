@@ -87,11 +87,32 @@ export const getRelativeDate = (date: string) => {
         return weekdays[inputDay];
     }
 
-    let monthString = (target.getMonth() + 1).toString();
-    let dayString = target.getDate().toString();
-
-    if (monthString.length < 2) monthString = "0" + monthString;
-    if (dayString.length < 2) dayString = "0" + dayString;
+    let monthString = (target.getMonth() + 1).toString().padStart(2, "0");
+    let dayString = target.getDate().toString().padStart(2, "0");
 
     return `${target.getFullYear()}-${monthString}-${dayString}`;
+};
+
+export const getLastUpdatedDate = (date: string) => {
+    // Target date & current date
+    const target = new Date(date);
+    const today = new Date();
+
+    // Normalize times for date comparison (without time)
+    const targetCopy = new Date(target);
+    targetCopy.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    // Get the time difference in days
+    const dayDiff =
+        (today.getTime() - targetCopy.getTime()) / (1000 * 60 * 60 * 24);
+
+    // Check if the input date is today
+    if (dayDiff === 0) {
+        const hours = target.getHours().toString().padStart(2, "0");
+        const minutes = target.getMinutes().toString().padStart(2, "0");
+        return `${hours}:${minutes}`;
+    } else {
+        return getRelativeDate(date);
+    }
 };
