@@ -21,6 +21,7 @@ export interface GroupDetails {
     owner?: string;
     owner_id: number;
     isOwner?: boolean;
+    last_updated?: string;
     question?: string;
     nextQuestion?: string;
     hasVoted?: boolean;

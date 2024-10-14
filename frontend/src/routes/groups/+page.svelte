@@ -162,7 +162,11 @@
         />
         <div class="groups">
             {#each $searchStore.filtered as group}
-                <GroupElement title={group.name} groupId={group.id} />
+                <GroupElement
+                    title={group.name}
+                    groupId={group.id}
+                    last_updated={group.last_updated}
+                />
             {/each}
             <button
                 class="btn create"

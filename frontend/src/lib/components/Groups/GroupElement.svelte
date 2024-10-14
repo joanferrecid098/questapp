@@ -1,13 +1,17 @@
 <script lang="ts">
+    import { getLastUpdatedDate } from "$scripts/dates";
+
     export let title;
-    // export let update;
+    export let last_updated;
     export let groupId;
+
+    const updateString = getLastUpdatedDate(last_updated);
 </script>
 
 <a class="container" href="/groups/{groupId}">
     <i class="material-symbols-outlined">groups</i>
     <p class="title"><strong>{title}</strong></p>
-    <!-- <p class="update">Last update: <strong>{update}</strong></p> -->
+    <p class="update">Last update: <strong>{updateString}</strong></p>
 </a>
 
 <style>
