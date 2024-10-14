@@ -19,6 +19,7 @@ CREATE TABLE `groups`
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     `owner_id` BIGINT NOT NULL,
+    `last_updated` DATETIME NOT NULL,
     FOREIGN KEY (`owner_id`) REFERENCES users(`id`),
     PRIMARY KEY (`id`)
 );
