@@ -14,13 +14,14 @@ CREATE TABLE `users`
 );
 
 -- @block groups
-CREATE TABLE `groups`
+CREATE TABLE `groupss`
 (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     `owner_id` BIGINT NOT NULL,
     `last_updated` DATETIME NOT NULL,
-    FOREIGN KEY (`owner_id`) REFERENCES users(`id`),
+    FOREIGN KEY (`owner_id`) REFERENCES users(`id`)
+    ON DELETE CASCADE,
     PRIMARY KEY (`id`)
 );
 
@@ -32,7 +33,8 @@ CREATE TABLE `questions`
     `question` VARCHAR(255) NOT NULL,
     `group_id` BIGINT NOT NULL,
     `date` DATE NOT NULL,
-    FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
+    FOREIGN KEY (`group_id`) REFERENCES groups(`id`)
+    ON DELETE CASCADE,
     PRIMARY KEY (`id`)
 );
 
@@ -42,8 +44,10 @@ CREATE TABLE `memberships`
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `user_id` BIGINT NOT NULL,
     `group_id` BIGINT NOT NULL,
-    FOREIGN KEY (`user_id`) REFERENCES users(`id`),
-    FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
+    FOREIGN KEY (`user_id`) REFERENCES users(`id`)
+    ON DELETE CASCADE,
+    FOREIGN KEY (`group_id`) REFERENCES groups(`id`)
+    ON DELETE CASCADE,
     PRIMARY KEY (`id`)
 );
 
@@ -54,9 +58,12 @@ CREATE TABLE `votes`
     `from_id` BIGINT NOT NULL,
     `to_id` BIGINT NOT NULL,
     `question_id` BIGINT NOT NULL,
-    FOREIGN KEY (`from_id`) REFERENCES users(`id`),
-    FOREIGN KEY (`to_id`) REFERENCES users(`id`),
-    FOREIGN KEY (`question_id`) REFERENCES questions(`id`),
+    FOREIGN KEY (`from_id`) REFERENCES users(`id`)
+    ON DELETE CASCADE,
+    FOREIGN KEY (`to_id`) REFERENCES users(`id`)
+    ON DELETE CASCADE,
+    FOREIGN KEY (`question_id`) REFERENCES questions(`id`)
+    ON DELETE CASCADE,
     PRIMARY KEY (`id`)
 );
 
@@ -67,8 +74,10 @@ CREATE TABLE `invites`
     `from_id` BIGINT NOT NULL,
     `group_id` BIGINT NOT NULL,
     `uuid` VARCHAR(36) NOT NULL UNIQUE,
-    FOREIGN KEY (`from_id`) REFERENCES users(`id`),
-    FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
+    FOREIGN KEY (`from_id`) REFERENCES users(`id`)
+    ON DELETE CASCADE,
+    FOREIGN KEY (`group_id`) REFERENCES groups(`id`)
+    ON DELETE CASCADE,
     PRIMARY KEY (`id`)
 );
 
@@ -80,7 +89,9 @@ CREATE TABLE `notifications`
     `group_id` BIGINT NOT NULL,
     `notifications` INT(8) NOT NULL,
     `last_update` DATE NOT NULL,
-    FOREIGN KEY (`user_id`) REFERENCES users(`id`),
-    FOREIGN KEY (`group_id`) REFERENCES groups(`id`),
+    FOREIGN KEY (`user_id`) REFERENCES users(`id`)
+    ON DELETE CASCADE,
+    FOREIGN KEY (`group_id`) REFERENCES groups(`id`)
+    ON DELETE CASCADE,
     PRIMARY KEY (`id`)
 );
