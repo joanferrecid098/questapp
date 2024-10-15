@@ -14,7 +14,7 @@ CREATE TABLE `users`
 );
 
 -- @block groups
-CREATE TABLE `groupss`
+CREATE TABLE `groups`
 (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
