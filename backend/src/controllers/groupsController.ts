@@ -212,18 +212,36 @@ export const removeGroup = async (req: Request, res: Response) => {
         return;
     }
 
-    const query = "DELETE FROM groups WHERE id = ? AND owner_id = ?";
+    try {
+        const groupQuery = "DELETE FROM groups WHERE id = ? AND owner_id = ?";
+        const [group] = await db.query<ResultSetHeader>(groupQuery, [
+            id,
+            req.user.id,
+        ]);
 
-    await db
-        .query(query, [id, req.user.id])
-        .then((result) => {
-            res.status(200).json(result[0]);
+        if (!group) {
+            res.status(400).json({
+                error: "There was an error deleting the group.",
+            });
             return;
-        })
-        .catch((err) => {
-            res.status(400).json({ error: err });
+        }
+
+        if (group.affectedRows < 1) {
+            res.status(404).json({ error: "Group not found." });
             return;
-        });
+        }
+
+        res.status(200).json(group);
+        return;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(400).json({ error: err.message });
+            return;
+        } else {
+            res.status(400).json({ error: "Internal server error." });
+            return;
+        }
+    }
 };
 
 // Group Members
