@@ -21,6 +21,8 @@
     let cachedName: string;
     let cachedUsername: string;
 
+    let logoutForm: HTMLFormElement;
+
     onMount(async () => {
         await getUserInfo()
             .then((response) => {
@@ -59,7 +61,6 @@
     const updateAccount = async ({ id, name, username }: UserDetails) => {
         if (!name || !username) {
             editMode = false;
-            console.log("Nothing changed.");
 
             cachedName = accountDetails.name!;
             cachedUsername = accountDetails.username!;
@@ -68,7 +69,6 @@
         }
         if (name === accountDetails.username || name === accountDetails.name) {
             editMode = false;
-            console.log("Nothing changed.");
 
             cachedName = accountDetails.name!;
             cachedUsername = accountDetails.username!;
@@ -155,7 +155,7 @@
                     },
                 ];
 
-                goto("/login");
+                logoutForm?.submit();
             })
             .catch((error) => {
                 messageList = [
@@ -263,6 +263,17 @@
                 </button>
             </div>
         </div>
+        <form
+            action="?/logout"
+            method="post"
+            bind:this={logoutForm}
+            style="display:none"
+        >
+            <button class="btn logoff" type="submit">
+                <i class="material-symbols-outlined">logout</i>
+                <p>Log Off</p>
+            </button>
+        </form>
     {/if}
     <div class="app-info">
         <div class="container">

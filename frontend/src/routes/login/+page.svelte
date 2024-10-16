@@ -24,6 +24,17 @@
         ];
     }
 
+    if ($page.url.searchParams.has("expired-token")) {
+        messageList = [
+            ...messageList,
+            {
+                title: "Session Expired",
+                content: "Please log in to your account again.",
+                type: "info",
+            },
+        ];
+    }
+
     const closeDialogue = (messageContent: MessageContent) => {
         const index = messageList.indexOf(messageContent);
 
