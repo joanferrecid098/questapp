@@ -5,7 +5,7 @@ import { sessionStore } from "$stores/auth";
 export const prerender = false;
 
 export const actions: Actions = {
-    logout: async ({ cookies, request }) => {
+    logout: async ({ cookies }) => {
         cookies.delete("session", { path: "/" });
         sessionStore.set("");
 

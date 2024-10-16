@@ -1,6 +1,6 @@
 import { base } from "$scripts/api";
 import { sessionStore } from "$stores/auth";
-import { redirect, type Actions } from "@sveltejs/kit";
+import { fail, redirect, type Actions } from "@sveltejs/kit";
 
 interface ServerResponse {
     username: string;
@@ -33,8 +33,7 @@ export const actions: Actions = {
             cookies.set("session", result.token, { path: "/" });
             sessionStore.set(result.token);
         } else {
-            console.error(result.error);
-            throw redirect(303, "/login?invalid-creds");
+            return fail(400, { error: result.error });
         }
 
         throw redirect(303, "/");
@@ -65,7 +64,7 @@ export const actions: Actions = {
             cookies.set("session", result.token, { path: "/" });
             sessionStore.set(result.token);
         } else {
-            throw redirect(303, "/login?not-strong-pass");
+            return fail(400, { error: result.error });
         }
 
         throw redirect(303, "/");

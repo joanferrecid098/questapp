@@ -4,6 +4,8 @@
     import { Message } from "$components";
     import { page } from "$app/stores";
 
+    export let form;
+
     /* Variables */
     let signupMode = false;
     let password: string;
@@ -11,23 +13,12 @@
     /* Messages */
     let messageList: MessageContent[] = [];
 
-    if ($page.url.searchParams.has("invalid-creds")) {
+    if (form) {
         messageList = [
             ...messageList,
             {
                 title: "Error",
-                content: "Incorrect username or password",
-                type: "error",
-            },
-        ];
-    }
-
-    if ($page.url.searchParams.has("not-strong-pass")) {
-        messageList = [
-            ...messageList,
-            {
-                title: "Error",
-                content: "The password in not strong enough.",
+                content: form.error,
                 type: "error",
             },
         ];
