@@ -10,9 +10,11 @@
         "start": "tsc && yarn copyfiles && node dist/main.js",
         "dev": "tsc && yarn copyfiles && nodemon dist/main.js",
         "copyfiles": "cpx 'src/custom/**/*' dist/custom",
-        "build": "tsc && yarn copyfiles"
+        "build": "tsc && yarn copyfiles",
+        "test": "npx playwright test"
     },
     "devDependencies": {
+        "@playwright/test": "^1.48.1",
         "@types/bcrypt": "^5.0.2",
         "@types/cors": "^2.8.17",
         "@types/express": "^4.17.21",
