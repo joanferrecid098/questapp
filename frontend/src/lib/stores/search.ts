@@ -7,7 +7,7 @@ export interface SearchStoreModel<T extends Record<PropertyKey, any>> {
 }
 
 export const createSearchStore = <T extends Record<PropertyKey, any>>(
-    data: T[]
+    data: T[],
 ) => {
     const { subscribe, set, update } = writable<SearchStoreModel<T>>({
         data: data,
@@ -23,7 +23,7 @@ export const createSearchStore = <T extends Record<PropertyKey, any>>(
 };
 
 export const searchHandler = <T extends Record<PropertyKey, any>>(
-    store: SearchStoreModel<T>
+    store: SearchStoreModel<T>,
 ) => {
     const searchTerm = store.search.toLowerCase() || "";
     store.filtered = store.data.filter((item: any) => {

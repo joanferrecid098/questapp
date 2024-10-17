@@ -10,7 +10,7 @@ import requireAuth from "./middleware/requireAuth";
 
 const unless = (
     paths: string[],
-    middleware: (req: Request, res: Response, next: NextFunction) => void
+    middleware: (req: Request, res: Response, next: NextFunction) => void,
 ) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (paths.some((path) => req.path.startsWith(path))) {

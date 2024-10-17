@@ -98,7 +98,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         const confirm = await changePassword(
             id.toString(),
             oldPassword,
-            newPassword
+            newPassword,
         );
 
         if (confirm[0].affectedRows != 1) {

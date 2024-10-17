@@ -295,15 +295,18 @@ export const getUsers = async (req: Request, res: Response) => {
             return;
         }
 
-        const voteCounts = votes.reduce((acc, vote) => {
-            if (acc[vote.to_id]) {
-                acc[vote.to_id]++;
-            } else {
-                acc[vote.to_id] = 1;
-            }
+        const voteCounts = votes.reduce(
+            (acc, vote) => {
+                if (acc[vote.to_id]) {
+                    acc[vote.to_id]++;
+                } else {
+                    acc[vote.to_id] = 1;
+                }
 
-            return acc;
-        }, {} as Record<number, number>);
+                return acc;
+            },
+            {} as Record<number, number>,
+        );
 
         const usersWithVotes = users.map((user) => ({
             ...user,

@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 export const signup = async (
     name: string,
     username: string,
-    password: string
+    password: string,
 ) => {
     // Validation
     if (!username || !password) {
@@ -81,7 +81,7 @@ export const login = async (username: string, password: string) => {
 export const changePassword = async (
     id: string,
     oldPassword: string,
-    newPassword: string
+    newPassword: string,
 ) => {
     // Validation
     if (!id || !oldPassword || !newPassword) {

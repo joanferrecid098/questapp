@@ -84,7 +84,7 @@ export const getUserStats = async () => {
 
 export const changePassword = async (
     oldPassword: string,
-    newPassword: string
+    newPassword: string,
 ) => {
     const response = await send<GetUserStats[]>({
         method: "PATCH",
@@ -175,7 +175,7 @@ export const createGroup = async (groupDetails: GroupDetails) => {
 
 export const updateGroup = async (
     groupDetails: GroupDetails,
-    removedUsers: UserDetails[]
+    removedUsers: UserDetails[],
 ) => {
     const update = await send<ResultSetHeader>({
         method: "PATCH",
