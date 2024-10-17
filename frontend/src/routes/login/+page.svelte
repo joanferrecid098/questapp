@@ -9,6 +9,7 @@
     /* Variables */
     let signupMode = false;
     let password: string;
+    let username: string;
 
     /* Messages */
     let messageList: MessageContent[] = [];
@@ -48,6 +49,7 @@
 
     /* Password Strength */
     $: strength = passwordStrength(password);
+    $: alphanumeric = /^[a-z0-9]+$/gi.test(username);
 </script>
 
 <section>
@@ -102,6 +104,7 @@
                         name="username"
                         placeholder="Username"
                         required={true}
+                        bind:value={username}
                     />
                 </div>
                 <div class="input">
@@ -128,7 +131,7 @@
                         1 symbol
                     </li>
                 </ul>
-                <button class="btn submit">
+                <button class="btn submit" disabled={!alphanumeric}>
                     <i class="material-symbols-outlined">key</i>
                     <p>Sign up</p>
                 </button>
@@ -267,5 +270,9 @@
         padding: 0.5rem;
         padding-left: 1rem;
         padding-right: 1rem;
+    }
+
+    .btn:disabled {
+        background-color: var(--color-text-white);
     }
 </style>

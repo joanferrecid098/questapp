@@ -7,7 +7,8 @@
     "author": "joanferrecid098",
     "license": "MIT",
     "scripts": {
-        "start": "tsc && yarn copyfiles && nodemon dist/main.js",
+        "start": "tsc && yarn copyfiles && node dist/main.js",
+        "dev": "tsc && yarn copyfiles && nodemon dist/main.js",
         "copyfiles": "cpx 'src/custom/**/*' dist/custom",
         "build": "tsc && yarn copyfiles"
     },
