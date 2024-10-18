@@ -7,11 +7,13 @@
     "author": "joanferrecid098",
     "license": "MIT",
     "scripts": {
-        "start": "tsc && yarn copyfiles && node dist/main.js",
-        "dev": "tsc && yarn copyfiles && nodemon dist/main.js",
-        "copyfiles": "cpx 'src/custom/**/*' dist/custom",
-        "build": "tsc && yarn copyfiles",
-        "test": "npx playwright test"
+        "start": "tsc && npm run copyfiles && node dist/src/main.js",
+        "dev": "tsc && npm run copyfiles && nodemon dist/src/main.js",
+        "copyfiles": "cpx 'src/custom/**/*' dist/src/custom",
+        "build": "tsc && npm run copyfiles",
+        "test": "npx playwright test",
+        "test:debug": "npx playwright test --debug",
+        "test:headed": "npx playwright test --headed"
     },
     "devDependencies": {
         "@playwright/test": "^1.48.1",
