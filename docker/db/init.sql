@@ -85,13 +85,10 @@ CREATE TABLE `invites`
 CREATE TABLE `notifications`
 (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `user_id` BIGINT NOT NULL,
-    `group_id` BIGINT NOT NULL,
+    `membership_id` BIGINT NOT NULL,
     `notifications` INT(8) NOT NULL,
     `last_update` DATE NOT NULL,
-    FOREIGN KEY (`user_id`) REFERENCES users(`id`)
-    ON DELETE CASCADE,
-    FOREIGN KEY (`group_id`) REFERENCES groups(`id`)
+    FOREIGN KEY (`membership_id`) REFERENCES memberships(`id`)
     ON DELETE CASCADE,
     PRIMARY KEY (`id`)
 );

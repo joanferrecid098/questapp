@@ -21,8 +21,7 @@ export interface Membership {
 
 export interface Notification {
     id: number;
-    user_id: number;
-    group_id: number;
+    membership_id: number;
     notifications: number;
     last_update: number;
 }

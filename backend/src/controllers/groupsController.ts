@@ -66,7 +66,14 @@ export const getGroup = async (req: Request, res: Response) => {
             id,
         ]);
 
-        if (!info || !voted) {
+        const notificationQuery =
+            "DELETE FROM notifications WHERE membership_id = (SELECT id FROM memberships WHERE user_id = ? AND group_id = ?)";
+        const [notification] = await db.query<VoteRow[]>(notificationQuery, [
+            req.user.id,
+            id,
+        ]);
+
+        if (!info || !voted || !notification) {
             res.status(400).json({
                 error: "There was an error while getting the group.",
             });
@@ -295,18 +302,15 @@ export const getUsers = async (req: Request, res: Response) => {
             return;
         }
 
-        const voteCounts = votes.reduce(
-            (acc, vote) => {
-                if (acc[vote.to_id]) {
-                    acc[vote.to_id]++;
-                } else {
-                    acc[vote.to_id] = 1;
-                }
+        const voteCounts = votes.reduce((acc, vote) => {
+            if (acc[vote.to_id]) {
+                acc[vote.to_id]++;
+            } else {
+                acc[vote.to_id] = 1;
+            }
 
-                return acc;
-            },
-            {} as Record<number, number>,
-        );
+            return acc;
+        }, {} as Record<number, number>);
 
         const usersWithVotes = users.map((user) => ({
             ...user,

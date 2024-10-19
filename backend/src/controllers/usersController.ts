@@ -224,7 +224,7 @@ export const getNotifications = async (req: Request, res: Response) => {
     const { id } = req.user;
 
     const query =
-        "SELECT notifications.id, group_id, notifications, last_update, name FROM notifications INNER JOIN groups ON notifications.group_id = groups.id WHERE user_id = ?";
+        "SELECT notifications.id, group_id, notifications, last_update, name FROM notifications INNER JOIN memberships ON memberships.id = notifications.membership_id INNER JOIN groups ON memberships.group_id = groups.id WHERE user_id = ?";
 
     await db
         .query<NotificationRow[]>(query, [id])
