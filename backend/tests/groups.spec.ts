@@ -9,7 +9,7 @@ test.beforeAll(async ({ request }) => {
     const response = await request.post("/api/users/signup", {
         data: {
             name: "API Groups User",
-            username: "apitests2",
+            username: "apitests3",
             password: "TestPass1!@",
         },
     });
@@ -96,7 +96,7 @@ test.describe("Test Groups API", async () => {
             expect(json).toHaveLength(1);
             expect(json[0].group_id.toString()).toMatch(groupId.toString());
             expect(json[0].name).toMatch("API Groups User");
-            expect(json[0].username).toMatch("apitests2");
+            expect(json[0].username).toMatch("apitests3");
             expect(json[0].voteCount.toString()).toMatch("0");
             expect(json[0].user_id).toBeTruthy();
 
@@ -193,16 +193,16 @@ test.describe("Test Groups API", async () => {
             expect(response.ok()).not.toBeTruthy();
         });
     });
+});
 
-    /* Remove Temporary Account */
-    test.afterAll(async ({ request }) => {
-        const response = await request.delete("/api/users/user", {
-            headers: {
-                Authorization: authorizationToken,
-            },
-        });
-
-        expect(response.ok()).toBeTruthy();
-        return true;
+/* Remove Temporary Account */
+test.afterAll(async ({ request }) => {
+    const response = await request.delete("/api/users/user", {
+        headers: {
+            Authorization: authorizationToken,
+        },
     });
+
+    expect(response.ok()).toBeTruthy();
+    return true;
 });
