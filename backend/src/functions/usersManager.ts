@@ -1,5 +1,5 @@
 import { UserRow } from "../interfaces/models";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { ResultSetHeader } from "mysql2";
 import validator from "validator";
 import db from "../connection";
 import bcrypt from "bcrypt";
