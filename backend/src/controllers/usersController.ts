@@ -164,8 +164,18 @@ export const getUserStats = async (req: Request, res: Response) => {
     const { id } = req.user;
 
     try {
-        const streakQuery = "SELECT streak FROM users WHERE id = ?";
-        const [streak] = await db.query<UserRow[]>(streakQuery, [id]);
+        const streakQuery =
+            "SELECT COUNT(questions.id) FROM votes INNER JOIN questions ON questions.id = votes.question_id WHERE from_id = ? GROUP BY date";
+        const [streak] = await db.query<RowDataPacket[]>(streakQuery, [
+            req.user.id,
+        ]);
+
+        if (!streak) {
+            res.status(400).json({
+                error: "There was an error while getting the statistics.",
+            });
+            return;
+        }
 
         const membershipQuery =
             "SELECT (SELECT COUNT(*) FROM memberships WHERE user_id = ?) AS joined_groups, (SELECT COUNT(*) FROM groups WHERE owner_id = ?) AS owned_groups FROM dual";
@@ -178,7 +188,7 @@ export const getUserStats = async (req: Request, res: Response) => {
             "SELECT votes.id, from_id, to_id FROM votes INNER JOIN questions ON questions.id = votes.question_id INNER JOIN memberships ON memberships.group_id = questions.group_id WHERE memberships.user_id = ? AND date = CURDATE()";
         const [votes] = await db.query<QuestionRow[]>(votesQuery, [id]);
 
-        if (!streak || !counts || !votes) {
+        if (!counts || !votes) {
             res.status(400).json({
                 error: "There was an error while getting the statistics.",
             });
@@ -190,14 +200,12 @@ export const getUserStats = async (req: Request, res: Response) => {
             return;
         }
 
-        console.log(votes);
-
         const allVotes = votes;
         const userVotes = votes.filter((vote) => vote.to_id === id);
 
         res.status(200).json([
             {
-                streak: streak[0].streak,
+                streak: streak.length,
                 joinedGroups: counts[0].joined_groups,
                 ownedGroups: counts[0].owned_groups,
                 votes: {

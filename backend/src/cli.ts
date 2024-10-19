@@ -31,7 +31,7 @@ const updateQuestions = async () => {
             }
 
             console.log(
-                `Successfully inserted ${result[0].affectedRows} rows.`,
+                `Successfully inserted ${result[0].affectedRows} rows.`
             );
 
             process.exit(0);
