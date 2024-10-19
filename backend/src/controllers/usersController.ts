@@ -2,7 +2,7 @@ import { NotificationRow, QuestionRow, UserRow } from "../interfaces/models";
 import { signup, login, changePassword } from "../functions/usersManager";
 import { Response, Request } from "express";
 import { RowDataPacket } from "mysql2";
-import validator from "validator";
+import validator, { toDate } from "validator";
 import jwt from "jsonwebtoken";
 import db from "../connection";
 
@@ -165,7 +165,7 @@ export const getUserStats = async (req: Request, res: Response) => {
 
     try {
         const streakQuery =
-            "SELECT COUNT(questions.id) FROM votes INNER JOIN questions ON questions.id = votes.question_id WHERE from_id = ? GROUP BY date";
+            "SELECT date FROM votes INNER JOIN questions ON questions.id = votes.question_id WHERE from_id = ? GROUP BY date";
         const [streak] = await db.query<RowDataPacket[]>(streakQuery, [
             req.user.id,
         ]);
@@ -195,17 +195,25 @@ export const getUserStats = async (req: Request, res: Response) => {
             return;
         }
 
-        if (streak.length < 1) {
-            res.status(404).json({ error: "User not found." });
-            return;
-        }
+        let streakCount = 0;
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        streak
+            .map((d) => new Date(d.date).setHours(0, 0, 0, 0))
+            .sort((a, b) => b - a)
+            .some((date, i, arr) => {
+                if (i > 0 && arr[i - 1] - date !== 86400000) return true;
+                streakCount +=
+                    date === today.getTime() || streakCount > 0 ? 1 : 0;
+            });
 
         const allVotes = votes;
         const userVotes = votes.filter((vote) => vote.to_id === id);
 
         res.status(200).json([
             {
-                streak: streak.length,
+                streak: streakCount,
                 joinedGroups: counts[0].joined_groups,
                 ownedGroups: counts[0].owned_groups,
                 votes: {
