@@ -98,7 +98,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         const confirm = await changePassword(
             id.toString(),
             oldPassword,
-            newPassword,
+            newPassword
         );
 
         if (confirm[0].affectedRows != 1) {
@@ -175,8 +175,8 @@ export const getUserStats = async (req: Request, res: Response) => {
         ]);
 
         const votesQuery =
-            "SELECT votes.id, question, group_id, from_id, to_id, date FROM questions INNER JOIN votes ON questions.id = votes.question_id WHERE date = CURDATE();";
-        const [votes] = await db.query<QuestionRow[]>(votesQuery, [id, id]);
+            "SELECT votes.id, from_id, to_id FROM votes INNER JOIN questions ON questions.id = votes.question_id INNER JOIN memberships ON memberships.group_id = questions.group_id WHERE memberships.user_id = ? AND date = CURDATE()";
+        const [votes] = await db.query<QuestionRow[]>(votesQuery, [id]);
 
         if (!streak || !counts || !votes) {
             res.status(400).json({
@@ -190,8 +190,10 @@ export const getUserStats = async (req: Request, res: Response) => {
             return;
         }
 
+        console.log(votes);
+
         const allVotes = votes;
-        const userVotes = votes.filter((vote) => vote.to_id.toString() === id);
+        const userVotes = votes.filter((vote) => vote.to_id === id);
 
         res.status(200).json([
             {
