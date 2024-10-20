@@ -37,7 +37,6 @@ export interface Question {
 export interface User {
     id: number;
     name: string;
-    streak: number;
     username: string;
     password: string;
 }

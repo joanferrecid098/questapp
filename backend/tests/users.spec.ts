@@ -84,12 +84,12 @@ test.describe("Test Users API", async () => {
 
             expect(response.ok()).toBeTruthy();
             const [json] = await response.json();
-            expect(json.streak.toString()).toMatch("0");
-            expect(json.joinedGroups.toString()).toMatch("0");
-            expect(json.ownedGroups.toString()).toMatch("0");
-            expect(json.votes.votedPercentage.toString()).toMatch("0");
-            // expect(json.votes.allVotes.toString()).toMatch("0");
-            expect(json.votes.userVotes.toString()).toMatch("0");
+            expect(json.streak).toEqual(0);
+            expect(json.joinedGroups).toEqual(0);
+            expect(json.ownedGroups).toEqual(0);
+            expect(json.votes.votedPercentage).toEqual(0);
+            expect(json.votes.allVotes).toEqual(0);
+            expect(json.votes.userVotes).toEqual(0);
         });
 
         await test.step("Create Group", async () => {
@@ -146,12 +146,12 @@ test.describe("Test Users API", async () => {
 
             expect(response.ok()).toBeTruthy();
             const [json] = await response.json();
-            expect(json.streak.toString()).toMatch("0");
-            expect(json.joinedGroups.toString()).toMatch("1");
-            expect(json.ownedGroups.toString()).toMatch("1");
-            // expect(json.votes.votedPercentage.toString()).toMatch("0");
-            // expect(json.votes.allVotes.toString()).toMatch("1");
-            // expect(json.votes.userVotes.toString()).toMatch("0");
+            expect(json.streak).toEqual(1);
+            expect(json.joinedGroups).toEqual(1);
+            expect(json.ownedGroups).toEqual(1);
+            expect(json.votes.votedPercentage).toEqual(100);
+            expect(json.votes.allVotes).toEqual(1);
+            expect(json.votes.userVotes).toEqual(1);
         });
     });
 
@@ -169,7 +169,7 @@ test.describe("Test Users API", async () => {
 
             expect(response.ok()).toBeTruthy();
             const json = await response.json();
-            expect(json.affectedRows.toString()).toMatch("1");
+            expect(json.affectedRows).toEqual(1);
         });
 
         await test.step("Verify User", async () => {

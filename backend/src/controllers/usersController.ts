@@ -2,7 +2,7 @@ import { NotificationRow, QuestionRow, UserRow } from "../interfaces/models";
 import { signup, login, changePassword } from "../functions/usersManager";
 import { Response, Request } from "express";
 import { RowDataPacket } from "mysql2";
-import validator from "validator";
+import validator, { toDate } from "validator";
 import jwt from "jsonwebtoken";
 import db from "../connection";
 
@@ -164,8 +164,18 @@ export const getUserStats = async (req: Request, res: Response) => {
     const { id } = req.user;
 
     try {
-        const streakQuery = "SELECT streak FROM users WHERE id = ?";
-        const [streak] = await db.query<UserRow[]>(streakQuery, [id]);
+        const streakQuery =
+            "SELECT date FROM votes INNER JOIN questions ON questions.id = votes.question_id WHERE from_id = ? GROUP BY date";
+        const [streak] = await db.query<RowDataPacket[]>(streakQuery, [
+            req.user.id,
+        ]);
+
+        if (!streak) {
+            res.status(400).json({
+                error: "There was an error while getting the statistics.",
+            });
+            return;
+        }
 
         const membershipQuery =
             "SELECT (SELECT COUNT(*) FROM memberships WHERE user_id = ?) AS joined_groups, (SELECT COUNT(*) FROM groups WHERE owner_id = ?) AS owned_groups FROM dual";
@@ -178,26 +188,32 @@ export const getUserStats = async (req: Request, res: Response) => {
             "SELECT votes.id, from_id, to_id FROM votes INNER JOIN questions ON questions.id = votes.question_id INNER JOIN memberships ON memberships.group_id = questions.group_id WHERE memberships.user_id = ? AND date = CURDATE()";
         const [votes] = await db.query<QuestionRow[]>(votesQuery, [id]);
 
-        if (!streak || !counts || !votes) {
+        if (!counts || !votes) {
             res.status(400).json({
                 error: "There was an error while getting the statistics.",
             });
             return;
         }
 
-        if (streak.length < 1) {
-            res.status(404).json({ error: "User not found." });
-            return;
-        }
+        let streakCount = 0;
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-        console.log(votes);
+        streak
+            .map((d) => new Date(d.date).setHours(0, 0, 0, 0))
+            .sort((a, b) => b - a)
+            .some((date, i, arr) => {
+                if (i > 0 && arr[i - 1] - date !== 86400000) return true;
+                streakCount +=
+                    date === today.getTime() || streakCount > 0 ? 1 : 0;
+            });
 
         const allVotes = votes;
         const userVotes = votes.filter((vote) => vote.to_id === id);
 
         res.status(200).json([
             {
-                streak: streak[0].streak,
+                streak: streakCount,
                 joinedGroups: counts[0].joined_groups,
                 ownedGroups: counts[0].owned_groups,
                 votes: {

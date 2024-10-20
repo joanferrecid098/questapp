@@ -94,10 +94,10 @@ test.describe("Test Groups API", async () => {
             expect(response.ok()).toBeTruthy();
             const json = await response.json();
             expect(json).toHaveLength(1);
-            expect(json[0].group_id.toString()).toMatch(groupId.toString());
+            expect(json[0].group_id).toEqual(groupId);
             expect(json[0].name).toMatch("API Groups User");
             expect(json[0].username).toMatch("apitests3");
-            expect(json[0].voteCount.toString()).toMatch("0");
+            expect(json[0].voteCount).toEqual(0);
             expect(json[0].user_id).toBeTruthy();
 
             if (json[0].user_id) {
@@ -126,7 +126,7 @@ test.describe("Test Groups API", async () => {
 
             expect(response.ok()).toBeTruthy();
             const json = await response.json();
-            expect(json.affectedRows.toString()).toMatch("1");
+            expect(json.affectedRows).toEqual(1);
         });
 
         await test.step("Verify Group", async () => {
@@ -180,7 +180,7 @@ test.describe("Test Groups API", async () => {
 
             expect(response.ok()).toBeTruthy();
             const json = await response.json();
-            expect(json.affectedRows.toString()).toMatch("1");
+            expect(json.affectedRows).toEqual(1);
         });
 
         await test.step("Verify Group", async () => {

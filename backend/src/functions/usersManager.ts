@@ -1,5 +1,5 @@
 import { UserRow } from "../interfaces/models";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { ResultSetHeader } from "mysql2";
 import validator from "validator";
 import db from "../connection";
 import bcrypt from "bcrypt";
@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 export const signup = async (
     name: string,
     username: string,
-    password: string,
+    password: string
 ) => {
     // Validation
     if (!username || !password) {
@@ -34,7 +34,7 @@ export const signup = async (
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const query = "INSERT INTO users VALUES (NULL, ?, 0, ?, ?)";
+    const query = "INSERT INTO users VALUES (NULL, ?, ?, ?)";
 
     const user = await db
         .query<ResultSetHeader>(query, [name, username, hash])
@@ -81,7 +81,7 @@ export const login = async (username: string, password: string) => {
 export const changePassword = async (
     id: string,
     oldPassword: string,
-    newPassword: string,
+    newPassword: string
 ) => {
     // Validation
     if (!id || !oldPassword || !newPassword) {

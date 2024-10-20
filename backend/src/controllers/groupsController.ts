@@ -283,7 +283,7 @@ export const getUsers = async (req: Request, res: Response) => {
         }
 
         const usersQuery =
-            "SELECT users.id, user_id, group_id, name, streak, username FROM memberships INNER JOIN users ON users.id = memberships.user_id WHERE memberships.group_id = ?";
+            "SELECT users.id, user_id, group_id, name, username FROM memberships INNER JOIN users ON users.id = memberships.user_id WHERE memberships.group_id = ?";
         const [users] = await db.query<UserRow[]>(usersQuery, [id]);
 
         const votesQuery =
