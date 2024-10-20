@@ -192,7 +192,7 @@ export const updateGroup = async (req: Request, res: Response) => {
         "UPDATE groups SET name = ?, owner_id = ?, last_updated = ? WHERE id = ? AND owner_id = ?";
 
     await db
-        .query(query, [
+        .query<ResultSetHeader>(query, [
             name,
             owner,
             date.slice(0, 19).replace("T", " "),
@@ -200,6 +200,11 @@ export const updateGroup = async (req: Request, res: Response) => {
             req.user.id,
         ])
         .then((result) => {
+            if (result[0].affectedRows < 1) {
+                res.status(404).json({ error: "Group not found." });
+                return;
+            }
+
             res.status(200).json(result[0]);
             return;
         })
@@ -434,6 +439,11 @@ export const createInvite = async (req: Request, res: Response) => {
         });
     } catch (err: unknown) {
         if (err instanceof Error) {
+            const errorWithErrno = err as { errno?: number };
+            if (errorWithErrno.errno === 1452) {
+                return res.status(404).json({ error: "Group not found." });
+            }
+
             return res.status(400).json({ error: err.message });
         } else {
             return res.status(400).json({ error: "Internal server error." });
