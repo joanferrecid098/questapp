@@ -142,6 +142,11 @@ export const submitVote = async (req: Request, res: Response) => {
         return;
     } catch (err: unknown) {
         if (err instanceof Error) {
+            const errorWithErrno = err as { errno?: number };
+            if (errorWithErrno.errno === 1452) {
+                return res.status(404).json({ error: "Group/user not found." });
+            }
+
             res.status(400).json({ error: err.message });
             return;
         } else {
@@ -178,7 +183,7 @@ export const updateVote = async (req: Request, res: Response) => {
         }
 
         if (question.length < 1) {
-            res.status(404).json({ error: "Vote not found." });
+            res.status(404).json({ error: "Group not found." });
             return;
         }
 
@@ -209,6 +214,11 @@ export const updateVote = async (req: Request, res: Response) => {
         return;
     } catch (err: unknown) {
         if (err instanceof Error) {
+            const errorWithErrno = err as { errno?: number };
+            if (errorWithErrno.errno === 1452) {
+                return res.status(404).json({ error: "Group/user not found." });
+            }
+
             res.status(400).json({ error: err.message });
             return;
         } else {
@@ -244,7 +254,7 @@ export const removeVote = async (req: Request, res: Response) => {
         }
 
         if (question.length < 1) {
-            res.status(404).json({ error: "Vote not found." });
+            res.status(404).json({ error: "Group not found." });
             return;
         }
 
@@ -274,6 +284,11 @@ export const removeVote = async (req: Request, res: Response) => {
         return;
     } catch (err: unknown) {
         if (err instanceof Error) {
+            const errorWithErrno = err as { errno?: number };
+            if (errorWithErrno.errno === 1452) {
+                return res.status(404).json({ error: "Group/user not found." });
+            }
+
             res.status(400).json({ error: err.message });
             return;
         } else {
