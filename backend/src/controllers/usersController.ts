@@ -2,7 +2,7 @@ import { NotificationRow, QuestionRow, UserRow } from "../interfaces/models";
 import { signup, login, changePassword } from "../functions/usersManager";
 import { Response, Request } from "express";
 import { RowDataPacket } from "mysql2";
-import validator, { toDate } from "validator";
+import validator from "validator";
 import jwt from "jsonwebtoken";
 import db from "../connection";
 
@@ -84,10 +84,10 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 export const updatePassword = async (req: Request, res: Response) => {
-    const { oldPassword, newPassword } = req.body;
+    const { old_password, new_password } = req.body;
     const { id } = req.user;
 
-    if (!oldPassword || !newPassword) {
+    if (!old_password || !new_password) {
         res.status(400).json({
             error: "All fields are required.",
         });
@@ -97,8 +97,8 @@ export const updatePassword = async (req: Request, res: Response) => {
     try {
         const confirm = await changePassword(
             id.toString(),
-            oldPassword,
-            newPassword
+            old_password,
+            new_password
         );
 
         if (confirm[0].affectedRows != 1) {
@@ -214,13 +214,13 @@ export const getUserStats = async (req: Request, res: Response) => {
         res.status(200).json([
             {
                 streak: streakCount,
-                joinedGroups: counts[0].joined_groups,
-                ownedGroups: counts[0].owned_groups,
+                joined_groups: counts[0].joined_groups,
+                owned_groups: counts[0].owned_groups,
                 votes: {
-                    votedPercentage:
+                    voted_percentage:
                         (userVotes.length / allVotes.length || 0) * 100,
-                    allVotes: allVotes.length,
-                    userVotes: userVotes.length,
+                    all_votes: allVotes.length,
+                    user_votes: userVotes.length,
                 },
             },
         ]);

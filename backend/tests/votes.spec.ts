@@ -102,7 +102,7 @@ test.describe("Test Users API", async () => {
             expect(json[0].group_id).toEqual(groupId);
             expect(json[0].name).toMatch("API Votes User");
             expect(json[0].username).toMatch("apitests5");
-            expect(json[0].voteCount).toEqual(0);
+            expect(json[0].vote_count).toEqual(0);
             expect(json[0].user_id).toBeTruthy();
 
             if (json[0].user_id) {
@@ -183,13 +183,13 @@ test.describe("Test Users API", async () => {
             expect(json[0].group_id).toEqual(groupId);
             expect(json[0].name).toMatch("API Votes User");
             expect(json[0].username).toMatch("apitests5");
-            expect(json[0].voteCount).toEqual(0);
+            expect(json[0].vote_count).toEqual(0);
             expect(json[0].user_id).toBeTruthy();
 
             expect(json[1].group_id).toEqual(groupId);
             expect(json[1].name).toMatch("API Votes User 2");
             expect(json[1].username).toMatch("apitests6");
-            expect(json[1].voteCount).toEqual(1);
+            expect(json[1].vote_count).toEqual(1);
             expect(json[1].user_id).toBeTruthy();
         });
 
@@ -222,13 +222,13 @@ test.describe("Test Users API", async () => {
             expect(json[0].group_id).toEqual(groupId);
             expect(json[0].name).toMatch("API Votes User");
             expect(json[0].username).toMatch("apitests5");
-            expect(json[0].voteCount).toEqual(1);
+            expect(json[0].vote_count).toEqual(1);
             expect(json[0].user_id).toBeTruthy();
 
             expect(json[1].group_id).toEqual(groupId);
             expect(json[1].name).toMatch("API Votes User 2");
             expect(json[1].username).toMatch("apitests6");
-            expect(json[1].voteCount).toEqual(1);
+            expect(json[1].vote_count).toEqual(1);
             expect(json[1].user_id).toBeTruthy();
         });
     });
@@ -262,13 +262,13 @@ test.describe("Test Users API", async () => {
             expect(json[0].group_id).toEqual(groupId);
             expect(json[0].name).toMatch("API Votes User");
             expect(json[0].username).toMatch("apitests5");
-            expect(json[0].voteCount).toEqual(2);
+            expect(json[0].vote_count).toEqual(2);
             expect(json[0].user_id).toBeTruthy();
 
             expect(json[1].group_id).toEqual(groupId);
             expect(json[1].name).toMatch("API Votes User 2");
             expect(json[1].username).toMatch("apitests6");
-            expect(json[1].voteCount).toEqual(0);
+            expect(json[1].vote_count).toEqual(0);
             expect(json[1].user_id).toBeTruthy();
         });
     });
@@ -302,13 +302,13 @@ test.describe("Test Users API", async () => {
             expect(json[0].group_id).toEqual(groupId);
             expect(json[0].name).toMatch("API Votes User");
             expect(json[0].username).toMatch("apitests5");
-            expect(json[0].voteCount).toEqual(1);
+            expect(json[0].vote_count).toEqual(1);
             expect(json[0].user_id).toBeTruthy();
 
             expect(json[1].group_id).toEqual(groupId);
             expect(json[1].name).toMatch("API Votes User 2");
             expect(json[1].username).toMatch("apitests6");
-            expect(json[1].voteCount).toEqual(0);
+            expect(json[1].vote_count).toEqual(0);
             expect(json[1].user_id).toBeTruthy();
         });
     });

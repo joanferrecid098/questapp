@@ -85,11 +85,11 @@ test.describe("Test Users API", async () => {
             expect(response.ok()).toBeTruthy();
             const [json] = await response.json();
             expect(json.streak).toEqual(0);
-            expect(json.joinedGroups).toEqual(0);
-            expect(json.ownedGroups).toEqual(0);
-            expect(json.votes.votedPercentage).toEqual(0);
-            expect(json.votes.allVotes).toEqual(0);
-            expect(json.votes.userVotes).toEqual(0);
+            expect(json.joined_groups).toEqual(0);
+            expect(json.owned_groups).toEqual(0);
+            expect(json.votes.voted_percentage).toEqual(0);
+            expect(json.votes.all_votes).toEqual(0);
+            expect(json.votes.user_votes).toEqual(0);
         });
 
         await test.step("Create Group", async () => {
@@ -147,11 +147,11 @@ test.describe("Test Users API", async () => {
             expect(response.ok()).toBeTruthy();
             const [json] = await response.json();
             expect(json.streak).toEqual(1);
-            expect(json.joinedGroups).toEqual(1);
-            expect(json.ownedGroups).toEqual(1);
-            expect(json.votes.votedPercentage).toEqual(100);
-            expect(json.votes.allVotes).toEqual(1);
-            expect(json.votes.userVotes).toEqual(1);
+            expect(json.joined_groups).toEqual(1);
+            expect(json.owned_groups).toEqual(1);
+            expect(json.votes.voted_percentage).toEqual(100);
+            expect(json.votes.all_votes).toEqual(1);
+            expect(json.votes.user_votes).toEqual(1);
         });
     });
 
@@ -190,8 +190,8 @@ test.describe("Test Users API", async () => {
         await test.step("Update Password", async () => {
             const response = await request.patch("/api/users/password", {
                 data: {
-                    oldPassword: "TestPass1!@",
-                    newPassword: "TestPass2!@",
+                    old_password: "TestPass1!@",
+                    new_password: "TestPass2!@",
                 },
                 headers: {
                     Authorization: authorizationToken,

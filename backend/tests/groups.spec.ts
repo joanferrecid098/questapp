@@ -100,8 +100,8 @@ test.describe("Test Groups API", async () => {
             const [json] = await response.json();
             expect(json.name).toMatch("API Testing Group");
             expect(json.owner).toMatch("API Groups User");
-            expect(json.hasVoted).not.toBeTruthy();
-            expect(json.isOwner).toBeTruthy();
+            expect(json.has_voted).not.toBeTruthy();
+            expect(json.is_owner).toBeTruthy();
         });
     });
 
@@ -134,7 +134,7 @@ test.describe("Test Groups API", async () => {
             expect(json[0].group_id).toEqual(groupId);
             expect(json[0].name).toMatch("API Groups User");
             expect(json[0].username).toMatch("apitests3");
-            expect(json[0].voteCount).toEqual(0);
+            expect(json[0].vote_count).toEqual(0);
             expect(json[0].user_id).toBeTruthy();
 
             if (json[0].user_id) {
@@ -177,8 +177,8 @@ test.describe("Test Groups API", async () => {
             const [json] = await response.json();
             expect(json.name).toMatch("API Test Group");
             expect(json.owner).toMatch("API Groups User");
-            expect(json.hasVoted).not.toBeTruthy();
-            expect(json.isOwner).toBeTruthy();
+            expect(json.has_voted).not.toBeTruthy();
+            expect(json.is_owner).toBeTruthy();
         });
     });
 

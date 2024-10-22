@@ -87,8 +87,8 @@ export const getGroup = async (req: Request, res: Response) => {
             const infoWithVoted = [
                 {
                     ...info[0],
-                    hasVoted: hasVoted,
-                    isOwner: isOwner,
+                    has_voted: hasVoted,
+                    is_owner: isOwner,
                 },
             ];
 
@@ -319,7 +319,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
         const usersWithVotes = users.map((user) => ({
             ...user,
-            voteCount: voteCounts[user.id] || 0,
+            vote_count: voteCounts[user.id] || 0,
         }));
 
         res.status(200).json(usersWithVotes);
@@ -512,7 +512,7 @@ export const joinGroup = async (req: Request, res: Response) => {
 
         res.status(200).json({
             ...membership,
-            groupId: invite[0].group_id,
+            group_id: invite[0].group_id,
         });
         return;
     } catch (err: unknown) {
