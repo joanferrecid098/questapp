@@ -78,7 +78,14 @@ const createNotifications = async () => {
                 notifications.map((notification) => notification.membership_id),
             ]);
 
-            if (!insert) {
+            const date = new Date().toISOString();
+
+            const groupQuery = "UPDATE groups SET last_updated = ?";
+            const [group] = await db.query<ResultSetHeader>(groupQuery, [
+                date.slice(0, 19).replace("T", " "),
+            ]);
+
+            if (!insert || !group) {
                 throw new Error("Error while creating the notifications.");
             }
 
