@@ -18,12 +18,12 @@ export interface GetUserInfo {
 
 export interface GetUserStats {
     streak: number;
-    joinedGroups: number;
-    ownedGroups: number;
+    joined_groups: number;
+    owned_groups: number;
     votes: {
-        votedPercentage: number;
-        allVotes: number;
-        userVotes: number;
+        voted_percentage: number;
+        all_votes: number;
+        user_votes: number;
     };
 }
 
@@ -50,8 +50,8 @@ export interface GetGroup {
     question: string;
     group_id: number;
     date: string;
-    hasVoted: boolean;
-    isOwner: boolean;
+    has_voted: boolean;
+    is_owner: boolean;
     last_updated: string;
 }
 
@@ -62,5 +62,5 @@ export interface GetGroupUsers {
     name: string;
     streak: number;
     username: string;
-    voteCount: number;
+    vote_count: number;
 }

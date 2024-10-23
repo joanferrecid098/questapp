@@ -47,7 +47,6 @@ export const send = async <T>({
     const response = await fetch(`${base}${path}`, opts);
 
     if (!response.ok) {
-        // if (response.status === 401) sessionStore.set("");
         throw new Error((await response.json()).error || response.statusText);
     }
 
@@ -76,22 +75,22 @@ export const getUserStats = async () => {
 
     return {
         dailyStreak: response[0].streak,
-        joinedGroups: response[0].joinedGroups,
-        ownedGroups: response[0].ownedGroups,
-        votedPercentage: Math.round(response[0].votes.votedPercentage),
+        joinedGroups: response[0].joined_groups,
+        ownedGroups: response[0].owned_groups,
+        votedPercentage: Math.round(response[0].votes.voted_percentage),
     };
 };
 
 export const changePassword = async (
     oldPassword: string,
-    newPassword: string,
+    newPassword: string
 ) => {
     const response = await send<GetUserStats[]>({
         method: "PATCH",
         path: `/api/users/password`,
         data: {
-            oldPassword,
-            newPassword,
+            old_password: oldPassword,
+            new_password: newPassword,
         },
     });
 
@@ -156,8 +155,8 @@ export const getGroup = async (id: number) => {
         owner: response[0].owner,
         owner_id: response[0].owner_id,
         question: response[0].question,
-        hasVoted: response[0].hasVoted,
-        isOwner: response[0].isOwner,
+        hasVoted: response[0].has_voted,
+        isOwner: response[0].is_owner,
     };
 };
 
@@ -175,7 +174,7 @@ export const createGroup = async (groupDetails: GroupDetails) => {
 
 export const updateGroup = async (
     groupDetails: GroupDetails,
-    removedUsers: UserDetails[],
+    removedUsers: UserDetails[]
 ) => {
     const update = await send<ResultSetHeader>({
         method: "PATCH",
@@ -220,13 +219,13 @@ export const getGroupUsers = async (id: number) => {
     });
 
     let totalVotes = 0;
-    response.forEach((user) => (totalVotes += user.voteCount));
+    response.forEach((user) => (totalVotes += user.vote_count));
 
     return response.map((user) => ({
         id: user.id,
         name: user.name,
         username: user.username,
-        percentage: Math.round((user.voteCount / totalVotes) * 100) || 0,
+        percentage: Math.round((user.vote_count / totalVotes) * 100) || 0,
     }));
 };
 
