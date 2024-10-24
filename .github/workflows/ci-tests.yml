@@ -17,12 +17,18 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                   node-version: lts/*
+            - name: Build MySQL Image
+              run: make build_db_image
+              working-directory: ./docker/db
+            - name: Run MySQL Image
+              run: make run_db_image
+              working-directory: ./docker/db
             - name: Install dependencies
               run: yarn install --immutable --immutable-cache --check-cache
             - name: Install Playwright Browsers
               run: npx playwright install --with-deps
             - name: Run Playwright tests
-              run: npx playwright test
+              run: yarn start & npx playwright test
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
               with:
