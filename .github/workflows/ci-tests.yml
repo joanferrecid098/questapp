@@ -19,10 +19,10 @@ jobs:
                   node-version: lts/*
             - name: Build MySQL Image
               run: make build_db_image
-              working-directory: ./docker/db
+              working-directory: ./docker
             - name: Run MySQL Image
               run: make run_db_image
-              working-directory: ./docker/db
+              working-directory: ./docker
             - name: Install dependencies
               run: yarn install --immutable --immutable-cache --check-cache
             - name: Install Playwright Browsers
