@@ -8,12 +8,15 @@ jobs:
     backend-tests:
         timeout-minutes: 60
         runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./backend
+
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4
               with:
                   node-version: lts/*
-            - run: cd backend
             - name: Install dependencies
               run: yarn ci
             - name: Install Playwright Browsers
