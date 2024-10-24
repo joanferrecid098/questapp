@@ -1,3 +1,4 @@
+import { PUBLIC_BASE_URL } from "$env/static/public";
 import { sessionStore } from "$stores/auth";
 import { get } from "svelte/store";
 import type {
@@ -13,7 +14,7 @@ import type {
     UserDetails,
 } from "$interfaces/models";
 
-export const base = "http://localhost:8080";
+export const base = PUBLIC_BASE_URL;
 
 /* Fetching */
 interface SendOptions {

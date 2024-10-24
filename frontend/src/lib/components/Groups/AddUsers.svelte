@@ -4,7 +4,7 @@
     export let linkId: string;
     export let closeAdd;
 
-    let linkPrefix = "https://questapp.com/invite/";
+    let linkPrefix = window.location.origin + "/invite/";
     let linkValue = linkPrefix + linkId;
     let linkIconState = "link";
 
