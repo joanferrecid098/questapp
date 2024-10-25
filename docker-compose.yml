@@ -13,3 +13,13 @@ services:
             USERNAME: questapp
             PASSWORD: Password!
             DB_PORT: 3306
+            TZ: Z
+
+    frontend:
+        container_name: questapp-frontend
+        build:
+            context: ./frontend
+        ports:
+            - "3000:3000"
+        environment:
+            PUBLIC_BASE_URL: http://192.168.1.210:8080
