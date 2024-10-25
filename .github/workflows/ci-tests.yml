@@ -30,7 +30,9 @@ jobs:
             - name: Copy .env file
               run: cp .env.sample .env
             - name: Run Playwright tests
-              run: yarn start & npx playwright test
+              run: |
+                  yarn start &
+                  npx playwright test
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
               with:
