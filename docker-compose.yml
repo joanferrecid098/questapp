@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+    backend:
+        container_name: questapp-backend
+        build:
+            context: ./backend
+        ports:
+            - "8080:8080"
+        environment:
+            PORT: 8080
+            HOST: 127.0.0.1
+            USERNAME: questapp
+            PASSWORD: Password!
+            DB_PORT: 3306

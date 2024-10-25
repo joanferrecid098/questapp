@@ -1,16 +1,34 @@
 import express, { NextFunction, Request, Response } from "express";
+import { exec } from "child_process";
+import cron from "node-cron";
 import dotenv from "dotenv";
 import cors from "cors";
 
 dotenv.config();
 const app = express();
 
+// Cron Job
+cron.schedule("0 0 * * *", () => {
+    exec("node " + __dirname + "/cli.js update", (error, stdout, stderr) => {
+        if (error) {
+            console.error(`${error.message}`);
+            return;
+        }
+        if (stderr) {
+            console.error(`${stderr}`);
+            return;
+        }
+
+        console.log(`${stdout}`);
+    });
+});
+
 // Middleware
 import requireAuth from "./middleware/requireAuth";
 
 const unless = (
     paths: string[],
-    middleware: (req: Request, res: Response, next: NextFunction) => void,
+    middleware: (req: Request, res: Response, next: NextFunction) => void
 ) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (paths.some((path) => req.path.startsWith(path))) {
