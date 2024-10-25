@@ -8,7 +8,6 @@ RUN npm install typescript --global
 
 COPY . .
 
-COPY .env.sample .env
 RUN yarn run check
 RUN yarn run build
 RUN rm -rf src/ static/

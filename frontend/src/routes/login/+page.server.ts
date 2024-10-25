@@ -28,9 +28,15 @@ export const actions: Actions = {
         });
 
         const result: ServerResponse = await response.json();
+        const isSecure = request.headers.get("x-forwarded-proto") === "https";
 
         if (response.ok) {
-            cookies.set("session", result.token, { path: "/" });
+            cookies.set("session", result.token, {
+                path: "/",
+                httpOnly: true,
+                sameSite: "lax",
+                secure: isSecure,
+            });
             sessionStore.set(result.token);
         } else {
             return fail(400, { error: result.error });
@@ -59,9 +65,15 @@ export const actions: Actions = {
         });
 
         const result: ServerResponse = await response.json();
+        const isSecure = request.headers.get("x-forwarded-proto") === "https";
 
         if (response.ok) {
-            cookies.set("session", result.token, { path: "/" });
+            cookies.set("session", result.token, {
+                path: "/",
+                httpOnly: true,
+                sameSite: "lax",
+                secure: isSecure,
+            });
             sessionStore.set(result.token);
         } else {
             return fail(400, { error: result.error });

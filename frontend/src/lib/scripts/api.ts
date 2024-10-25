@@ -1,5 +1,5 @@
-import { PUBLIC_BASE_URL } from "$env/static/public";
 import { sessionStore } from "$stores/auth";
+import { env } from "$env/dynamic/public";
 import { get } from "svelte/store";
 import type {
     GetGroup,
@@ -14,7 +14,7 @@ import type {
     UserDetails,
 } from "$interfaces/models";
 
-export const base = PUBLIC_BASE_URL;
+export const base = env.PUBLIC_BASE_URL;
 
 /* Fetching */
 interface SendOptions {

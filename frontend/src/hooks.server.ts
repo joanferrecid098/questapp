@@ -12,18 +12,31 @@ export const handle: Handle = async ({ event, resolve }) => {
     const unprotectedRoutes = ["/login", "/register"];
 
     if (token) {
+        const isSecure =
+            event.request.headers.get("x-forwarded-proto") === "https";
+
         try {
             const decodedToken: SessionToken = jwtDecode<SessionToken>(token);
-
             const currentTime = Math.floor(Date.now() / 1000);
+
             if (decodedToken.exp < currentTime) {
-                event.cookies.delete("session", { path: "/" });
+                event.cookies.delete("session", {
+                    path: "/",
+                    httpOnly: true,
+                    sameSite: "lax",
+                    secure: isSecure,
+                });
                 throw redirect(302, "/login?expired-token");
             }
 
             event.locals.token = token;
         } catch (error) {
-            event.cookies.delete("session", { path: "/" });
+            event.cookies.delete("session", {
+                path: "/",
+                httpOnly: true,
+                sameSite: "lax",
+                secure: isSecure,
+            });
             throw redirect(302, "/login?expired-token");
         }
     }

@@ -13,6 +13,7 @@ services:
             USERNAME: questapp
             PASSWORD: Password!
             DB_PORT: 3306
+            SECRET: VerySecure
             TZ: Z
 
     frontend:
