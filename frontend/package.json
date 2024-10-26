@@ -1,20 +1,24 @@
 {
     "name": "frontend",
     "version": "0.0.1",
+    "license": "MIT",
     "scripts": {
         "dev": "vite dev",
         "build": "vite build",
         "preview": "vite preview",
+        "test:e2e": "npx playwright test",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
     },
     "devDependencies": {
         "@fontsource-variable/nunito-sans": "^5.1.0",
+        "@playwright/test": "^1.48.2",
         "@sveltejs/adapter-auto": "^3.0.0",
         "@sveltejs/adapter-node": "^5.2.8",
         "@sveltejs/kit": "^2.0.0",
         "@sveltejs/vite-plugin-svelte": "^3.0.0",
         "@types/jwt-decode": "^3.1.0",
+        "@types/node": "^22.8.1",
         "check-password-strength": "^2.0.10",
         "jwt-decode": "^4.0.0",
         "svelte": "^4.2.7",
