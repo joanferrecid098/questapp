@@ -32,6 +32,7 @@ jobs:
             - name: Run Playwright tests
               run: |
                   yarn start &
+                  sleep 3
                   npx playwright test
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
