@@ -82,7 +82,7 @@ test.describe("Test Login UI", async () => {
         expect(page.url()).toContain("/login");
     });
 
-    test("Register User", async ({ page }) => {
+    test("Register User", async ({ page, browserName }) => {
         await page.goto("/");
         expect(page.url()).toContain("/login");
 
@@ -99,7 +99,7 @@ test.describe("Test Login UI", async () => {
         expect(page.getByRole("button", { name: "Sign up" })).toBeVisible();
 
         await page.getByPlaceholder("Display name").fill("UI Login Account");
-        await page.getByPlaceholder("Username").fill("uitests1");
+        await page.getByPlaceholder("Username").fill("uitests1" + browserName);
         await page.getByPlaceholder("Password").fill("TestPass1!@");
         await page.getByRole("button", { name: "Sign up" }).click();
 
@@ -107,12 +107,12 @@ test.describe("Test Login UI", async () => {
     });
 });
 
-test.afterAll(async ({ request }) => {
+test.afterAll(async ({ request, browserName }) => {
     let authorizationToken: string;
 
     var response = await request.post("http://127.0.0.1:8080/api/users/login", {
         data: {
-            username: "uitests1",
+            username: "uitests1" + browserName,
             password: "TestPass1!@",
         },
     });
