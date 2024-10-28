@@ -110,7 +110,7 @@ test.describe("Test Login UI", async () => {
 test.afterAll(async ({ request, browserName }) => {
     let authorizationToken: string;
 
-    var response = await request.post("http://127.0.0.1:8080/api/users/login", {
+    var response = await request.post("http://localhost:8080/api/users/login", {
         data: {
             username: "uitests1" + browserName,
             password: "TestPass1!@",
@@ -124,7 +124,7 @@ test.afterAll(async ({ request, browserName }) => {
     authorizationToken = "Bearer " + json.token;
 
     var response = await request.delete(
-        "http://127.0.0.1:8080/api/users/user",
+        "http://localhost:8080/api/users/user",
         {
             headers: {
                 Authorization: authorizationToken,
