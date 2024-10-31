@@ -125,7 +125,7 @@
                 ];
 
                 joinGroupActive = false;
-                goto("/groups/" + response.groupId + "?join-group");
+                goto("/groups/" + response.group_id + "?join-group");
             })
             .catch((error) => {
                 messageList = [

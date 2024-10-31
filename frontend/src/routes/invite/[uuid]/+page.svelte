@@ -12,7 +12,7 @@
 
         await acceptInvite(uuid)
             .then((response) => {
-                goto("/groups/" + response.groupId + "?join-group");
+                goto("/groups/" + response.group_id + "?join-group");
             })
             .catch((error) => {
                 goto("/groups?invite-not-found");

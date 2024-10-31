@@ -231,7 +231,7 @@ export const getGroupUsers = async (id: number) => {
 };
 
 export const acceptInvite = async (uuid: string) => {
-    const response = await send<ResultSetHeader & { groupId: number }>({
+    const response = await send<ResultSetHeader & { group_id: number }>({
         method: "POST",
         path: `/api/groups/invite/${uuid}`,
     });
