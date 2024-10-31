@@ -60,7 +60,10 @@ jobs:
               run: make run_db_image
               working-directory: .
             - name: Install dependencies
-              run: yarn install --immutable --immutable-cache --check-cache
+              run: |
+                  yarn install --immutable --immutable-cache --check-cache
+                  cd ../backend
+                  yarn install --immutable --immutable-cache --check-cache
             - name: Install Playwright Browsers
               run: npx playwright install --with-deps
             - name: Copy .env file
