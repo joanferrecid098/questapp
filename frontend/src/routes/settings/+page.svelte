@@ -247,7 +247,10 @@
                         </div>
                     </div>
                     <div class="image">
-                        <img src="https://picsum.photos/256/256" alt="" />
+                        <img
+                            src="https://picsum.photos/seed/test{accountDetails.name}/256"
+                            alt=""
+                        />
                     </div>
                 </div>
                 <button
