@@ -9,12 +9,14 @@ services:
             - "8080:8080"
         environment:
             PORT: 8080
-            HOST: 127.0.0.1
+            HOST: db
             USERNAME: questapp
             PASSWORD: Password!
             DB_PORT: 3306
             SECRET: VerySecure
             TZ: Z
+        networks:
+            - questapp-network
 
     frontend:
         container_name: questapp-frontend
@@ -23,4 +25,27 @@ services:
         ports:
             - "3000:3000"
         environment:
-            PUBLIC_BASE_URL: http://192.168.1.210:8080
+            PUBLIC_BASE_URL: http://127.0.0.1:8080
+        networks:
+            - questapp-network
+
+    db:
+        container_name: questapp-db
+        build:
+            context: ./db
+        restart: always
+        environment:
+            MYSQL_DATABASE: "questapp"
+            MYSQL_USER: "questapp"
+            MYSQL_PASSWORD: "Password!"
+            MYSQL_ROOT_PASSWORD: "Password!"
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./data:/var/lib/mysql
+        networks:
+            - questapp-network
+
+networks:
+    questapp-network:
+        driver: bridge
