@@ -13,6 +13,7 @@ export interface UserDetails {
     username?: string;
     percentage?: number;
     searchTerms?: string;
+    isOwner?: boolean;
 }
 
 export interface GroupDetails {

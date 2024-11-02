@@ -58,6 +58,21 @@
     onDestroy(() => {
         unsubscribe();
     });
+
+    const removeUserFromGroup = (user: UserDetails) => {
+        groupUsers = groupUsers.filter((u) => u.id !== user.id);
+
+        searchStore.set({
+            data: groupUsers.map((user) => ({
+                ...user,
+                searchTerms: `${user.name} ${user.username}`,
+            })),
+            filtered: [],
+            search: "",
+        });
+
+        removeUser(user);
+    };
 </script>
 
 <div class="information">
@@ -126,7 +141,8 @@
                         <div class="overlay">
                             <button
                                 class="delete material-symbols-outlined"
-                                on:click={() => removeUser(user)}
+                                on:click={() => removeUserFromGroup(user)}
+                                disabled={user.isOwner}
                             >
                                 delete
                             </button>
@@ -278,8 +294,13 @@
         padding: 0.25rem;
     }
 
-    .delete:hover {
+    .delete:hover:enabled {
         background-color: var(--color-primary-black);
+    }
+
+    .delete:disabled {
+        cursor: default;
+        opacity: 80%;
     }
 
     .user > p {

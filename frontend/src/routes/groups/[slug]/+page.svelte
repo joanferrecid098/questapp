@@ -51,6 +51,10 @@
         await getGroupUsers(Number(slug))
             .then((response) => {
                 groupUsers = response;
+                groupUsers = groupUsers.map((user) => ({
+                    ...user,
+                    isOwner: user.id === groupDetails.owner_id,
+                }));
             })
             .catch((error) => {
                 messageList = [
