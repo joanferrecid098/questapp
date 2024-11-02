@@ -141,7 +141,8 @@
 </script>
 
 <svelte:head>
-    <title>Home</title>
+    <title>Home - QuestApp</title>
+    <meta name="description" content="The home page for QuestApp." />
 </svelte:head>
 
 <section>

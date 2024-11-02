@@ -146,7 +146,8 @@
 </script>
 
 <svelte:head>
-    <title>Groups</title>
+    <title>Groups - QuestApp</title>
+    <meta name="description" content="Select one of your groups." />
 </svelte:head>
 
 <section>

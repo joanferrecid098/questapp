@@ -52,6 +52,11 @@
     $: alphanumeric = /^[a-z0-9]+$/gi.test(username);
 </script>
 
+<svelte:head>
+    <title>Login - QuestApp</title>
+    <meta name="description" content="Welcome to QuestApp." />
+</svelte:head>
+
 <section>
     {#if !signupMode}
         <div class="login">

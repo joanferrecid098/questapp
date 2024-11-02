@@ -22,6 +22,7 @@
     /* Variables */
     let slug = $page.params.slug;
     let interval: ReturnType<typeof setInterval>;
+    let titleName = "Group";
     let timer: string = "";
     let hasVoted = false;
 
@@ -35,6 +36,7 @@
         await getGroup(Number(slug))
             .then((response) => {
                 groupDetails = response;
+                titleName = response.name;
             })
             .catch((error) => {
                 messageList = [
@@ -231,6 +233,11 @@
         clearInterval(interval);
     });
 </script>
+
+<svelte:head>
+    <title>{titleName} - QuestApp</title>
+    <meta name="description" content="Check out your QuestApp group." />
+</svelte:head>
 
 <section>
     {#if groupDetails}

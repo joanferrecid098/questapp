@@ -171,7 +171,8 @@
 </script>
 
 <svelte:head>
-    <title>Settings</title>
+    <title>Settings - QuestApp</title>
+    <meta name="description" content="Account settings for QuestApp." />
 </svelte:head>
 
 <section>
@@ -287,6 +288,7 @@
         </div>
     </div>
 </section>
+
 {#if deleteMode}
     <DeleteAccount {deleteAccount} userDetails={accountDetails} />
 {/if}
