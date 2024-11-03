@@ -73,7 +73,15 @@
 
         removeUser(user);
     };
+
+    const beforeUnload = (e: Event) => {
+        if (editMode) {
+            e.preventDefault();
+        }
+    };
 </script>
+
+<svelte:window on:beforeunload={beforeUnload} />
 
 <div class="information">
     {#if !editMode}

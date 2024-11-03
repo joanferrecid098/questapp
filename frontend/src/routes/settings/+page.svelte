@@ -168,7 +168,15 @@
                 ];
             });
     };
+
+    const beforeUnload = (e: Event) => {
+        if (editMode) {
+            e.preventDefault();
+        }
+    };
 </script>
+
+<svelte:window on:beforeunload={beforeUnload} />
 
 <svelte:head>
     <title>Settings - QuestApp</title>
