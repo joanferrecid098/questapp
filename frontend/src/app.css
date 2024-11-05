@@ -68,6 +68,7 @@ button {
 input {
     border: 0;
     font-family: var(--font-body);
+    font-size: 0.8rem;
 }
 
 select {
@@ -94,6 +95,12 @@ i {
     justify-content: start;
     flex-wrap: wrap;
     gap: 1rem;
+}
+
+@media screen and (max-width: 800px) {
+    :root {
+        font-size: 14px;
+    }
 }
 
 .visually-hidden {
