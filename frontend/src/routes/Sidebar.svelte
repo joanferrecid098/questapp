@@ -18,44 +18,49 @@
         >
         <p>Groups</p>
     </a>
-    <a class="container settings" href="/settings">
-        <i
-            class="material-symbols-outlined"
-            class:is-active={currentRoute === "/settings"}>settings</i
-        >
-        <p>Settings</p>
-    </a>
+    <div class="bottom">
+        <a class="container settings" href="/settings">
+            <i
+                class="material-symbols-outlined"
+                class:is-active={currentRoute === "/settings"}>settings</i
+            >
+            <p>Settings</p>
+        </a>
+    </div>
 </nav>
 
 <style>
     nav {
         /* Background */
-        background-color: var(--color-primary-black);
+        background-color: var(--color-bg-2);
 
         /* Position */
+        width: 6rem;
+        height: 100vh;
+        max-width: 6rem;
+        max-height: 100vh;
         position: fixed;
-        width: 100vw;
-        height: auto;
-        max-width: 100vw;
-        max-height: 6rem;
-
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 5;
+        padding: 2rem 0 2rem 0;
+        box-sizing: border-box;
 
         /* Flex */
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
         align-content: stretch;
-        justify-content: space-evenly;
+        justify-content: start;
         gap: 1rem;
     }
 
     .container {
-        height: 4rem;
-        width: 4rem;
+        background-color: var(--color-primary-black);
+
+        width: 100%;
+        padding: 0;
+        max-width: 4.5rem;
+        max-height: 4.5rem;
+        flex: 1;
+        border-radius: 0.5rem;
 
         display: flex;
         flex-direction: column;
@@ -63,15 +68,34 @@
         align-content: stretch;
         justify-content: center;
         gap: 0.125rem;
-        padding: 1rem;
+    }
+
+    .bottom {
+        height: 100%;
+        width: 100%;
+        max-height: 100%;
+        max-width: 4.5rem;
+        flex: 1;
+
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+        align-content: stretch;
+        justify-content: end;
+    }
+
+    p {
+        font-size: 0.75rem;
+        transition: 200ms color;
     }
 
     i {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         transition: 200ms color;
     }
 
     /* State changes */
+
     .container:hover {
         cursor: pointer;
     }

@@ -1,10 +1,22 @@
 <script lang="ts">
+    import Sidebar from "./Sidebar.svelte";
     import Navbar from "./Navbar.svelte";
+    import { onMount } from "svelte";
     import "../app.css";
+
+    let isMobile = false;
+
+    onMount(() => {
+        isMobile = window.screen.availWidth <= 800;
+    });
 </script>
 
 <div class="app">
-    <Navbar />
+    {#if isMobile}
+        <Navbar />
+    {:else}
+        <Sidebar />
+    {/if}
 
     <main>
         <slot />
@@ -25,5 +37,11 @@
         padding-right: 4rem;
         padding-top: 4rem;
         padding-bottom: 2rem;
+    }
+
+    @media screen and (max-width: 800px) {
+        main {
+            padding-left: 4rem;
+        }
     }
 </style>

@@ -97,12 +97,6 @@ i {
     gap: 1rem;
 }
 
-@media screen and (max-width: 800px) {
-    :root {
-        font-size: 14px;
-    }
-}
-
 .visually-hidden {
     border: 0;
     clip: rect(0 0 0 0);
