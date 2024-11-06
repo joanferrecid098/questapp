@@ -1,14 +1,24 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+
     export let title;
     export let update;
     export let notifications;
     export let groupId;
+
+    let isMobile = false;
+
+    onMount(() => {
+        isMobile = window.screen.availWidth <= 800;
+    });
 </script>
 
 <a class="container" href="/groups/{groupId}">
     <i class="material-symbols-outlined">groups</i>
     <p class="title"><strong>{title}</strong></p>
-    <p class="update">Last update: <strong>{update}</strong></p>
+    {#if !isMobile}
+        <p class="update">Last update: <strong>{update}</strong></p>
+    {/if}
     <p class="notifications"><strong>{notifications}</strong></p>
     <i class="material-symbols-outlined">notifications</i>
 </a>
