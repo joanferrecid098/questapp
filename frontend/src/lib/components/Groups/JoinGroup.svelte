@@ -108,4 +108,11 @@
     .error {
         color: var(--color-danger-red);
     }
+
+    /* Responsive */
+    @media screen and (max-width: 800px) {
+        h2 {
+            font-size: 1.25rem;
+        }
+    }
 </style>

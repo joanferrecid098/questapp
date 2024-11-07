@@ -24,6 +24,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: var(--color-bg-1);
+        z-index: 4;
     }
 
     .overlay {
@@ -33,5 +34,13 @@
         left: 0;
         width: 100vw;
         height: 100vh;
+        z-index: 3;
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 800px) {
+        .contents {
+            width: 90%;
+        }
     }
 </style>
