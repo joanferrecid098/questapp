@@ -271,4 +271,20 @@
     .create > i {
         color: var(--color-primary-black);
     }
+
+    /* Responsive */
+    @media screen and (max-width: 800px) {
+        .header {
+            background-color: var(--color-bg-2);
+
+            width: 100%;
+            padding: 0.5rem 0 0.5rem 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        p {
+            font-size: 1.125rem;
+        }
+    }
 </style>

@@ -37,13 +37,16 @@
         flex: 1;
         flex-shrink: 0;
         text-align: start;
+        overflow-wrap: anywhere;
     }
 
     i {
         font-size: 1.375rem;
     }
-
-    /* .update {
-        text-align: end;
-    } */
+    /* Responsive */
+    @media screen and (max-width: 800px) {
+        .update {
+            text-align: end;
+        }
+    }
 </style>
