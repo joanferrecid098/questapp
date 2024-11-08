@@ -189,7 +189,7 @@
     </div>
     {#if !editMode}
         <div class="details">
-            <div class="container header">
+            <div class="container container-header">
                 <h2>Account Details</h2>
                 <button class="edit" on:click={() => (editMode = true)}>
                     <i class="material-symbols-outlined">edit</i>
@@ -229,7 +229,7 @@
         </div>
     {:else}
         <div class="details">
-            <div class="container header">
+            <div class="container container-header">
                 <h2>Account Details</h2>
                 <button
                     class="edit"
@@ -325,7 +325,7 @@
         height: 100%;
     }
 
-    .header {
+    .container-header {
         display: flex;
         flex-direction: column;
         align-items: start;
@@ -370,7 +370,7 @@
         gap: 0.5rem;
     }
 
-    .header {
+    .container-header {
         flex-direction: row;
         align-items: center;
     }
@@ -470,5 +470,40 @@
     .input > p {
         font-size: 1.25rem;
         flex-shrink: 0;
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 800px) {
+        .header {
+            background-color: var(--color-bg-2);
+
+            display: flex;
+            width: 100%;
+            padding: 0.5rem 0 0.5rem 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input {
+            flex-direction: column;
+            align-items: start;
+            justify-content: start;
+            gap: 0.75rem;
+        }
+
+        .input > p {
+            font-size: 1rem;
+        }
+
+        .info {
+            flex-direction: column;
+        }
     }
 </style>

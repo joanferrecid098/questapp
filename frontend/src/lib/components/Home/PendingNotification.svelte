@@ -46,6 +46,7 @@
         flex: 1;
         flex-shrink: 0;
         text-align: start;
+        overflow-wrap: anywhere;
     }
 
     i {
