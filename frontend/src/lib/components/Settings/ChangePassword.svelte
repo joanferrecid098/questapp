@@ -148,4 +148,22 @@
         color: var(--color-text-white);
         width: 100%;
     }
+
+    /* Responsive */
+    @media screen and (max-width: 800px) {
+        h2 {
+            font-size: 1.25rem;
+        }
+
+        .input {
+            flex-direction: column;
+            align-items: start;
+            justify-content: start;
+            gap: 0.75rem;
+        }
+
+        .input > p {
+            font-size: 1rem;
+        }
+    }
 </style>
