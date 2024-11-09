@@ -42,6 +42,7 @@
     @media screen and (max-width: 800px) {
         main {
             padding: 1.5rem;
+            padding-bottom: 7.5rem;
         }
     }
 </style>

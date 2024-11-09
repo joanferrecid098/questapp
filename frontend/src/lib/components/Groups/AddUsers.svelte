@@ -117,7 +117,9 @@
 
     /* Elements */
     .link > p {
+        text-align: start;
         font-size: 1rem;
+        overflow-wrap: anywhere;
     }
 
     i {
