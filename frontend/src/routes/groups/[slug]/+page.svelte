@@ -28,6 +28,12 @@
 
     let removedUsers: UserDetails[] = [];
 
+    let isMobile = false;
+
+    onMount(() => {
+        isMobile = window.screen.availWidth <= 800;
+    });
+
     /* API Responses */
     let groupDetails: GroupDetails;
     let groupUsers: UserDetails[];
@@ -248,9 +254,15 @@
         <div class="header">
             <div class="details">
                 <p><strong>{groupDetails.name}</strong></p>
-                <p class="end">
-                    New question in: <strong>{timer}</strong>
-                </p>
+                {#if isMobile}
+                    <p class="end">
+                        Time left: <strong>{timer}</strong>
+                    </p>
+                {:else}
+                    <p class="end">
+                        New question in: <strong>{timer}</strong>
+                    </p>
+                {/if}
             </div>
             <div class="question">
                 <h2>{groupDetails.question}</h2>
@@ -329,12 +341,13 @@
     /* Elements */
     .end {
         text-align: end;
+        flex-shrink: 0;
+        flex: 1;
     }
 
     .details > p {
         font-size: 1.125rem;
         flex-shrink: 0;
-        flex: 1;
     }
 
     .question > h2 {
