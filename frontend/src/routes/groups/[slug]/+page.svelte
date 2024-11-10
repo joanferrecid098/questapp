@@ -332,6 +332,7 @@
         justify-content: start;
         padding: 0.5rem 1rem 0.5rem 1rem;
         box-sizing: border-box;
+        flex-wrap: wrap;
     }
 
     .question {
@@ -353,5 +354,13 @@
     .question > h2 {
         width: 100%;
         text-align: center;
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 800px) {
+        .details > p {
+            flex-shrink: unset;
+            overflow-wrap: anywhere;
+        }
     }
 </style>

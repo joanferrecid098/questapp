@@ -43,8 +43,6 @@
 
     p {
         font-size: 1rem;
-        flex: 1;
-        flex-shrink: 0;
         text-align: start;
         overflow-wrap: anywhere;
     }
@@ -56,5 +54,9 @@
     .update,
     .notifications {
         text-align: end;
+    }
+
+    .title {
+        flex: 1;
     }
 </style>
