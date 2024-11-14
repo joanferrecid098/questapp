@@ -57,7 +57,8 @@ services:
         image: joanferrecid098/questapp-frontend:latest
         container_name: questapp-frontend
         ports:
-            - "3000:3000"
+            # Change "80" to the port you want the UI on
+            - "80:3000"
         environment:
             PUBLIC_BASE_URL: http://127.0.0.1:8080
         networks:
