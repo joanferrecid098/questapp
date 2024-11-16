@@ -1,42 +1,102 @@
 [
     {
-        "question": "Question 1",
-        "category": "Category 1"
+        "question": "Who would most likely survive a zombie apocalypse?",
+        "category": "Survival"
     },
     {
-        "question": "Question 2",
-        "category": "Category 1"
+        "question": "Who would most likely win a wilderness cooking challenge?",
+        "category": "Survival"
     },
     {
-        "question": "Question 3",
-        "category": "Category 1"
+        "question": "Who would be best at building a shelter from scratch?",
+        "category": "Survival"
     },
     {
-        "question": "Question 4",
-        "category": "Category 1"
+        "question": "Who is most likely to start a fire without matches?",
+        "category": "Survival"
     },
     {
-        "question": "Question 5",
-        "category": "Category 1"
+        "question": "Who would most likely lead a group to safety during a natural disaster?",
+        "category": "Survival"
     },
     {
-        "question": "Question 1",
-        "category": "Category 2"
+        "question": "Who is most likely to become a famous author?",
+        "category": "Career"
     },
     {
-        "question": "Question 2",
-        "category": "Category 2"
+        "question": "Who is most likely to become a world-renowned scientist?",
+        "category": "Career"
     },
     {
-        "question": "Question 3",
-        "category": "Category 2"
+        "question": "Who would make the best stand-up comedian?",
+        "category": "Career"
     },
     {
-        "question": "Question 4",
-        "category": "Category 2"
+        "question": "Who would most likely become a successful politician?",
+        "category": "Career"
     },
     {
-        "question": "Question 5",
-        "category": "Category 2"
+        "question": "Who would most likely start their own fashion brand?",
+        "category": "Career"
+    },
+    {
+        "question": "Who would make the best secret agent?",
+        "category": "Roles"
+    },
+    {
+        "question": "Who would be the perfect character in a spy movie?",
+        "category": "Roles"
+    },
+    {
+        "question": "Who would most likely play the villain in a blockbuster film?",
+        "category": "Roles"
+    },
+    {
+        "question": "Who would most likely be a hero in an action movie?",
+        "category": "Roles"
+    },
+    {
+        "question": "Who would most likely be the voice actor for a beloved animated character?",
+        "category": "Roles"
+    },
+    {
+        "question": "Who is most likely to invent a groundbreaking gadget?",
+        "category": "Innovation"
+    },
+    {
+        "question": "Who would most likely design a futuristic city?",
+        "category": "Innovation"
+    },
+    {
+        "question": "Who would come up with the next big app idea?",
+        "category": "Innovation"
+    },
+    {
+        "question": "Who would most likely create a viral online trend?",
+        "category": "Innovation"
+    },
+    {
+        "question": "Who is most likely to win an award for a technological invention?",
+        "category": "Innovation"
+    },
+    {
+        "question": "Who has the best taste in movies?",
+        "category": "Hobbies"
+    },
+    {
+        "question": "Who would most likely binge-watch an entire series in one day?",
+        "category": "Hobbies"
+    },
+    {
+        "question": "Who would be the best person to recommend a good book?",
+        "category": "Hobbies"
+    },
+    {
+        "question": "Who is most likely to know every word to a popular song?",
+        "category": "Hobbies"
+    },
+    {
+        "question": "Who would most likely win a board game night?",
+        "category": "Hobbies"
     }
 ]
