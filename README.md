@@ -1,6 +1,8 @@
 # Questapp
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+![MIT License](https://img.shields.io/github/license/joanferrecid098/questapp)
+![GitHub Release (Latest)](https://img.shields.io/github/v/release/joanferrecid098/questapp)
+![Docker Image Version (Tag)](https://img.shields.io/docker/v/joanferrecid098/questapp/latest)
 
 Questapp is a social and engaging web application that allows you to create and participate in daily surveys with friends, letting you share insights, start conversations, and discover preferences within your group. You can easily host it on your own server for private use or deploy it publicly for wider access.
 
