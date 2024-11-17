@@ -1,7 +1,7 @@
 # Questapp
 
 ![MIT License](https://img.shields.io/github/license/joanferrecid098/questapp)
-![GitHub Release (Latest)](https://img.shields.io/github/v/release/joanferrecid098/questapp)
+![GitHub Release (Latest)](https://img.shields.io/github/v/release/joanferrecid098/questapp?include_prereleases)
 ![Frontend Image (Tag)](https://img.shields.io/docker/v/joanferrecid098/questapp-frontend/latest)
 ![Backend Image (Tag)](https://img.shields.io/docker/v/joanferrecid098/questapp-frontend/latest)
 
